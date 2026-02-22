@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NotLa | Hepsi Bir Arada Akıllı Not & Görev Asistanı</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class' };
+    </script>
+    <!-- Quill.js (Zengin Metin Editörü) -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <!-- SortableJS (Sürükle-Bırak) -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- html2pdf.js (PDF Dışa Aktarma) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- localForage (IndexedDB tabanlı yüksek kapasiteli depolama) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/localforage/1.10.0/localforage.min.js"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        /* Tema Stilleri */
+        .theme-dark { background-color: #0f172a; color: #f1f5f9; }
+        .theme-dark .bg-card { background-color: #1e293b; border-color: #334155; }
+        .theme-dark aside { background-color: #020617; border-color: #1e293b; }
+        .theme-dark header { background-color: #0f172a; border-color: #1e293b; }
+
+        /* Yazı Kaybolma / Geçiş Hatalarını Düzelten Yumuşak Transizyonlar */
+        body, aside, header, main, .bg-card, .note-card, input, select, button, .nav-btn, 
+        .calendar-day, .calendar-event, #settingsModalContent, #editorModalContent {
+            transition-property: background-color, border-color, color, fill, stroke, box-shadow, transform;
+            transition-duration: 300ms;
+            transition-timing-function: ease-in-out;
+        }
+
+        /* Temel Kart Arka Planı ve Renk Modları Geçişi */
+        .bg-card { background-color: #ffffff; }
+
+        /* Renk Kodlaması: Uyumluluk ve Geçişler */
+        .note-color-red { background-color: #fee2e2; border-color: #fca5a5; }
+        .note-color-yellow { background-color: #fef3c7; border-color: #fcd34d; }
+        .note-color-green { background-color: #dcfce7; border-color: #86efac; }
+        .note-color-blue { background-color: #dbeafe; border-color: #93c5fd; }
+        .note-color-purple { background-color: #f3e8ff; border-color: #d8b4fe; }
+
+        .theme-dark .note-color-red { background-color: rgba(220, 38, 38, 0.15); border-color: rgba(220, 38, 38, 0.3); }
+        .theme-dark .note-color-yellow { background-color: rgba(217, 119, 6, 0.15); border-color: rgba(217, 119, 6, 0.3); }
+        .theme-dark .note-color-green { background-color: rgba(22, 163, 74, 0.15); border-color: rgba(22, 163, 74, 0.3); }
+        .theme-dark .note-color-blue { background-color: rgba(37, 99, 235, 0.15); border-color: rgba(37, 99, 235, 0.3); }
+        .theme-dark .note-color-purple { background-color: rgba(147, 51, 234, 0.15); border-color: rgba(147, 51, 234, 0.3); }
+
+        /* Quill Editor Özelleştirme */
+        .ql-toolbar.ql-snow { border: none !important; border-bottom: 1px solid #e2e8f0 !important; background: #f8fafc; border-radius: 0 !important; }
+        .theme-dark .ql-toolbar.ql-snow { background: #1e293b; border-bottom-color: #334155 !important; }
+        .theme-dark .ql-snow .ql-stroke { stroke: #f1f5f9; }
+        .theme-dark .ql-snow .ql-fill { fill: #f1f5f9; }
+        .theme-dark .ql-snow .ql-picker { color: #f1f5f9; }
+        .theme-dark .ql-editor.ql-blank::before { color: #94a3b8; }
+        .theme-dark .ql-editor { color: #f1f5f9; }
+        
+        .ql-container { font-size: 1.1rem; height: calc(100% - 42px) !important; min-height: 250px; }
+        .ql-editor { height: 100%; min-height: 250px; }
+
+        .note-card { cursor: pointer; position: relative; }
+        .note-card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        
+        /* Mobil Uyumlu Grid */
+        .grid-view { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
+        @media (min-width: 640px) { .grid-view { gap: 1.5rem; } }
+        
+        .list-view { display: flex; flex-direction: column; gap: 0.75rem; }
+        .list-view .note-card { display: flex; align-items: center; justify-content: space-between; padding: 1rem; }
+
+        .spinner {
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid #fff;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        /* Custom Scrollbar */
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+        @media (min-width: 640px) { .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; } }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .theme-dark .custom-scrollbar::-webkit-scrollbar-thumb { background: #475569; }
+
+    </style>
+</head>
+<body class="bg-gray-50 text-slate-900 overflow-hidden">
+
+    <div id="app" class="flex h-screen w-full relative">
+        
+        <!-- Mobil Sidebar Arka Plan Karartması -->
+        <div id="sidebarBackdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-30 hidden md:hidden transition-opacity opacity-0"></div>
+
+        <!-- Yan Menü (Mobil Duyarlı) -->
+        <aside id="sidebar" class="absolute md:relative inset-y-0 left-0 w-64 bg-white dark:bg-slate-900 border-r dark:border-slate-800 flex flex-col shrink-0 z-40 transition-transform duration-300 ease-in-out transform -translate-x-full md:translate-x-0 h-full shadow-2xl md:shadow-none">
+            <div class="p-6 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="bg-indigo-600 text-white p-2 rounded-xl shadow-lg shadow-indigo-500/50 dark:shadow-[0_0_15px_rgba(79,70,229,0.5)]">
+                        <i data-lucide="check-square"></i>
+                    </div>
+                    <h1 class="text-2xl font-bold tracking-tight text-slate-800 dark:text-white">NotLa</h1>
+                </div>
+                <!-- Mobil Sidebar Kapatma Butonu -->
+                <button onclick="toggleSidebar()" class="md:hidden p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <nav class="flex-1 px-4 space-y-1 overflow-y-auto custom-scrollbar">
+                <div class="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 mt-2">Görünümler</div>
+                
+                <button onclick="setFilter('notes')" class="nav-btn active w-full flex items-center gap-3 px-3 py-3 md:py-2.5 rounded-xl hover:bg-indigo-50 dark:hover:bg-slate-800 text-left transition text-sm font-medium text-slate-700 dark:text-slate-300" data-filter="notes">
+                    <i data-lucide="book-open" class="w-5 h-5 md:w-4 md:h-4"></i> Notlarım
+                </button>
+                <button onclick="setFilter('tasks')" class="nav-btn w-full flex items-center gap-3 px-3 py-3 md:py-2.5 rounded-xl hover:bg-indigo-50 dark:hover:bg-slate-800 text-left transition text-sm font-medium text-slate-700 dark:text-slate-300" data-filter="tasks">
+                    <i data-lucide="check-circle" class="w-5 h-5 md:w-4 md:h-4"></i> Görevlerim
+                </button>
+                <button onclick="setFilter('favorites')" class="nav-btn w-full flex items-center gap-3 px-3 py-3 md:py-2.5 rounded-xl hover:bg-indigo-50 dark:hover:bg-slate-800 text-left transition text-sm font-medium text-slate-700 dark:text-slate-300" data-filter="favorites">
+                    <i data-lucide="star" class="w-5 h-5 md:w-4 md:h-4"></i> Önemli
+                </button>
+                <button onclick="setFilter('trash')" class="nav-btn w-full flex items-center gap-3 px-3 py-3 md:py-2.5 rounded-xl hover:bg-indigo-50 dark:hover:bg-slate-800 text-left transition text-sm font-medium text-red-500 dark:text-red-400" data-filter="trash">
+                    <i data-lucide="trash-2" class="w-5 h-5 md:w-4 md:h-4"></i> Çöp Kutusu
+                </button>
+
+                <div class="mt-8 mb-2 px-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Etiketler</div>
+                <div id="tagList" class="space-y-1">
+                    <!-- Dinamik Etiketler -->
+                </div>
+            </nav>
+
+            <div class="p-4 border-t dark:border-slate-800 space-y-2">
+                <button onclick="openSettings()" class="w-full flex items-center gap-3 px-3 py-3 md:py-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-left transition text-sm font-medium text-slate-700 dark:text-slate-300">
+                    <i data-lucide="settings" class="w-5 h-5 text-slate-500"></i> Ayarlar
+                </button>
+            </div>
+        </aside>
+
+        <!-- Ana Alan -->
+        <main class="flex-1 flex flex-col relative min-w-0 w-full h-full">
+            <!-- Header -->
+            <header class="h-16 md:h-20 flex items-center justify-between px-4 md:px-8 bg-white/80 backdrop-blur-md sticky top-0 z-10 border-b dark:bg-slate-900/80 dark:border-slate-800">
+                
+                <!-- Mobil Hamburger Menü İkonu -->
+                <button onclick="toggleSidebar()" class="md:hidden p-2 mr-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+
+                <div class="flex-1 max-w-xl relative" id="searchContainer">
+                    <i data-lucide="search" class="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>
+                    <input type="text" id="searchBox" oninput="handleSearch()" placeholder="Ara..." class="w-full pl-9 md:pl-11 pr-4 py-2 md:py-2.5 bg-slate-100 dark:bg-slate-800 rounded-xl md:rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition text-sm dark:text-white border border-transparent dark:border-slate-700">
+                </div>
+
+                <div class="flex items-center gap-2 md:gap-4 ml-2 md:ml-6">
+                    <button id="calendarToggleBtn" onclick="toggleCalendarMode()" class="relative p-2 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/40 dark:to-purple-900/40 border border-indigo-100 dark:border-indigo-800/60 rounded-xl transition flex items-center justify-center shadow-sm hover:shadow-md hover:shadow-indigo-500/20 group overflow-hidden" title="Takvim (Planlananlar)">
+                        <div class="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 opacity-0 group-hover:opacity-10 transition-opacity"></div>
+                        <i data-lucide="calendar" id="calendarIcon" class="w-5 h-5 text-indigo-600 dark:text-indigo-400 transform group-hover:scale-110 transition-transform"></i>
+                    </button>
+                    <button id="viewToggleBtn" onclick="toggleView()" class="hidden md:flex p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition" title="Görünümü Değiştir">
+                        <i data-lucide="grid" id="viewIcon" class="w-5 h-5 text-slate-600 dark:text-slate-300"></i>
+                    </button>
+                    <!-- Masaüstü Yeni Butonu -->
+                    <button onclick="createNewItem()" class="hidden md:flex bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl items-center gap-2 text-sm font-semibold shadow-lg shadow-indigo-200 transition active:scale-95" id="mainAddBtn">
+                        <i data-lucide="plus" class="w-4 h-4" id="mainAddBtnIcon"></i> <span id="mainAddBtnText">Yeni Not</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Notlar Grid / Calendar / Tasks Container -->
+            <div id="notesContainer" class="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar pb-24 md:pb-8">
+                <!-- İçerik JavaScript ile buraya gelecek -->
+            </div>
+
+            <!-- Mobil Yüzen Yeni Butonu (FAB) -->
+            <button onclick="createNewItem()" class="md:hidden fixed bottom-6 right-6 w-14 h-14 bg-indigo-600 rounded-full flex items-center justify-center text-white shadow-[0_4px_20px_rgba(79,70,229,0.5)] z-20 active:scale-90 transition-transform">
+                <i data-lucide="plus" class="w-6 h-6"></i>
+            </button>
+        </main>
+    </div>
+
+    <!-- Editör Modalı (Mobilde Tam Ekran) -->
+    <div id="editorModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center sm:p-4 opacity-0 transition-opacity duration-300">
+        <div class="bg-white dark:bg-slate-900 w-full h-full sm:max-w-5xl sm:h-[95vh] sm:rounded-3xl shadow-2xl flex flex-col overflow-hidden transform transition-transform duration-300 scale-95" id="editorModalContent">
+            
+            <!-- Modal Header -->
+            <div class="p-3 sm:p-4 border-b flex items-center justify-between gap-2 dark:border-slate-800 bg-white dark:bg-slate-900 z-10 shrink-0">
+                <!-- Mobilde geri butonu ekle -->
+                <button onclick="saveAndClose()" class="sm:hidden p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg shrink-0">
+                    <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                </button>
+
+                <!-- Checkbox ve Title Alanı -->
+                <div class="flex items-center flex-1 min-w-0 pr-2 gap-2 sm:gap-3">
+                    <button id="modalTaskCheck" onclick="toggleCurrentTaskCheck()" class="hidden w-6 h-6 sm:w-7 sm:h-7 rounded-full border-2 items-center justify-center shrink-0 transition-colors"></button>
+                    <input type="text" id="noteTitle" placeholder="Başlıksız Not" class="text-xl sm:text-2xl font-bold bg-transparent outline-none flex-1 min-w-0 px-2 dark:text-white placeholder-slate-300 dark:placeholder-slate-600 truncate transition-colors">
+                </div>
+                
+                <div class="flex items-center gap-1 sm:gap-2 shrink-0">
+                    <!-- Dışa Aktar Dropdown -->
+                    <div class="relative hidden sm:block">
+                        <button onclick="toggleExportMenu()" class="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 px-3 py-2 rounded-xl text-sm font-medium transition">
+                            <i data-lucide="download" class="w-4 h-4"></i> İndir
+                        </button>
+                        <div id="exportMenu" class="hidden absolute right-0 mt-2 w-40 bg-white dark:bg-slate-800 shadow-xl rounded-xl border dark:border-slate-700 overflow-hidden py-1 z-50">
+                            <button onclick="exportNote('pdf')" class="w-full text-left px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-700 text-sm flex items-center gap-2 dark:text-white"><i data-lucide="file-text" class="w-4 h-4 text-red-500"></i> PDF Olarak</button>
+                            <button onclick="exportNote('txt')" class="w-full text-left px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-700 text-sm flex items-center gap-2 dark:text-white"><i data-lucide="file" class="w-4 h-4 text-blue-500"></i> TXT Olarak</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Masaüstü Kapat Butonu -->
+                    <button onclick="saveAndClose()" class="hidden sm:flex p-2 hover:bg-red-50 dark:hover:bg-red-900/30 text-slate-400 hover:text-red-500 rounded-full transition">
+                        <i data-lucide="x" class="w-6 h-6"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Modal Body (Editor & Attachments) -->
+            <div class="flex-1 overflow-y-auto flex flex-col relative custom-scrollbar bg-white dark:bg-slate-900">
+                <div id="quillEditor" class="flex-1"></div>
+                
+                <!-- Dosya Ekleri Bölümü -->
+                <div class="p-3 sm:p-4 border-t dark:border-slate-800 shrink-0">
+                    <div class="flex items-center justify-between mb-2">
+                        <h4 class="text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-300 flex items-center gap-2">
+                            <i data-lucide="paperclip" class="w-4 h-4"></i> Dosya Ekleri
+                        </h4>
+                        <button onclick="document.getElementById('fileInput').click()" class="text-xs bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 px-3 py-1.5 rounded-lg font-medium transition dark:text-white flex items-center gap-1">
+                            <i data-lucide="plus" class="w-3 h-3"></i> Ekle
+                        </button>
+                        <input type="file" id="fileInput" class="hidden" multiple onchange="handleFileUpload(event)">
+                    </div>
+                    <div id="attachmentList" class="flex flex-wrap gap-2">
+                        <!-- Eklenen dosyalar buraya gelecek -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Footer (Settings) -->
+            <div class="p-3 sm:p-4 border-t flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/80 z-10 shrink-0 pb-6 sm:pb-4">
+                <div class="flex gap-2 flex-wrap items-center w-full sm:w-auto">
+                    <!-- Renk Seçici -->
+                    <div class="flex items-center gap-1 sm:gap-2 bg-white dark:bg-slate-800 px-2 sm:px-3 py-1.5 rounded-lg border dark:border-slate-700 flex-1 sm:flex-none">
+                        <i data-lucide="palette" class="w-4 h-4 text-slate-400"></i>
+                        <select id="noteColor" class="text-xs sm:text-sm bg-transparent outline-none dark:text-white cursor-pointer w-full sm:w-24">
+                            <option value="white">Beyaz</option>
+                            <option value="#fee2e2">Kırmızı</option>
+                            <option value="#fef3c7">Sarı</option>
+                            <option value="#dcfce7">Yeşil</option>
+                            <option value="#dbeafe">Mavi</option>
+                            <option value="#f3e8ff">Mor</option>
+                        </select>
+                    </div>
+
+                    <!-- Hatırlatıcı (Sadece Görevlerde Görünür) -->
+                    <div id="reminderContainer" class="flex items-center gap-1 sm:gap-2 bg-white dark:bg-slate-800 px-2 sm:px-3 py-1.5 rounded-lg border dark:border-slate-700 flex-1 sm:flex-none hidden">
+                        <i data-lucide="clock" class="w-4 h-4 text-slate-400 shrink-0"></i>
+                        <input type="datetime-local" id="noteReminder" class="text-xs sm:text-sm bg-transparent outline-none dark:text-white cursor-pointer text-slate-600 w-full">
+                    </div>
+
+                    <!-- Konum (Sadece Görevlerde Görünür) -->
+                    <div id="locationContainer" class="flex items-center gap-1 sm:gap-2 bg-white dark:bg-slate-800 px-2 sm:px-3 py-1.5 rounded-lg border dark:border-slate-700 flex-1 sm:flex-none hidden">
+                        <i data-lucide="map-pin" class="w-4 h-4 text-slate-400 shrink-0"></i>
+                        <input type="text" id="noteLocation" placeholder="Konum..." class="text-xs sm:text-sm bg-transparent outline-none dark:text-white w-full sm:w-28">
+                    </div>
+
+                    <!-- Etiketler -->
+                    <div class="flex items-center gap-1 sm:gap-2 bg-white dark:bg-slate-800 px-2 sm:px-3 py-1.5 rounded-lg border dark:border-slate-700 w-full sm:w-auto mt-2 sm:mt-0">
+                        <i data-lucide="tag" class="w-4 h-4 text-slate-400"></i>
+                        <input type="text" id="noteTags" placeholder="Etiket1, Etiket2..." class="text-xs sm:text-sm bg-transparent outline-none dark:text-white w-full sm:w-32">
+                    </div>
+                </div>
+                
+                <div class="text-[10px] sm:text-xs text-slate-400 font-medium italic hidden sm:block w-full sm:w-auto text-right mt-2 sm:mt-0" id="saveStatus">Kaydedildi</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ayarlar Modalı -->
+    <div id="settingsModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+        <div class="bg-white dark:bg-slate-900 w-full max-w-md max-h-[90vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden transform transition-transform duration-300 scale-95" id="settingsModalContent">
+            <div class="p-4 sm:p-6 border-b flex items-center justify-between dark:border-slate-800 shrink-0">
+                <h2 class="text-lg sm:text-xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                    <i data-lucide="settings" class="w-5 h-5 text-indigo-500"></i> Ayarlar
+                </h2>
+                <button onclick="closeSettings()" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition dark:text-slate-300">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            
+            <div class="p-4 sm:p-6 overflow-y-auto custom-scrollbar flex-1">
+                <h3 class="text-xs sm:text-sm font-semibold text-slate-500 mb-3 uppercase tracking-wider">Görünüm</h3>
+                <div class="grid grid-cols-2 gap-2 sm:gap-3 mb-6">
+                    <button onclick="setTheme('light')" class="flex flex-col items-center gap-2 p-2 sm:p-3 rounded-xl border-2 border-transparent hover:bg-slate-50 dark:hover:bg-slate-800 transition" id="theme-btn-light">
+                        <div class="w-full h-10 sm:h-12 bg-white rounded-lg border shadow-sm flex items-center justify-center text-slate-400"><i data-lucide="sun" class="w-4 h-4 sm:w-5 sm:h-5"></i></div>
+                        <span class="text-[10px] sm:text-xs font-medium dark:text-slate-300">Açık</span>
+                    </button>
+                    <button onclick="setTheme('dark')" class="flex flex-col items-center gap-2 p-2 sm:p-3 rounded-xl border-2 border-transparent hover:bg-slate-50 dark:hover:bg-slate-800 transition" id="theme-btn-dark">
+                        <div class="w-full h-10 sm:h-12 bg-slate-900 rounded-lg border border-slate-700 shadow-sm flex items-center justify-center text-slate-400"><i data-lucide="moon" class="w-4 h-4 sm:w-5 sm:h-5"></i></div>
+                        <span class="text-[10px] sm:text-xs font-medium dark:text-slate-300">Koyu</span>
+                    </button>
+                </div>
+
+                <h3 class="text-xs sm:text-sm font-semibold text-slate-500 mb-3 uppercase tracking-wider">Editör</h3>
+                <div class="space-y-2 mb-6">
+                    <label class="flex items-center justify-between p-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer">
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="type" class="w-5 h-5 text-slate-500"></i>
+                            <div class="text-left">
+                                <div class="text-sm font-bold dark:text-slate-200">Yazım Denetimi</div>
+                                <div class="text-xs text-slate-500 dark:text-slate-400">Hatalı kelimelerin altını çiz.</div>
+                            </div>
+                        </div>
+                        <input type="checkbox" id="spellcheckToggle" class="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500" onchange="toggleSpellcheck()">
+                    </label>
+                </div>
+
+                <h3 class="text-xs sm:text-sm font-semibold text-slate-500 mb-3 uppercase tracking-wider">Veri Yönetimi</h3>
+                <div class="space-y-2">
+                    <button onclick="exportBackup()" class="w-full flex items-center gap-3 p-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition group">
+                        <i data-lucide="download-cloud" class="w-5 h-5 text-indigo-500 group-hover:scale-110 transition-transform"></i>
+                        <div class="text-left">
+                            <div class="text-sm font-bold dark:text-slate-200">Yedeği İndir</div>
+                            <div class="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400">Tüm notlarını cihaza kaydet.</div>
+                        </div>
+                    </button>
+                    
+                    <label class="w-full flex items-center gap-3 p-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer group">
+                        <i data-lucide="upload-cloud" class="w-5 h-5 text-indigo-500 group-hover:scale-110 transition-transform"></i>
+                        <div class="text-left flex-1">
+                            <div class="text-sm font-bold dark:text-slate-200">Yedeği Yükle</div>
+                            <div class="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400">Daha önceki yedeği geri yükle.</div>
+                        </div>
+                        <input type="file" id="backupInput" accept=".json" class="hidden" onchange="importBackup(event)">
+                    </label>
+
+                    <button onclick="clearAllData()" class="w-full flex items-center gap-3 p-3 rounded-xl border border-red-200 dark:border-red-900/50 hover:bg-red-50 dark:hover:bg-red-900/20 transition text-red-600 dark:text-red-400 mt-4 group">
+                        <i data-lucide="alert-triangle" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
+                        <div class="text-left">
+                            <div class="text-sm font-bold">Tüm Verileri Sil</div>
+                            <div class="text-[10px] sm:text-xs opacity-80">Uygulamayı sıfırla.</div>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export İçin Görünmez Konteyner -->
+    <div id="exportContainer" class="hidden bg-white p-8 text-black w-[800px]"></div>
+
+    <script>
+        // --- Uygulama Durumu (State) ---
+        let notes = [];
+        let trash = [];
+        let currentNoteId = null;
+        let currentFilter = localStorage.getItem('notla_filter') || 'notes'; 
+        let viewMode = localStorage.getItem('notla_view') || 'grid';
+        let currentTheme = localStorage.getItem('notla_theme') || 'light';
+        let spellcheckEnabled = localStorage.getItem('notla_spellcheck') !== 'false';
+        let currentCalendarDate = new Date();
+        let editor;
+        let sortableInstance = null;
+
+        if ("Notification" in window && Notification.permission !== "granted" && Notification.permission !== "denied") {
+            Notification.requestPermission();
+        }
+
+        // --- Mobil Sidebar Kontrolü ---
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('sidebarBackdrop');
+            if (sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.remove('-translate-x-full');
+                backdrop.classList.remove('hidden');
+                setTimeout(() => backdrop.classList.remove('opacity-0'), 10);
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                backdrop.classList.add('opacity-0');
+                setTimeout(() => backdrop.classList.add('hidden'), 300);
+            }
+        }
+
+        // --- Başlatma ---
+        window.onload = async () => {
+            localforage.config({ name: 'NotLaApp', storeName: 'notla_data' });
+
+            try {
+                let legacyNotes = localStorage.getItem('notla_notes');
+                let legacyTrash = localStorage.getItem('notla_trash');
+                
+                if (legacyNotes) {
+                    notes = JSON.parse(legacyNotes);
+                    await localforage.setItem('notla_notes', notes);
+                    localStorage.removeItem('notla_notes');
+                } else {
+                    notes = (await localforage.getItem('notla_notes')) || [];
+                }
+
+                if (legacyTrash) {
+                    trash = JSON.parse(legacyTrash);
+                    await localforage.setItem('notla_trash', trash);
+                    localStorage.removeItem('notla_trash');
+                } else {
+                    trash = (await localforage.getItem('notla_trash')) || [];
+                }
+
+                let dataMigrated = false;
+                notes.forEach(n => {
+                    if (!n.type) { n.type = 'note'; dataMigrated = true; }
+                    if (n.completed === undefined) { n.completed = false; dataMigrated = true; }
+                });
+                trash.forEach(n => {
+                    if (!n.type) { n.type = 'note'; dataMigrated = true; }
+                    if (n.completed === undefined) { n.completed = false; dataMigrated = true; }
+                });
+                if(dataMigrated) saveToStorage();
+
+            } catch (e) {
+                console.error("Veri yüklenirken hata oluştu:", e);
+                notes = []; trash = [];
+            }
+
+            lucide.createIcons();
+            initEditor();
+            applySpellcheck();
+            setTheme(currentTheme);
+            setFilter(currentFilter); 
+            
+            setInterval(checkReminders, 30000);
+            checkReminders();
+        };
+
+        function applySpellcheck() {
+            const editorEl = document.querySelector('.ql-editor');
+            if (editorEl) editorEl.setAttribute('spellcheck', spellcheckEnabled);
+            const toggle = document.getElementById('spellcheckToggle');
+            if (toggle) toggle.checked = spellcheckEnabled;
+        }
+
+        function toggleSpellcheck() {
+            spellcheckEnabled = document.getElementById('spellcheckToggle').checked;
+            localStorage.setItem('notla_spellcheck', spellcheckEnabled);
+            applySpellcheck();
+        }
+
+        function initEditor() {
+            editor = new Quill('#quillEditor', {
+                theme: 'snow',
+                placeholder: 'Detayları yaz...',
+                modules: {
+                    toolbar: [
+                        [{ 'header': [1, 2, false] }],
+                        ['bold', 'italic', 'underline'],
+                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                        [{ 'color': [] }, { 'background': [] }],
+                        ['link', 'image']
+                    ]
+                }
+            });
+
+            editor.on('text-change', () => {
+                if (currentNoteId) {
+                    const note = notes.find(n => n.id === currentNoteId);
+                    if (note) {
+                        note.content = editor.root.innerHTML;
+                        note.updatedAt = new Date().toISOString();
+                        triggerAutoSaveUI();
+                    }
+                }
+            });
+
+            ['noteTitle', 'noteTags', 'noteColor', 'noteReminder', 'noteLocation'].forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.addEventListener('input', () => {
+                        if (currentNoteId) {
+                            const note = notes.find(n => n.id === currentNoteId);
+                            if(note) {
+                                note.title = document.getElementById('noteTitle').value;
+                                note.tags = document.getElementById('noteTags').value.split(',').map(t => t.trim()).filter(t => t !== '');
+                                note.color = document.getElementById('noteColor').value;
+                                note.reminder = document.getElementById('noteReminder').value || null;
+                                note.location = document.getElementById('noteLocation').value || '';
+                                note.reminderShown = false;
+                                triggerAutoSaveUI();
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        function openSettings() {
+            if(window.innerWidth < 768) toggleSidebar();
+            const modal = document.getElementById('settingsModal');
+            const content = document.getElementById('settingsModalContent');
+            modal.classList.remove('hidden');
+            void modal.offsetWidth;
+            modal.classList.remove('opacity-0');
+            modal.classList.add('opacity-100');
+            content.classList.remove('scale-95');
+            content.classList.add('scale-100');
+            
+            document.querySelectorAll('[id^="theme-btn-"]').forEach(btn => btn.classList.remove('border-indigo-500', 'bg-indigo-50', 'dark:bg-indigo-900/30'));
+            const activeBtn = document.getElementById('theme-btn-' + currentTheme);
+            if(activeBtn) activeBtn.classList.add('border-indigo-500', 'bg-indigo-50', 'dark:bg-indigo-900/30');
+            lucide.createIcons();
+        }
+
+        function closeSettings() {
+            const modal = document.getElementById('settingsModal');
+            const content = document.getElementById('settingsModalContent');
+            modal.classList.remove('opacity-100');
+            modal.classList.add('opacity-0');
+            content.classList.remove('scale-100');
+            content.classList.add('scale-95');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+
+        function setTheme(theme) {
+            if (theme === 'dynamic') theme = 'light'; // Eskiden kalan ayarları sıfırla
+            currentTheme = theme;
+            localStorage.setItem('notla_theme', theme);
+            if (theme === 'dark') document.documentElement.classList.add('dark');
+            else document.documentElement.classList.remove('dark');
+            document.body.classList.remove('theme-dark', 'bg-gray-50');
+            if (theme === 'dark') document.body.classList.add('theme-dark');
+            else document.body.classList.add('bg-gray-50');
+
+            document.querySelectorAll('[id^="theme-btn-"]').forEach(btn => btn.classList.remove('border-indigo-500', 'bg-indigo-50', 'dark:bg-indigo-900/30'));
+            const activeBtn = document.getElementById('theme-btn-' + theme);
+            if(activeBtn) activeBtn.classList.add('border-indigo-500', 'bg-indigo-50', 'dark:bg-indigo-900/30');
+        }
+
+        function exportBackup() {
+            const data = { notes, trash, exportDate: new Date().toISOString() };
+            const blob = new Blob([JSON.stringify(data, null, 2)], {type: "application/json"});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `NotLa_Yedek_${new Date().toLocaleDateString('tr-TR').replace(/\./g, '-')}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function importBackup(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                try {
+                    const data = JSON.parse(evt.target.result);
+                    if (data.notes && Array.isArray(data.notes)) {
+                        if(confirm("DİKKAT: Mevcut notlarınızın üzerine yazılacak. Onaylıyor musunuz?")) {
+                            notes = data.notes;
+                            trash = data.trash || [];
+                            saveToStorage();
+                            renderNotes();
+                            alert("Yedek başarıyla yüklendi!");
+                            closeSettings();
+                        }
+                    } else { alert("HATA: Geçersiz yedek dosyası."); }
+                } catch(err) { alert("Dosya okunurken hata oluştu."); }
+            };
+            reader.readAsText(file);
+            e.target.value = '';
+        }
+
+        async function clearAllData() {
+            if(confirm("DİKKAT! Tüm veriler silinecek. Emin misin?")) {
+                if(confirm("Bu işlem GERİ ALINAMAZ. Onaylıyor musun?")) {
+                    notes = []; trash = [];
+                    await localforage.clear();
+                    saveToStorage(); renderNotes(); closeSettings();
+                    alert("Tüm veriler silindi.");
+                }
+            }
+        }
+
+        let saveTimeout;
+        function triggerAutoSaveUI() {
+            saveToStorage();
+            const status = document.getElementById('saveStatus');
+            if(!status) return;
+            status.innerText = 'Kaydediliyor...';
+            status.classList.remove('text-slate-400');
+            status.classList.add('text-indigo-500');
+            
+            clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(() => {
+                status.innerText = 'Kaydedildi';
+                status.classList.remove('text-indigo-500');
+                status.classList.add('text-slate-400');
+                if(currentFilter === 'calendar') renderCalendar();
+                else renderNotes();
+            }, 1000);
+        }
+
+        function destroySortable() {
+            if (sortableInstance) {
+                try { if (sortableInstance.el) sortableInstance.destroy(); } catch(e) {}
+                sortableInstance = null;
+            }
+        }
+
+        function initSortable() {
+            destroySortable();
+            const el = document.getElementById('notesContainer');
+            if (!el) return;
+            if(currentFilter === 'notes' && viewMode === 'grid') {
+                sortableInstance = Sortable.create(el, {
+                    draggable: '.note-card', animation: 150, delay: 200, delayOnTouchOnly: true,
+                    onEnd: function (evt) {
+                        const movedItem = notes.splice(evt.oldIndex, 1)[0];
+                        notes.splice(evt.newIndex, 0, movedItem);
+                        saveToStorage();
+                    }
+                });
+            }
+        }
+
+        // --- Veri Ekleme & Yönetimi ---
+        function createNewItem() {
+            const isTask = currentFilter === 'tasks' || currentFilter === 'calendar';
+            const newItem = {
+                id: Date.now().toString(),
+                type: isTask ? 'task' : 'note',
+                title: '', content: '', tags: [], color: 'white',
+                isFavorite: false, reminder: null, location: '', reminderShown: false, attachments: [], completed: false,
+                createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
+            };
+            notes.unshift(newItem);
+            saveToStorage();
+            openEditor(newItem.id);
+        }
+
+        function createNewNoteWithDate(dateStr) {
+            const newItem = {
+                id: Date.now().toString(),
+                type: 'task', 
+                title: '', content: '', tags: [], color: 'white',
+                isFavorite: false, reminder: dateStr + 'T12:00', location: '', reminderShown: false, attachments: [], completed: false,
+                createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
+            };
+            notes.unshift(newItem);
+            saveToStorage();
+            openEditor(newItem.id);
+        }
+
+        function quickAddTask(event) {
+            if (event.key === 'Enter') {
+                const val = event.target.value.trim();
+                if (val) {
+                    const newTask = {
+                        id: Date.now().toString(), type: 'task',
+                        title: val, content: '', tags: [], color: 'white',
+                        isFavorite: false, reminder: null, location: '', reminderShown: false, attachments: [], completed: false,
+                        createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
+                    };
+                    notes.unshift(newTask);
+                    saveToStorage();
+                    renderNotes();
+                    const input = document.getElementById('quickAddInput');
+                    if (input) {
+                        input.value = '';
+                        input.focus();
+                    }
+                }
+            }
+        }
+
+        function toggleTaskCompletion(id, event) {
+            if(event) event.stopPropagation();
+            const item = notes.find(n => n.id === id);
+            if(item) {
+                item.completed = !item.completed;
+                saveToStorage();
+                if(currentFilter === 'calendar') renderCalendar();
+                else renderNotes();
+            }
+        }
+
+        function toggleCurrentTaskCheck() {
+            if(currentNoteId) {
+                const note = notes.find(n => n.id === currentNoteId);
+                if(note && note.type === 'task') {
+                    note.completed = !note.completed;
+                    updateModalTaskCheck(note.completed);
+                    triggerAutoSaveUI();
+                }
+            }
+        }
+
+        function updateModalTaskCheck(isCompleted) {
+            const btn = document.getElementById('modalTaskCheck');
+            const title = document.getElementById('noteTitle');
+            if(isCompleted) {
+                btn.className = "w-6 h-6 sm:w-7 sm:h-7 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors bg-indigo-500 border-indigo-500 text-white";
+                btn.innerHTML = '<i data-lucide="check" class="w-4 h-4 sm:w-5 sm:h-5"></i>';
+                title.classList.add('line-through', 'text-slate-400');
+            } else {
+                btn.className = "w-6 h-6 sm:w-7 sm:h-7 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors border-slate-300 dark:border-slate-600 hover:border-indigo-400";
+                btn.innerHTML = '';
+                title.classList.remove('line-through', 'text-slate-400');
+            }
+            lucide.createIcons();
+        }
+
+        function openEditor(id) {
+            currentNoteId = id;
+            const note = notes.find(n => n.id === id);
+            if (note) {
+                document.getElementById('noteTitle').value = note.title;
+                document.getElementById('noteTitle').placeholder = note.type === 'task' ? 'Görev adı...' : 'Başlıksız Not';
+                document.getElementById('noteTags').value = (note.tags || []).join(', ');
+                document.getElementById('noteColor').value = note.color || 'white';
+                document.getElementById('noteLocation').value = note.location || '';
+                
+                const reminderContainer = document.getElementById('reminderContainer');
+                const locationContainer = document.getElementById('locationContainer');
+                
+                if (note.type === 'task') {
+                    if (reminderContainer) reminderContainer.classList.remove('hidden');
+                    if (locationContainer) locationContainer.classList.remove('hidden');
+                    document.getElementById('noteReminder').value = note.reminder || '';
+                } else {
+                    if (reminderContainer) reminderContainer.classList.add('hidden');
+                    if (locationContainer) locationContainer.classList.add('hidden');
+                }
+
+                editor.root.innerHTML = note.content || '';
+                
+                const checkBtn = document.getElementById('modalTaskCheck');
+                if (note.type === 'task') {
+                    checkBtn.classList.remove('hidden');
+                    updateModalTaskCheck(note.completed);
+                } else {
+                    checkBtn.classList.add('hidden');
+                    document.getElementById('noteTitle').classList.remove('line-through', 'text-slate-400');
+                }
+
+                renderAttachments();
+                
+                const modal = document.getElementById('editorModal');
+                const content = document.getElementById('editorModalContent');
+                modal.classList.remove('hidden');
+                void modal.offsetWidth;
+                modal.classList.remove('opacity-0');
+                modal.classList.add('opacity-100');
+                content.classList.remove('scale-95', 'translate-y-4');
+                content.classList.add('scale-100', 'translate-y-0');
+                
+                if(window.innerWidth > 768) { setTimeout(() => editor.focus(), 300); }
+            }
+        }
+
+        function saveAndClose() {
+            const modal = document.getElementById('editorModal');
+            const content = document.getElementById('editorModalContent');
+            modal.classList.remove('opacity-100');
+            modal.classList.add('opacity-0');
+            content.classList.remove('scale-100');
+            content.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                currentNoteId = null;
+                if(currentFilter === 'calendar') renderCalendar();
+                else renderNotes();
+            }, 300);
+        }
+
+        // --- Dosya Ekleri ---
+        function handleFileUpload(event) {
+            const files = event.target.files;
+            if(!files.length || !currentNoteId) return;
+            const note = notes.find(n => n.id === currentNoteId);
+            if(!note) return;
+
+            Array.from(files).forEach(file => {
+                if(file.size > 5 * 1024 * 1024) { alert(`${file.name} çok büyük (Maks. 5MB).`); return; }
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    if(!note.attachments) note.attachments = [];
+                    note.attachments.push({
+                        name: file.name, type: file.type, data: e.target.result,
+                        id: Date.now().toString() + Math.random().toString(36).substr(2, 5)
+                    });
+                    triggerAutoSaveUI();
+                    renderAttachments();
+                };
+                reader.readAsDataURL(file);
+            });
+            event.target.value = '';
+        }
+
+        function renderAttachments() {
+            const list = document.getElementById('attachmentList');
+            list.innerHTML = '';
+            const note = notes.find(n => n.id === currentNoteId);
+            if(!note || !note.attachments || note.attachments.length === 0) return;
+
+            note.attachments.forEach(att => {
+                const isImage = att.type.startsWith('image/');
+                const el = document.createElement('div');
+                el.className = 'flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-lg border dark:border-slate-700 text-xs sm:text-sm group';
+                el.innerHTML = `
+                    <i data-lucide="${isImage ? 'image' : 'file'}" class="w-3 h-3 sm:w-4 sm:h-4 text-slate-500"></i>
+                    <a href="${att.data}" download="${att.name}" class="text-indigo-600 dark:text-indigo-400 font-medium hover:underline truncate max-w-[100px] sm:max-w-[150px]">${att.name}</a>
+                    <button onclick="removeAttachment('${att.id}')" class="text-slate-400 hover:text-red-50 ml-1 sm:ml-2 p-1"><i data-lucide="x" class="w-3 h-3 sm:w-4 sm:h-4"></i></button>
+                `;
+                list.appendChild(el);
+            });
+            lucide.createIcons();
+        }
+
+        function removeAttachment(id) {
+            if(!currentNoteId) return;
+            const note = notes.find(n => n.id === currentNoteId);
+            if(note && note.attachments) {
+                note.attachments = note.attachments.filter(a => a.id !== id);
+                triggerAutoSaveUI();
+                renderAttachments();
+            }
+        }
+
+        function checkReminders() {
+            const now = new Date().getTime();
+            let changed = false;
+            notes.forEach(note => {
+                if (note.type === 'task' && note.reminder && !note.reminderShown) {
+                    const reminderTime = new Date(note.reminder).getTime();
+                    if (now >= reminderTime) {
+                        showNotification(note.title || 'İsimsiz Görev', "Hatırlatıcı zamanı geldi!");
+                        note.reminderShown = true;
+                        changed = true;
+                    }
+                }
+            });
+            if(changed) saveToStorage();
+        }
+
+        function showNotification(title, body) {
+            if ("Notification" in window && Notification.permission === "granted") {
+                new Notification("NotLa: " + title, { body: body, icon: "https://cdn-icons-png.flaticon.com/512/3208/3208703.png" });
+            } else { alert(`🔔 HATIRLATICI: ${title}\n${body}`); }
+        }
+
+        function toggleExportMenu() { document.getElementById('exportMenu').classList.toggle('hidden'); }
+
+        function exportNote(type) {
+            const note = notes.find(n => n.id === currentNoteId);
+            if(!note) return;
+            toggleExportMenu();
+            const title = note.title || 'NotLa_Belgesi';
+            if (type === 'txt') {
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = note.content;
+                const content = `${title.toUpperCase()}\n\n${tempDiv.innerText || tempDiv.textContent}\n\n---\nOluşturulma: ${new Date(note.createdAt).toLocaleString()}`;
+                const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = `${title}.txt`;
+                link.click();
+            } 
+            else if (type === 'pdf') {
+                const container = document.getElementById('exportContainer');
+                container.innerHTML = `<div style="font-family: Arial, sans-serif; padding: 20px;"><h1 style="color: #4f46e5; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px;">${title}</h1><div style="margin-top: 20px; font-size: 14px; line-height: 1.6;">${note.content}</div><div style="margin-top: 40px; font-size: 10px; color: #9ca3af; text-align: center; border-top: 1px solid #e5e7eb; padding-top: 10px;">NotLa Uygulaması • ${new Date().toLocaleString()}</div></div>`;
+                container.classList.remove('hidden');
+                html2pdf().set({ margin: 1, filename: `${title}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } }).from(container).save().then(() => {
+                    container.classList.add('hidden'); container.innerHTML = '';
+                });
+            }
+        }
+
+        function toggleFavorite(id, e) { e.stopPropagation(); const note = notes.find(n => n.id === id); if (note) { note.isFavorite = !note.isFavorite; saveToStorage(); renderNotes(); } }
+        function moveToTrash(id, e) { e.stopPropagation(); const noteIndex = notes.findIndex(n => n.id === id); if (noteIndex > -1) { trash.unshift(notes.splice(noteIndex, 1)[0]); saveToStorage(); renderNotes(); } }
+        function restoreFromTrash(id, e) { e.stopPropagation(); const noteIndex = trash.findIndex(n => n.id === id); if (noteIndex > -1) { notes.unshift(trash.splice(noteIndex, 1)[0]); saveToStorage(); renderNotes(); } }
+        function permanentDelete(id, e) { e.stopPropagation(); if(confirm("Kalıcı olarak silinecek. Emin misin?")) { trash = trash.filter(n => n.id !== id); saveToStorage(); renderNotes(); } }
+
+        // --- TAKVİM (CALENDAR) RENDER ---
+        function changeCalendarMonth(offset) { currentCalendarDate.setMonth(currentCalendarDate.getMonth() + offset); renderCalendar(); }
+        function resetCalendarToToday() { currentCalendarDate = new Date(); renderCalendar(); }
+
+        function renderCalendar() {
+            destroySortable(); 
+            const container = document.getElementById('notesContainer');
+            
+            const viewBtn = document.getElementById('viewToggleBtn');
+            if(viewBtn) viewBtn.classList.add('hidden');
+            document.getElementById('searchContainer').classList.add('opacity-0', 'pointer-events-none');
+            
+            container.className = 'flex-1 overflow-y-auto p-4 sm:p-8 custom-scrollbar bg-slate-50 dark:bg-transparent pb-24 md:pb-8';
+            
+            const year = currentCalendarDate.getFullYear();
+            const month = currentCalendarDate.getMonth();
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const startDay = firstDay === 0 ? 6 : firstDay - 1;
+            
+            const monthNames = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
+            const dayNames = ["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"];
+
+            const colorMap = {
+                'white': 'bg-indigo-50 border-indigo-200 text-indigo-700 dark:bg-indigo-900/40 dark:border-indigo-800 dark:text-indigo-300',
+                '#fee2e2': 'bg-red-100 border-red-200 text-red-700 dark:bg-red-900/40 dark:border-red-800 dark:text-red-300',
+                '#fef3c7': 'bg-yellow-100 border-yellow-200 text-yellow-700 dark:bg-yellow-900/40 dark:border-yellow-800 dark:text-yellow-300',
+                '#dcfce7': 'bg-green-100 border-green-200 text-green-700 dark:bg-green-900/40 dark:border-green-800 dark:text-green-300',
+                '#dbeafe': 'bg-blue-100 border-blue-200 text-blue-700 dark:bg-blue-900/40 dark:border-blue-800 dark:text-blue-300',
+                '#f3e8ff': 'bg-purple-100 border-purple-200 text-purple-700 dark:bg-purple-900/40 dark:border-purple-800 dark:text-purple-300'
+            };
+
+            let html = `
+                <div class="max-w-6xl mx-auto h-full flex flex-col min-w-[300px]" style="animation: fadeIn 0.3s ease-out;">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 shrink-0 gap-4">
+                        <h2 class="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-white flex items-center gap-3">
+                            <div class="p-2 sm:p-2.5 bg-indigo-100 dark:bg-indigo-500/20 rounded-xl text-indigo-600 dark:text-indigo-400 shadow-sm">
+                                <i data-lucide="calendar-days" class="w-6 h-6 sm:w-7 sm:h-7"></i>
+                            </div>
+                            ${monthNames[month]} ${year}
+                        </h2>
+                        <div class="flex items-center gap-2 sm:gap-3 w-full sm:w-auto justify-between sm:justify-end">
+                            <button onclick="resetCalendarToToday()" class="px-3 sm:px-4 py-2 text-sm font-semibold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition shadow-sm text-slate-700 dark:text-slate-300 flex items-center gap-2">
+                                <i data-lucide="calendar" class="w-4 h-4"></i> Bugün
+                            </button>
+                            <div class="flex gap-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm p-1">
+                                <button onclick="changeCalendarMonth(-1)" class="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition text-slate-600 dark:text-slate-400"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
+                                <button onclick="changeCalendarMonth(1)" class="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition text-slate-600 dark:text-slate-400"><i data-lucide="chevron-right" class="w-5 h-5"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex-1 flex flex-col min-h-[400px] border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-sm">
+                        <div class="grid grid-cols-7 gap-px shrink-0 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
+            `;
+
+            dayNames.forEach(day => { html += `<div class="p-2 sm:p-3 text-center text-[10px] sm:text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">${day}</div>`; });
+            html += `</div><div class="grid grid-cols-7 gap-px flex-1 bg-slate-200 dark:bg-slate-700">`;
+
+            for (let i = 0; i < startDay; i++) { html += `<div class="bg-slate-50/50 dark:bg-slate-900/30 p-1 sm:p-2"></div>`; }
+
+            const today = new Date();
+            for (let i = 1; i <= daysInMonth; i++) {
+                const currentDateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+                
+                const dayNotes = notes.filter(n => {
+                    if (n.type !== 'task' || !n.reminder) return false; 
+                    const targetDate = new Date(n.reminder);
+                    return targetDate.getFullYear() === year && targetDate.getMonth() === month && targetDate.getDate() === i;
+                });
+
+                let notesHtml = dayNotes.map(n => {
+                    const colorClass = colorMap[n.color || 'white'];
+                    const isCompleted = n.completed;
+                    const checkIcon = isCompleted ? '<i data-lucide="check-circle" class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-indigo-500 shrink-0"></i>' : '<i data-lucide="circle" class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-slate-400 group-hover/event:text-indigo-400 shrink-0 transition-colors"></i>';
+                    
+                    return `
+                    <div onclick="openEditor('${n.id}'); event.stopPropagation();" 
+                         class="calendar-event mt-1 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-md border ${colorClass} ${isCompleted ? 'opacity-50 bg-slate-50 dark:bg-slate-800/50' : ''} shadow-sm flex items-center gap-1.5 transition-all hover:scale-[1.02] hover:shadow-md cursor-pointer group/event">
+                        <div onclick="toggleTaskCompletion('${n.id}', event)" class="shrink-0 flex items-center justify-center hover:scale-110 transition-transform">
+                            ${checkIcon}
+                        </div>
+                        <span class="truncate font-semibold text-[9px] sm:text-[11px] group-hover/event:opacity-100 opacity-90 ${isCompleted ? 'line-through' : ''}">${n.title || 'İsimsiz Görev'}</span>
+                    </div>`;
+                }).join('');
+
+                const isToday = (i === today.getDate() && month === today.getMonth() && year === today.getFullYear());
+                const cellBgClass = isToday ? 'bg-indigo-50/40 dark:bg-indigo-900/20' : 'bg-white dark:bg-slate-800';
+                const dayNumClass = isToday 
+                    ? 'bg-indigo-600 text-white w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center shadow-md' 
+                    : 'text-slate-700 dark:text-slate-300 w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors';
+
+                html += `
+                    <div onclick="createNewNoteWithDate('${currentDateStr}')" class="calendar-day ${cellBgClass} min-h-[70px] sm:min-h-[110px] p-1 sm:p-2 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors cursor-pointer flex flex-col group relative">
+                        <div class="font-bold text-[11px] sm:text-sm mb-1 ${dayNumClass}">${i}</div>
+                        <div class="flex-1 flex flex-col gap-0.5 sm:gap-1 overflow-y-auto custom-scrollbar pr-0.5 relative z-10">
+                            ${notesHtml}
+                        </div>
+                        <div class="hidden sm:flex absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                            <div class="bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 rounded-md p-1 shadow-sm"><i data-lucide="plus" class="w-3 h-3"></i></div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            const totalCells = startDay + daysInMonth;
+            const remainingCells = Math.ceil(totalCells / 7) * 7 - totalCells;
+            for (let i = 0; i < remainingCells; i++) { html += `<div class="bg-slate-50/50 dark:bg-slate-900/30 p-1 sm:p-2"></div>`; }
+
+            html += `</div></div></div>`;
+            container.innerHTML = html;
+            lucide.createIcons();
+        }
+
+        // --- TASKS (GÖREVLER) RENDER ---
+        function renderTasksView(filteredTasks) {
+            destroySortable(); 
+            const container = document.getElementById('notesContainer');
+            
+            const viewBtn = document.getElementById('viewToggleBtn');
+            if(viewBtn) viewBtn.classList.add('hidden');
+            document.getElementById('searchContainer').classList.remove('opacity-0', 'pointer-events-none');
+            
+            container.className = 'flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar pb-24 md:pb-8 max-w-4xl mx-auto w-full';
+            
+            // To-Do Organizasyon Mantığı (Microsoft To Do Stili)
+            const now = new Date();
+            const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+            const tomorrowStart = todayStart + 86400000;
+
+            let overdue = [], todayTasks = [], upcoming = [], noDate = [], completed = [];
+
+            filteredTasks.forEach(task => {
+                if (task.completed) {
+                    completed.push(task);
+                } else if (!task.reminder) {
+                    noDate.push(task);
+                } else {
+                    const taskDate = new Date(task.reminder).getTime();
+                    if (taskDate < todayStart) overdue.push(task);
+                    else if (taskDate >= todayStart && taskDate < tomorrowStart) todayTasks.push(task);
+                    else upcoming.push(task);
+                }
+            });
+
+            let html = `
+                <div class="mb-8 relative group">
+                    <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+                        <i data-lucide="plus" class="w-5 h-5 text-indigo-500"></i>
+                    </div>
+                    <input type="text" id="quickAddInput" onkeypress="quickAddTask(event)" placeholder="Görev ekle ve Enter'a bas..." class="w-full pl-12 pr-4 py-4 bg-white dark:bg-slate-800 rounded-2xl shadow-sm focus:shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition text-slate-700 dark:text-white border border-slate-200 dark:border-slate-700">
+                </div>
+            `;
+
+            const colorClassMap = {
+                'white': '', '#fee2e2': 'bg-red-50 dark:bg-red-900/10 border-red-200 dark:border-red-900/30', '#fef3c7': 'bg-yellow-50 dark:bg-yellow-900/10 border-yellow-200 dark:border-yellow-900/30',
+                '#dcfce7': 'bg-green-50 dark:bg-green-900/10 border-green-200 dark:border-green-900/30', '#dbeafe': 'bg-blue-50 dark:bg-blue-900/10 border-blue-200 dark:border-blue-900/30', '#f3e8ff': 'bg-purple-50 dark:bg-purple-900/10 border-purple-200 dark:border-purple-900/30'
+            };
+
+            const createTaskHtml = (task) => {
+                const bgBorderClass = colorClassMap[task.color] || 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700';
+                return `
+                    <div onclick="openEditor('${task.id}')" class="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-2xl border hover:shadow-md transition cursor-pointer group ${bgBorderClass} ${task.completed ? 'opacity-60 bg-slate-50 dark:bg-slate-800/50' : ''}">
+                        <button onclick="toggleTaskCompletion('${task.id}', event)" class="w-6 h-6 sm:w-7 sm:h-7 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${task.completed ? 'bg-indigo-500 border-indigo-500 text-white' : 'border-slate-300 dark:border-slate-600 group-hover:border-indigo-400'}">
+                            ${task.completed ? '<i data-lucide="check" class="w-4 h-4"></i>' : ''}
+                        </button>
+                        <div class="flex-1 min-w-0">
+                            <h4 class="text-sm sm:text-base font-medium truncate transition-colors ${task.completed ? 'line-through text-slate-500' : 'text-slate-800 dark:text-slate-200'}">${task.title || 'İsimsiz Görev'}</h4>
+                            <div class="flex items-center gap-3 mt-1 flex-wrap">
+                                ${task.reminder ? `<div class="text-[10px] sm:text-xs ${new Date(task.reminder).getTime() < todayStart && !task.completed ? 'text-red-500' : 'text-indigo-500'} flex items-center gap-1"><i data-lucide="calendar" class="w-3 h-3"></i> ${new Date(task.reminder).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</div>` : ''}
+                                ${task.location ? `<div class="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1"><i data-lucide="map-pin" class="w-3 h-3"></i> ${task.location}</div>` : ''}
+                                ${task.attachments && task.attachments.length > 0 ? `<div class="text-[10px] sm:text-xs text-slate-400 flex items-center gap-1"><i data-lucide="paperclip" class="w-3 h-3"></i></div>` : ''}
+                                ${task.content && task.content.length > 15 ? `<div class="text-[10px] sm:text-xs text-slate-400 flex items-center gap-1"><i data-lucide="align-left" class="w-3 h-3"></i></div>` : ''}
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1 shrink-0">
+                            ${currentFilter === 'trash' ? `
+                                <button onclick="restoreFromTrash('${task.id}', event)" title="Geri Yükle" class="p-2 hover:bg-green-100 rounded-lg text-green-600 transition"><i data-lucide="rotate-ccw" class="w-5 h-5"></i></button>
+                            ` : `
+                                <button onclick="toggleFavorite('${task.id}', event)" class="p-2 rounded-xl transition ${task.isFavorite ? 'text-orange-500' : 'text-slate-400 opacity-0 group-hover:opacity-100 hover:bg-slate-100 dark:hover:bg-slate-700'}">
+                                    <i data-lucide="star" class="w-5 h-5" ${task.isFavorite ? 'fill="currentColor"' : ''}></i>
+                                </button>
+                                <button onclick="moveToTrash('${task.id}', event)" class="p-2 rounded-xl transition text-slate-400 opacity-0 group-hover:opacity-100 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30">
+                                    <i data-lucide="trash-2" class="w-5 h-5"></i>
+                                </button>
+                            `}
+                        </div>
+                    </div>
+                `;
+            };
+
+            const renderSection = (title, icon, colorClass, taskArray) => {
+                if(taskArray.length === 0) return '';
+                let sectionHtml = `
+                    <div class="mb-3 mt-6 flex items-center gap-2 font-bold text-xs sm:text-sm uppercase tracking-wider ${colorClass}">
+                        <i data-lucide="${icon}" class="w-4 h-4"></i> ${title} <span class="opacity-60 ml-1">(${taskArray.length})</span>
+                    </div>
+                    <div class="space-y-3">
+                `;
+                taskArray.forEach(task => { sectionHtml += createTaskHtml(task); });
+                sectionHtml += `</div>`;
+                return sectionHtml;
+            };
+
+            if(filteredTasks.length === 0) {
+                html += `<div class="text-center text-slate-400 py-10"><i data-lucide="check-square" class="w-16 h-16 mx-auto mb-4 opacity-20"></i><p>Şu an için hiç görev yok. Harika!</p></div>`;
+            } else {
+                html += renderSection('Gecikmiş', 'alert-circle', 'text-red-500', overdue);
+                html += renderSection('Bugün', 'sun', 'text-indigo-500 dark:text-indigo-400', todayTasks);
+                html += renderSection('Yaklaşan', 'calendar', 'text-slate-600 dark:text-slate-300', upcoming);
+                html += renderSection('Tarihsiz', 'inbox', 'text-slate-500 dark:text-slate-400', noDate);
+                html += renderSection('Tamamlananlar', 'check-circle-2', 'text-emerald-600 dark:text-emerald-500', completed);
+            }
+
+            container.innerHTML = html;
+            lucide.createIcons();
+        }
+
+        // --- CARDS (NOTLAR) RENDER ---
+        function renderCardsView(filteredNotes) {
+            const container = document.getElementById('notesContainer');
+            
+            const viewBtn = document.getElementById('viewToggleBtn');
+            if(viewBtn) viewBtn.classList.remove('hidden');
+            if(window.innerWidth < 768 && viewBtn) viewBtn.classList.add('hidden');
+            
+            document.getElementById('searchContainer').classList.remove('opacity-0', 'pointer-events-none');
+            
+            container.className = `flex-1 overflow-y-auto p-4 md:p-8 ${viewMode === 'grid' ? 'grid-view' : 'list-view'} custom-scrollbar relative z-10 pb-24 md:pb-8`;
+            container.innerHTML = '';
+
+            if (filteredNotes.length === 0) {
+                container.innerHTML = `<div class="col-span-full flex flex-col items-center justify-center text-slate-400 py-20 h-full">
+                    <i data-lucide="ghost" class="w-16 h-16 sm:w-20 sm:h-20 mb-4 sm:mb-6 opacity-20"></i>
+                    <p class="text-sm sm:text-lg font-medium opacity-60">Burada henüz bir şey yok.</p>
+                </div>`;
+            }
+
+            const noteColorClassMap = {
+                '#fee2e2': 'note-color-red', '#fef3c7': 'note-color-yellow', '#dcfce7': 'note-color-green',
+                '#dbeafe': 'note-color-blue', '#f3e8ff': 'note-color-purple'
+            };
+
+            filteredNotes.forEach(note => {
+                const div = document.createElement('div');
+                const themeColorClass = (note.color && noteColorClassMap[note.color]) ? noteColorClassMap[note.color] : '';
+                div.className = `note-card bg-card p-5 sm:p-6 rounded-2xl border ${viewMode === 'list' ? 'flex items-center gap-4' : ''} dark:border-slate-800 ${themeColorClass} ${note.completed ? 'opacity-60' : ''}`;
+                div.onclick = () => currentFilter !== 'trash' && openEditor(note.id);
+                
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = note.content || '';
+                const plainText = tempDiv.textContent || tempDiv.innerText || "";
+                const preview = plainText.substring(0, 100) + (plainText.length > 100 ? '...' : '');
+                
+                const hasAttachment = note.attachments && note.attachments.length > 0 ? `<i data-lucide="paperclip" class="w-3 h-3 text-indigo-500"></i>` : '';
+
+                div.innerHTML = `
+                    <div class="flex-1 min-w-0 flex flex-col h-full">
+                        <div class="flex justify-between items-start mb-2 sm:mb-3">
+                            <div class="flex items-center min-w-0 flex-1">
+                                <h3 class="font-bold truncate pr-2 sm:pr-4 text-slate-800 dark:text-white text-base sm:text-lg">${note.title || 'Başlıksız Not'}</h3>
+                            </div>
+                            <div class="flex gap-1 shrink-0 ml-2">
+                                ${currentFilter === 'trash' ? `
+                                    <button onclick="restoreFromTrash('${note.id}', event)" title="Geri Yükle" class="p-1.5 hover:bg-green-100 rounded-lg text-green-600 transition"><i data-lucide="rotate-ccw" class="w-4 h-4"></i></button>
+                                    <button onclick="permanentDelete('${note.id}', event)" title="Tamamen Sil" class="p-1.5 hover:bg-red-100 rounded-lg text-red-600 transition"><i data-lucide="x-circle" class="w-4 h-4"></i></button>
+                                ` : `
+                                    <button onclick="toggleFavorite('${note.id}', event)" class="p-1.5 hover:bg-orange-50 dark:hover:bg-slate-700 rounded-lg ${note.isFavorite ? 'text-orange-500' : 'text-slate-400'} transition"><i data-lucide="star" class="w-4 h-4" ${note.isFavorite ? 'fill="currentColor"' : ''}></i></button>
+                                    <button onclick="moveToTrash('${note.id}', event)" class="p-1.5 hover:bg-red-50 dark:hover:bg-slate-700 rounded-lg text-slate-400 hover:text-red-500 transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                `}
+                            </div>
+                        </div>
+                        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 line-clamp-3 sm:line-clamp-4 mb-3 sm:mb-4 flex-1">${preview || '<i class="opacity-40 font-normal">İçerik boş...</i>'}</p>
+                        
+                        <div class="flex items-center justify-between mt-auto pt-3 sm:pt-4 border-t border-slate-200/50 dark:border-slate-700/50">
+                            <div class="flex flex-wrap gap-1.5 overflow-hidden h-5 sm:h-6">
+                                ${note.tags && note.tags.length > 0 ? note.tags.map(t => `<span class="text-[9px] sm:text-[10px] px-1.5 sm:px-2 py-0.5 bg-black/5 dark:bg-white/10 text-slate-700 dark:text-slate-300 rounded-md font-semibold uppercase truncate max-w-[60px] sm:max-w-[80px]">${t}</span>`).join('') : '<span class="text-[10px] opacity-0">-</span>'}
+                            </div>
+                            <div class="flex items-center gap-1 sm:gap-2 bg-black/5 dark:bg-white/5 px-1.5 sm:px-2 py-1 rounded-md">
+                                ${hasAttachment}
+                                <span class="text-[9px] sm:text-[10px] font-medium text-slate-500 ml-1">${new Date(note.updatedAt).toLocaleDateString('tr-TR')}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+            lucide.createIcons();
+            renderTags();
+            initSortable();
+        }
+
+        // --- Ana Render Yönlendiricisi ---
+        function renderNotes() {
+            if (currentFilter === 'calendar') {
+                renderCalendar();
+                return;
+            }
+
+            const searchVal = document.getElementById('searchBox').value.toLowerCase();
+            let dataList = currentFilter === 'trash' ? trash : notes;
+            let filtered = [];
+            
+            if (currentFilter === 'notes') {
+                filtered = dataList.filter(n => n.type === 'note');
+            } else if (currentFilter === 'tasks') {
+                filtered = dataList.filter(n => n.type === 'task');
+            } else if (currentFilter === 'favorites') {
+                filtered = dataList.filter(n => n.isFavorite); // Her ikisini de gösterir
+            } else if (currentFilter.startsWith('tag:')) {
+                const tag = currentFilter.replace('tag:', '');
+                filtered = dataList.filter(n => (n.tags || []).includes(tag));
+            } else {
+                filtered = dataList; // 'all' durumu
+            }
+
+            if (searchVal) {
+                filtered = filtered.filter(n => 
+                    (n.title && n.title.toLowerCase().includes(searchVal)) || 
+                    (n.content && n.content.toLowerCase().includes(searchVal)) ||
+                    (n.tags && n.tags.some(t => t.toLowerCase().includes(searchVal)))
+                );
+            }
+
+            if (currentFilter === 'tasks') {
+                renderTasksView(filtered);
+            } else {
+                renderCardsView(filtered);
+            }
+        }
+
+        function renderTags() {
+            const allTags = [...new Set(notes.flatMap(n => n.tags || []))];
+            const tagContainer = document.getElementById('tagList');
+            tagContainer.innerHTML = '';
+            allTags.forEach(tag => {
+                const btn = document.createElement('button');
+                const isActive = currentFilter === 'tag:'+tag;
+                btn.className = `w-full flex items-center gap-3 px-3 py-3 md:py-2 rounded-xl hover:bg-indigo-50 dark:hover:bg-slate-800 text-left transition text-sm font-medium nav-btn ${isActive ? 'bg-indigo-50 text-indigo-600 dark:bg-slate-800 dark:text-indigo-400' : 'text-slate-700 dark:text-slate-300'}`;
+                btn.dataset.filter = 'tag:'+tag;
+                btn.onclick = () => {
+                    setFilter('tag:' + tag);
+                    if(window.innerWidth < 768) toggleSidebar();
+                };
+                btn.innerHTML = `<i data-lucide="hash" class="w-4 h-4"></i> <span class="truncate">${tag}</span>`;
+                tagContainer.appendChild(btn);
+            });
+            lucide.createIcons();
+        }
+
+        function handleSearch() { renderNotes(); }
+
+        function toggleCalendarMode() {
+            if (currentFilter === 'calendar') {
+                setFilter(localStorage.getItem('notla_filter') || 'notes');
+            } else {
+                setFilter('calendar');
+            }
+        }
+
+        function setFilter(filter) {
+            // Eğer çöpte değilsek, seçimi hafızaya kaydet
+            if(filter !== 'trash' && !filter.startsWith('tag:')) {
+                localStorage.setItem('notla_filter', filter);
+            }
+            currentFilter = filter;
+            
+            document.querySelectorAll('.nav-btn').forEach(b => {
+                b.classList.remove('bg-indigo-50', 'text-indigo-600', 'dark:bg-slate-800', 'dark:text-indigo-400');
+                if (b.dataset.filter === 'trash') {
+                    b.classList.add('text-red-500', 'dark:text-red-400');
+                } else {
+                    b.classList.add('text-slate-700', 'dark:text-slate-300');
+                }
+                
+                if (b.dataset.filter === filter) {
+                    b.classList.remove('text-slate-700', 'dark:text-slate-300', 'text-red-500', 'dark:text-red-400');
+                    b.classList.add('bg-indigo-50', 'text-indigo-600', 'dark:bg-slate-800', 'dark:text-indigo-400');
+                }
+            });
+
+            // "Yeni Ekle" Buton Metnini Güncelle (Takvimdeyken veya görevdeyken "Yeni Görev" yazar)
+            const addBtnText = document.getElementById('mainAddBtnText');
+            if (addBtnText) {
+                addBtnText.innerText = (filter === 'tasks' || filter === 'calendar') ? 'Yeni Görev' : 'Yeni Not';
+            }
+
+            const calBtn = document.getElementById('calendarToggleBtn');
+            const calIcon = document.getElementById('calendarIcon');
+            if (calBtn && calIcon) {
+                if (filter === 'calendar') {
+                    calBtn.className = 'relative p-2 bg-gradient-to-r from-indigo-600 to-purple-600 border border-transparent rounded-xl transition-all duration-300 flex items-center justify-center shadow-[0_0_20px_rgba(99,102,241,0.6)] scale-105 group overflow-hidden';
+                    calIcon.className = 'w-5 h-5 text-white transform group-hover:scale-110 transition-transform';
+                } else {
+                    calBtn.className = 'relative p-2 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/40 dark:to-purple-900/40 border border-indigo-100 dark:border-indigo-800/60 rounded-xl transition-all duration-300 flex items-center justify-center shadow-sm hover:shadow-md hover:shadow-indigo-500/20 group overflow-hidden';
+                    calIcon.className = 'w-5 h-5 text-indigo-600 dark:text-indigo-400 transform group-hover:scale-110 transition-transform';
+                }
+            }
+            
+            if(window.innerWidth < 768 && filter !== 'calendar' && filter !== currentFilter) {
+                toggleSidebar();
+            }
+
+            renderNotes();
+        }
+
+        function toggleView() {
+            viewMode = viewMode === 'grid' ? 'list' : 'grid';
+            localStorage.setItem('notla_view', viewMode);
+            document.getElementById('viewIcon').setAttribute('data-lucide', viewMode === 'grid' ? 'list' : 'grid');
+            renderNotes();
+        }
+
+        function saveToStorage() {
+            localforage.setItem('notla_notes', notes).catch(err => {
+                console.error("Kayıt Hatası (Notes):", err);
+            });
+            localforage.setItem('notla_trash', trash).catch(err => {
+                console.error("Kayıt Hatası (Trash):", err);
+            });
+        }
+
+        window.onclick = function(event) {
+            if (!event.target.closest('button[onclick="toggleExportMenu()"]') && !event.target.closest('#exportMenu')) {
+                const exMenu = document.getElementById('exportMenu');
+                if (exMenu) exMenu.classList.add('hidden');
+            }
+            if (event.target.id === 'settingsModal') {
+                closeSettings();
+            }
+        }
+    </script>
+</body>
+</html>
