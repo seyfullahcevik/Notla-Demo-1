@@ -573,6 +573,124 @@
                 });
             }
         };
+        // --- APPLE İLE GİRİŞ ---
+        window.loginWithApple = function() {
+            const statusMsg = document.getElementById('loginStatusMsg');
+            if(statusMsg) {
+                statusMsg.classList.remove('hidden', 'text-red-500', 'text-green-500');
+                statusMsg.innerText = "Apple ile bağlantı kuruluyor...";
+                
+                const provider = new firebase.auth.OAuthProvider('apple.com');
+                firebase.auth().signInWithPopup(provider)
+                .then((result) => {
+                    statusMsg.innerText = "Giriş başarılı! Yönlendiriliyorsunuz...";
+                    statusMsg.classList.add('text-green-500');
+                    setTimeout(window.continueAsGuest, 1000);
+                }).catch((error) => {
+                    statusMsg.innerText = "Apple Giriş Hatası: " + error.message;
+                    statusMsg.classList.add('text-red-500');
+                    console.error("Apple Auth Hata:", error);
+                });
+            }
+        };
+
+        // --- TELEFON (SMS) İLE GİRİŞ ---
+        window.recaptchaVerifier = null;
+        window.confirmationResult = null;
+
+        window.showPhoneLoginUI = function() {
+            document.getElementById('mainLoginButtons').classList.add('hidden');
+            document.getElementById('phoneLoginUI').classList.remove('hidden');
+            document.getElementById('phoneLoginUI').classList.add('flex');
+            
+            // Recaptcha sadece 1 kez oluşturulur
+            if (!window.recaptchaVerifier) {
+                window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+                    'size': 'invisible',
+                    'callback': (response) => {
+                        // reCAPTCHA çözüldü, sendSMSCode devam edebilir
+                    }
+                });
+            }
+        };
+
+        window.cancelPhoneLogin = function() {
+            document.getElementById('phoneLoginUI').classList.add('hidden');
+            document.getElementById('phoneLoginUI').classList.remove('flex');
+            document.getElementById('mainLoginButtons').classList.remove('hidden');
+            
+            // Adımları sıfırla
+            document.getElementById('phoneStep1').classList.remove('hidden');
+            document.getElementById('phoneStep1').classList.add('flex');
+            document.getElementById('phoneStep2').classList.add('hidden');
+            document.getElementById('phoneStep2').classList.remove('flex');
+            
+            document.getElementById('loginStatusMsg').classList.add('hidden');
+            document.getElementById('phoneNumberInput').value = '';
+            document.getElementById('smsCodeInput').value = '';
+        };
+
+        window.sendSMSCode = function() {
+            let phoneNumber = document.getElementById('phoneNumberInput').value.trim();
+            const statusMsg = document.getElementById('loginStatusMsg');
+            
+            // Numara formatı kontrolü (Eğer + yoksa TR kodu ekle varsayımı yapabiliriz)
+            if (!phoneNumber.startsWith('+')) {
+                phoneNumber = '+' + phoneNumber.replace(/[^0-9]/g, '');
+            }
+
+            if (phoneNumber.length < 10) {
+                alert("Lütfen geçerli bir telefon numarası girin (Örn: +90 555 123 4567)");
+                return;
+            }
+            
+            statusMsg.classList.remove('hidden', 'text-red-500');
+            statusMsg.classList.add('text-indigo-500');
+            statusMsg.innerText = "Doğrulama SMS'i gönderiliyor...";
+
+            firebase.auth().signInWithPhoneNumber(phoneNumber, window.recaptchaVerifier)
+            .then((result) => {
+                window.confirmationResult = result;
+                statusMsg.innerText = "SMS başarıyla gönderildi.";
+                
+                // 1. adımı gizle, 2. adımı aç
+                document.getElementById('phoneStep1').classList.add('hidden');
+                document.getElementById('phoneStep1').classList.remove('flex');
+                document.getElementById('phoneStep2').classList.remove('hidden');
+                document.getElementById('phoneStep2').classList.add('flex');
+            }).catch((error) => {
+                statusMsg.innerText = "SMS Gönderilemedi: Numara formatını (+90...) kontrol edin veya daha sonra tekrar deneyin.";
+                statusMsg.classList.remove('text-indigo-500');
+                statusMsg.classList.add('text-red-500');
+                console.error("SMS Hatası:", error);
+                
+                // Hata olursa Recaptcha'yı sıfırlamak gerekir
+                if(window.recaptchaVerifier) window.recaptchaVerifier.render().then((widgetId) => grecaptcha.reset(widgetId));
+            });
+        };
+
+        window.verifySMSCode = function() {
+            const code = document.getElementById('smsCodeInput').value.trim();
+            const statusMsg = document.getElementById('loginStatusMsg');
+            
+            if(!code || code.length !== 6) {
+                alert("Lütfen size gönderilen 6 haneli kodu girin.");
+                return;
+            }
+
+            statusMsg.classList.remove('hidden', 'text-red-500');
+            statusMsg.innerText = "Kod doğrulanıyor...";
+
+            window.confirmationResult.confirm(code).then((result) => {
+                statusMsg.innerText = "Giriş başarılı! Yönlendiriliyorsunuz...";
+                statusMsg.classList.add('text-green-500');
+                setTimeout(window.continueAsGuest, 1000);
+            }).catch((error) => {
+                statusMsg.innerText = "Hatalı kod girdiniz. Lütfen tekrar deneyin.";
+                statusMsg.classList.add('text-red-500');
+                console.error("Doğrulama Hatası:", error);
+            });
+        };
 
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
