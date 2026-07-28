@@ -1113,7 +1113,7 @@
             }
 
             container.innerHTML = html;
-            lucide.createIcons();
+            lucide.createIcons({ root: document.getElementById('notesContainer') });
         }
 
         // --- CARDS (NOTLAR) RENDER ---
@@ -1248,7 +1248,7 @@
             lucide.createIcons();
         }
 
-        function handleSearch() { renderNotes(); }
+        const handleSearch = debounce(() => { renderNotes(); }, 300);
 
         function toggleCalendarMode() {
             if (currentFilter === 'calendar') {
