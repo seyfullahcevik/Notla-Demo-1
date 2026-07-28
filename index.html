@@ -414,7 +414,7 @@
         window.onAuthStateChanged = onAuthStateChanged;
     </script>
     <script>
-        // --- Uygulama Durumu (State) ---
+        // --- Uygulama Durumu (State) --- 
         let notes = [];
         let trash = [];
         let currentNoteId = null;
@@ -425,6 +425,37 @@
         let currentCalendarDate = new Date();
         let editor;
         let sortableInstance = null;
+     // --- Giriş Sistemi Fonksiyonları ---
+        function continueAsGuest() {
+            const loginScreen = document.getElementById('loginScreen');
+            loginScreen.classList.add('opacity-0');
+            setTimeout(() => {
+                loginScreen.classList.add('hidden');
+                // Karşılama ekranı kalkınca arka plandaki ikonların düzgün yüklenmesi için:
+                lucide.createIcons(); 
+            }, 500);
+        }
+
+        function loginWithGoogle() {
+            const statusMsg = document.getElementById('loginStatusMsg');
+            statusMsg.classList.remove('hidden');
+            statusMsg.innerText = "Google ile bağlantı kuruluyor...";
+            
+            if (window.signInWithPopup && window.googleAuth && window.googleProvider) {
+                window.signInWithPopup(window.googleAuth, window.googleProvider)
+                .then((result) => {
+                    statusMsg.innerText = "Giriş başarılı! Uygulamaya geçiliyor...";
+                    statusMsg.classList.remove('text-red-500');
+                    statusMsg.classList.add('text-green-500');
+                    setTimeout(continueAsGuest, 1000); // Başarılı olunca ekranı kapat
+                }).catch((error) => {
+                    statusMsg.innerText = "Giriş yapılamadı: Pencereyi kapattınız veya hata oluştu.";
+                    statusMsg.classList.add('text-red-500');
+                });
+            } else {
+                statusMsg.innerText = "Sistem yükleniyor, lütfen birkaç saniye bekleyip tekrar tıklayın.";
+            }
+        }   
 
         if ("Notification" in window && Notification.permission !== "granted" && Notification.permission !== "denied") {
             Notification.requestPermission();
