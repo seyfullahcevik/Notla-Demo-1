@@ -457,7 +457,7 @@
                         </div>
                         <input type="file" id="backupInput" accept=".json" class="hidden" onchange="importBackup(event)">
                     </label>
-           <button onclick="clearAllData()" class="w-full flex items-center gap-3 p-3 rounded-xl border border-red-200 dark:border-red-900/50 hover:bg-red-50 dark:hover:bg-red-900/20 transition text-red-600 dark:text-red-400 mt-4 group">
+                    <button onclick="clearAllData()" class="w-full flex items-center gap-3 p-3 rounded-xl border border-red-200 dark:border-red-900/50 hover:bg-red-50 dark:hover:bg-red-900/20 transition text-red-600 dark:text-red-400 mt-4 group">
                         <i data-lucide="alert-triangle" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
                         <div class="text-left">
                             <div class="text-sm font-bold">Tüm Verileri Sil</div>
@@ -476,7 +476,7 @@
                 </div>
             </div>
         </div>
-    </div>         
+    </div>
 
     <!-- Export İçin Görünmez Konteyner -->
     <div id="exportContainer" class="hidden bg-white p-8 text-black w-[800px]"></div>
@@ -589,17 +589,14 @@
                 statusMsg.innerText = "Google ile bağlantı kuruluyor...";
                 
                 const provider = new firebase.auth.GoogleAuthProvider();
-                // TAKVİM İZNİ EKLENDİ
                 provider.addScope('https://www.googleapis.com/auth/calendar.events'); 
 
                 firebase.auth().signInWithPopup(provider)
                 .then((result) => {
-                    // Google API Token'ı (Anahtarını) al ve tarayıcı belleğine (session) kaydet
                     const credential = firebase.auth.GoogleAuthProvider.credentialFromResult(result);
                     if(credential && credential.accessToken) {
                         sessionStorage.setItem('google_api_token', credential.accessToken);
                     }
-                    
                     statusMsg.innerText = "Giriş başarılı! Yönlendiriliyorsunuz...";
                     statusMsg.classList.add('text-green-500');
                     setTimeout(window.continueAsGuest, 1000);
@@ -610,13 +607,12 @@
                 });
             }
         };
-        // --- APPLE İLE GİRİŞ ---
+
         window.loginWithApple = function() {
             const statusMsg = document.getElementById('loginStatusMsg');
             if(statusMsg) {
                 statusMsg.classList.remove('hidden', 'text-red-500', 'text-green-500');
                 statusMsg.innerText = "Apple ile bağlantı kuruluyor...";
-                
                 const provider = new firebase.auth.OAuthProvider('apple.com');
                 firebase.auth().signInWithPopup(provider)
                 .then((result) => {
@@ -626,12 +622,10 @@
                 }).catch((error) => {
                     statusMsg.innerText = "Apple Giriş Hatası: " + error.message;
                     statusMsg.classList.add('text-red-500');
-                    console.error("Apple Auth Hata:", error);
                 });
             }
         };
 
-        // --- TELEFON (SMS) İLE GİRİŞ ---
         window.recaptchaVerifier = null;
         window.confirmationResult = null;
 
@@ -639,15 +633,12 @@
             document.getElementById('mainLoginButtons').classList.add('hidden');
             document.getElementById('phoneLoginUI').classList.remove('hidden');
             document.getElementById('phoneLoginUI').classList.add('flex');
-            
-            // Recaptcha sadece 1 kez oluşturulur
             if (!window.recaptchaVerifier) {
                 window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
-                    'size': 'invisible',
-                    'callback': (response) => {
-                        // reCAPTCHA çözüldü, sendSMSCode devam edebilir
-                    }
+                    'size': 'normal',
+                    'callback': (response) => {}
                 });
+                window.recaptchaVerifier.render();
             }
         };
 
@@ -655,13 +646,10 @@
             document.getElementById('phoneLoginUI').classList.add('hidden');
             document.getElementById('phoneLoginUI').classList.remove('flex');
             document.getElementById('mainLoginButtons').classList.remove('hidden');
-            
-            // Adımları sıfırla
             document.getElementById('phoneStep1').classList.remove('hidden');
             document.getElementById('phoneStep1').classList.add('flex');
             document.getElementById('phoneStep2').classList.add('hidden');
             document.getElementById('phoneStep2').classList.remove('flex');
-            
             document.getElementById('loginStatusMsg').classList.add('hidden');
             document.getElementById('phoneNumberInput').value = '';
             document.getElementById('smsCodeInput').value = '';
@@ -669,26 +657,13 @@
 
         window.sendSMSCode = function() {
             const countryCode = document.getElementById('countryCodeSelect').value;
-            let rawNumber = document.getElementById('phoneNumberInput').value.trim();
+            let rawNumber = document.getElementById('phoneNumberInput').value.trim().replace(/[^0-9]/g, '');
             const statusMsg = document.getElementById('loginStatusMsg');
 
-            // 1. Kullanıcı numaranın içine boşluk veya harf koyduysa hepsini temizle, sadece rakamları al
-            rawNumber = rawNumber.replace(/[^0-9]/g, '');
+            if (countryCode === '+90' && rawNumber.startsWith('0')) { rawNumber = rawNumber.substring(1); }
+            if (rawNumber.length < 7) { alert("Lütfen geçerli bir telefon numarası girin."); return; }
 
-            // 2. Eğer Türkiye (+90) seçiliyse ve kullanıcı başında '0' yazdıysa onu sil (Örn: 0555 -> 555)
-            if (countryCode === '+90' && rawNumber.startsWith('0')) {
-                rawNumber = rawNumber.substring(1);
-            }
-
-            // Temel uzunluk doğrulaması
-            if (rawNumber.length < 7) {
-                alert("Lütfen geçerli bir telefon numarası girin.");
-                return;
-            }
-
-            // Firebase'in tam olarak istediği format: +905551234567
             const fullPhoneNumber = countryCode + rawNumber;
-            
             statusMsg.classList.remove('hidden', 'text-red-500');
             statusMsg.classList.add('text-indigo-500');
             statusMsg.innerText = "Doğrulama SMS'i gönderiliyor...";
@@ -697,17 +672,13 @@
             .then((result) => {
                 window.confirmationResult = result;
                 statusMsg.innerText = "SMS başarıyla gönderildi.";
-                
                 document.getElementById('phoneStep1').classList.add('hidden');
                 document.getElementById('phoneStep1').classList.remove('flex');
                 document.getElementById('phoneStep2').classList.remove('hidden');
                 document.getElementById('phoneStep2').classList.add('flex');
             }).catch((error) => {
                 statusMsg.innerText = "SMS Gönderilemedi. Lütfen numarayı doğru yazdığınızdan emin olun.";
-                statusMsg.classList.remove('text-indigo-500');
-                statusMsg.classList.add('text-red-500');
-                console.error("SMS Hatası:", error);
-                
+                statusMsg.classList.remove('text-indigo-500'); statusMsg.classList.add('text-red-500');
                 if(window.recaptchaVerifier) window.recaptchaVerifier.render().then((widgetId) => grecaptcha.reset(widgetId));
             });
         };
@@ -715,23 +686,14 @@
         window.verifySMSCode = function() {
             const code = document.getElementById('smsCodeInput').value.trim();
             const statusMsg = document.getElementById('loginStatusMsg');
-            
-            if(!code || code.length !== 6) {
-                alert("Lütfen size gönderilen 6 haneli kodu girin.");
-                return;
-            }
-
-            statusMsg.classList.remove('hidden', 'text-red-500');
-            statusMsg.innerText = "Kod doğrulanıyor...";
-
+            if(!code || code.length !== 6) { alert("Lütfen size gönderilen 6 haneli kodu girin."); return; }
+            statusMsg.classList.remove('hidden', 'text-red-500'); statusMsg.innerText = "Kod doğrulanıyor...";
             window.confirmationResult.confirm(code).then((result) => {
                 statusMsg.innerText = "Giriş başarılı! Yönlendiriliyorsunuz...";
                 statusMsg.classList.add('text-green-500');
                 setTimeout(window.continueAsGuest, 1000);
             }).catch((error) => {
-                statusMsg.innerText = "Hatalı kod girdiniz. Lütfen tekrar deneyin.";
-                statusMsg.classList.add('text-red-500');
-                console.error("Doğrulama Hatası:", error);
+                statusMsg.innerText = "Hatalı kod girdiniz. Lütfen tekrar deneyin."; statusMsg.classList.add('text-red-500');
             });
         };
 
@@ -739,12 +701,10 @@
             const sidebar = document.getElementById('sidebar');
             const backdrop = document.getElementById('sidebarBackdrop');
             if (sidebar.classList.contains('-translate-x-full')) {
-                sidebar.classList.remove('-translate-x-full');
-                backdrop.classList.remove('hidden');
+                sidebar.classList.remove('-translate-x-full'); backdrop.classList.remove('hidden');
                 setTimeout(() => backdrop.classList.remove('opacity-0'), 10);
             } else {
-                sidebar.classList.add('-translate-x-full');
-                backdrop.classList.add('opacity-0');
+                sidebar.classList.add('-translate-x-full'); backdrop.classList.add('opacity-0');
                 setTimeout(() => backdrop.classList.add('hidden'), 300);
             }
         }
@@ -769,8 +729,7 @@
                 if (sharedId) {
                     renderSharedScreen(sharedId, user.email);
                 } else {
-                    renderNotes();
-                    syncSharedNotes();
+                    renderNotes(); syncSharedNotes();
                 }
             } else {
                 if (sharedId) { renderSharedScreen(sharedId, null); }
@@ -783,28 +742,15 @@
                 let legacyNotes = localStorage.getItem('notla_notes');
                 let legacyTrash = localStorage.getItem('notla_trash');
                 if (legacyNotes) {
-                    notes = JSON.parse(legacyNotes);
-                    await localforage.setItem('notla_notes', notes);
-                    localStorage.removeItem('notla_notes');
-                } else {
-                    notes = (await localforage.getItem('notla_notes')) || [];
-                }
+                    notes = JSON.parse(legacyNotes); await localforage.setItem('notla_notes', notes); localStorage.removeItem('notla_notes');
+                } else { notes = (await localforage.getItem('notla_notes')) || []; }
                 if (legacyTrash) {
-                    trash = JSON.parse(legacyTrash);
-                    await localforage.setItem('notla_trash', trash);
-                    localStorage.removeItem('notla_trash');
-                } else {
-                    trash = (await localforage.getItem('notla_trash')) || [];
-                }
+                    trash = JSON.parse(legacyTrash); await localforage.setItem('notla_trash', trash); localStorage.removeItem('notla_trash');
+                } else { trash = (await localforage.getItem('notla_trash')) || []; }
             } catch (e) {}
 
-            lucide.createIcons();
-            initEditor();
-            applySpellcheck();
-            setTheme(currentTheme);
-            setFilter(currentFilter); 
-            setInterval(checkReminders, 30000);
-            checkReminders();
+            lucide.createIcons(); initEditor(); applySpellcheck(); setTheme(currentTheme); setFilter(currentFilter); 
+            setInterval(checkReminders, 30000); checkReminders();
         };
 
         // --- PAYLAŞILAN NOT EKRANI & KONTROLLERİ ---
@@ -813,78 +759,30 @@
                 const doc = await firebase.firestore().collection('shared_notes').doc(sharedId).get();
                 if (doc.exists) {
                     const sharedNote = doc.data();
-
                     if (sharedNote.accessType === 'restricted') {
                         if (!userEmail) {
                             document.getElementById('loginScreen').style.display = 'none';
-                            document.getElementById('app').innerHTML = `
-                                <div class="flex-1 flex items-center justify-center bg-slate-50 dark:bg-slate-900 h-screen p-4">
-                                    <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-xl max-w-md w-full text-center border border-slate-200 dark:border-slate-700">
-                                        <div class="w-16 h-16 bg-slate-100 dark:bg-slate-700 text-slate-400 rounded-full flex items-center justify-center mx-auto mb-4"><i data-lucide="lock" class="w-8 h-8"></i></div>
-                                        <h2 class="text-xl font-bold text-slate-800 dark:text-white mb-2">Giriş Yapmanız Gerekiyor</h2>
-                                        <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Bu not kısıtlı erişime sahip. Görüntüleyebilmek için lütfen hesabınıza giriş yapın.</p>
-                                        <button onclick="window.location.reload()" class="w-full flex items-center justify-center gap-3 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3.5 rounded-xl font-semibold transition shadow-md">Giriş Ekranına Dön</button>
-                                    </div>
-                                </div>`;
-                            lucide.createIcons();
-                            return;
+                            document.getElementById('app').innerHTML = `<div class="flex-1 flex items-center justify-center bg-slate-50 dark:bg-slate-900 h-screen p-4"><div class="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-xl max-w-md w-full text-center border border-slate-200 dark:border-slate-700"><div class="w-16 h-16 bg-slate-100 dark:bg-slate-700 text-slate-400 rounded-full flex items-center justify-center mx-auto mb-4"><i data-lucide="lock" class="w-8 h-8"></i></div><h2 class="text-xl font-bold text-slate-800 dark:text-white mb-2">Giriş Yapmanız Gerekiyor</h2><p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Bu not kısıtlı erişime sahip. Görüntüleyebilmek için lütfen hesabınıza giriş yapın.</p><button onclick="window.location.reload()" class="w-full flex items-center justify-center gap-3 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3.5 rounded-xl font-semibold transition shadow-md">Giriş Ekranına Dön</button></div></div>`;
+                            lucide.createIcons(); return;
                         }
-                        
                         if (!sharedNote.sharedEmails || !sharedNote.sharedEmails.includes(userEmail.toLowerCase())) {
                             document.getElementById('loginScreen').style.display = 'none';
-                            document.getElementById('app').innerHTML = `
-                                <div class="flex-1 flex items-center justify-center bg-slate-50 dark:bg-slate-900 h-screen p-4">
-                                    <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-xl max-w-md w-full text-center border border-slate-200 dark:border-slate-700">
-                                        <div class="w-16 h-16 bg-red-50 dark:bg-red-900/30 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4"><i data-lucide="shield-alert" class="w-8 h-8"></i></div>
-                                        <h2 class="text-xl font-bold text-slate-800 dark:text-white mb-2">Erişim İzni Gerekiyor</h2>
-                                        <p class="text-sm text-slate-500 dark:text-slate-400 mb-2">Şu anki hesabınızla (<b>${userEmail}</b>) bu nota erişim yetkiniz bulunmuyor.</p>
-                                        <p class="text-xs text-slate-400 dark:text-slate-500 mb-6">Aşağıdaki butona tıklayarak not sahibinden e-posta ile erişim izni isteyebilirsiniz.</p>
-                                        <div class="flex flex-col gap-3">
-                                            <button onclick="requestAccess('${sharedNote.ownerEmail || ''}', '${sharedNote.title || 'İsimsiz Not'}', '${userEmail}')" class="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3.5 rounded-xl font-semibold transition shadow-md"><i data-lucide="mail" class="w-5 h-5"></i> Erişim İste</button>
-                                            <button onclick="window.location.href = window.location.origin + window.location.pathname" class="w-full flex items-center justify-center gap-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-white px-6 py-3.5 rounded-xl font-semibold transition">Kendi Notlarıma Dön</button>
-                                        </div>
-                                    </div>
-                                </div>`;
-                            lucide.createIcons();
-                            return;
+                            document.getElementById('app').innerHTML = `<div class="flex-1 flex items-center justify-center bg-slate-50 dark:bg-slate-900 h-screen p-4"><div class="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-xl max-w-md w-full text-center border border-slate-200 dark:border-slate-700"><div class="w-16 h-16 bg-red-50 dark:bg-red-900/30 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4"><i data-lucide="shield-alert" class="w-8 h-8"></i></div><h2 class="text-xl font-bold text-slate-800 dark:text-white mb-2">Erişim İzni Gerekiyor</h2><p class="text-sm text-slate-500 dark:text-slate-400 mb-2">Şu anki hesabınızla (<b>${userEmail}</b>) bu nota erişim yetkiniz bulunmuyor.</p><p class="text-xs text-slate-400 dark:text-slate-500 mb-6">Aşağıdaki butona tıklayarak not sahibinden e-posta ile erişim izni isteyebilirsiniz.</p><div class="flex flex-col gap-3"><button onclick="requestAccess('${sharedNote.ownerEmail || ''}', '${sharedNote.title || 'İsimsiz Not'}', '${userEmail}')" class="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3.5 rounded-xl font-semibold transition shadow-md"><i data-lucide="mail" class="w-5 h-5"></i> Erişim İste</button><button onclick="window.location.href = window.location.origin + window.location.pathname" class="w-full flex items-center justify-center gap-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-white px-6 py-3.5 rounded-xl font-semibold transition">Kendi Notlarıma Dön</button></div></div></div>`;
+                            lucide.createIcons(); return;
                         }
                     }
 
                     document.getElementById('loginScreen').style.display = 'none';
-                    document.getElementById('app').innerHTML = `
-                        <div class="flex-1 flex flex-col h-screen bg-slate-50 dark:bg-slate-900 overflow-y-auto p-4 sm:p-12 custom-scrollbar">
-                            <div class="max-w-3xl mx-auto w-full bg-white dark:bg-slate-800 p-6 sm:p-10 rounded-3xl shadow-xl border dark:border-slate-700">
-                                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-4 border-b dark:border-slate-700 mb-6 gap-4">
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-xs font-semibold px-3 py-1 bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 rounded-full">
-                                            ${sharedNote.mode === 'edit' ? '✏️ Düzenlenebilir Paylaşım' : '👁️ Görüntüleme Paylaşımı'}
-                                        </span>
-                                    </div>
-                                    <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-                                        <button onclick="importSharedNote('${sharedId}', 'copy')" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-white rounded-xl text-xs font-semibold transition shadow-sm flex items-center justify-center gap-2"><i data-lucide="copy" class="w-4 h-4"></i> Bağımsız Kopya Al</button>
-                                        <button onclick="importSharedNote('${sharedId}', 'linked')" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold transition shadow-sm flex items-center justify-center gap-2" title="Orijinal not silinirse sizden de silinir"><i data-lucide="link" class="w-4 h-4"></i> Defterime Ekle (Senkronize)</button>
-                                    </div>
-                                </div>
-                                <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-6">${sharedNote.title}</h1>
-                                <div class="prose dark:prose-invert max-w-none text-slate-700 dark:text-slate-300 text-base leading-relaxed">${sharedNote.content}</div>
-                                <div class="mt-10 pt-6 border-t dark:border-slate-700 text-center">
-                                    <a href="${window.location.origin + window.location.pathname}" class="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold transition shadow-lg shadow-indigo-500/30 text-sm">Kendi NotLa Uygulamanıza Dönün</a>
-                                </div>
-                            </div>
-                        </div>`;
+                    document.getElementById('app').innerHTML = `<div class="flex-1 flex flex-col h-screen bg-slate-50 dark:bg-slate-900 overflow-y-auto p-4 sm:p-12 custom-scrollbar"><div class="max-w-3xl mx-auto w-full bg-white dark:bg-slate-800 p-6 sm:p-10 rounded-3xl shadow-xl border dark:border-slate-700"><div class="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-4 border-b dark:border-slate-700 mb-6 gap-4"><div class="flex items-center gap-2"><span class="text-xs font-semibold px-3 py-1 bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 rounded-full">${sharedNote.mode === 'edit' ? '✏️ Düzenlenebilir Paylaşım' : '👁️ Görüntüleme Paylaşımı'}</span></div><div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto"><button onclick="importSharedNote('${sharedId}', 'copy')" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-white rounded-xl text-xs font-semibold transition shadow-sm flex items-center justify-center gap-2"><i data-lucide="copy" class="w-4 h-4"></i> Bağımsız Kopya Al</button><button onclick="importSharedNote('${sharedId}', 'linked')" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold transition shadow-sm flex items-center justify-center gap-2" title="Orijinal not silinirse sizden de silinir"><i data-lucide="link" class="w-4 h-4"></i> Defterime Ekle (Senkronize)</button></div></div><h1 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-6">${sharedNote.title}</h1><div class="prose dark:prose-invert max-w-none text-slate-700 dark:text-slate-300 text-base leading-relaxed">${sharedNote.content}</div><div class="mt-10 pt-6 border-t dark:border-slate-700 text-center"><a href="${window.location.origin + window.location.pathname}" class="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold transition shadow-lg shadow-indigo-500/30 text-sm">Kendi NotLa Uygulamanıza Dönün</a></div></div></div>`;
                     lucide.createIcons();
                 } else {
-                    alert("Bu paylaşılan not bulunamadı veya silinmiş.");
-                    window.location.href = window.location.origin + window.location.pathname;
+                    alert("Bu paylaşılan not bulunamadı veya silinmiş."); window.location.href = window.location.origin + window.location.pathname;
                 }
             } catch (e) { console.error("Hata:", e); }
         }
 
         function requestAccess(ownerEmail, noteTitle, requesterEmail) {
-            if (!ownerEmail) {
-                alert("Not sahibinin e-posta bilgisi eksik olduğu için otomatik erişim isteği gönderilemiyor.");
-                return;
-            }
+            if (!ownerEmail) { alert("Not sahibinin e-posta bilgisi eksik olduğu için otomatik erişim isteği gönderilemiyor."); return; }
             const subject = encodeURIComponent(`"${noteTitle}" adlı notunuz için erişim isteği`);
             const body = encodeURIComponent(`Merhaba,\n\n"${noteTitle}" adlı notunuza erişim sağlamak istiyorum.\n\nE-posta adresim: ${requesterEmail}\n\nLütfen beni notun erişim listesine ekler misiniz?\n\nTeşekkürler.`);
             window.location.href = `mailto:${ownerEmail}?subject=${subject}&body=${body}`;
@@ -896,28 +794,14 @@
             try {
                 const doc = await firebase.firestore().collection('shared_notes').doc(sId).get();
                 if(doc.exists) {
-                    const data = doc.data();
-                    const noteId = type === 'linked' ? sId : Date.now().toString(); 
-                    
+                    const data = doc.data(); const noteId = type === 'linked' ? sId : Date.now().toString(); 
                     const newNote = {
-                        id: noteId, type: 'note',
-                        title: type === 'linked' ? data.title : data.title + " (Kopya)",
-                        content: data.content,
-                        tags: type === 'linked' ? ['Ortak Not'] : ['Kopya'],
-                        color: type === 'linked' ? '#dbeafe' : 'white',
-                        isFavorite: false, reminder: null, location: '', attachments: [],
-                        createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
+                        id: noteId, type: 'note', title: type === 'linked' ? data.title : data.title + " (Kopya)", content: data.content,
+                        tags: type === 'linked' ? ['Ortak Not'] : ['Kopya'], color: type === 'linked' ? '#dbeafe' : 'white',
+                        isFavorite: false, reminder: null, location: '', attachments: [], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
                     };
-
-                    if (type === 'linked') {
-                        newNote.isSharedWithMe = true;
-                        newNote.shareId = sId;
-                        newNote.shareMode = data.mode;
-                    }
-                    
-                    notes = notes.filter(n => n.id !== newNote.id);
-                    notes.unshift(newNote);
-                    saveToStorage();
+                    if (type === 'linked') { newNote.isSharedWithMe = true; newNote.shareId = sId; newNote.shareMode = data.mode; }
+                    notes = notes.filter(n => n.id !== newNote.id); notes.unshift(newNote); saveToStorage();
                     alert(type === 'linked' ? "✅ Ortak not eklendi! Orijinal değişiklikler buraya yansıyacaktır." : "✅ Notun bağımsız bir kopyası defterinize eklendi.");
                     window.location.href = window.location.origin + window.location.pathname;
                 }
@@ -935,16 +819,12 @@
                             const data = doc.data();
                             if (note.isSharedWithMe) {
                                 if (note.content !== data.content || note.title !== data.title || note.shareMode !== data.mode) {
-                                    note.content = data.content; note.title = data.title; note.shareMode = data.mode;
-                                    hasChanges = true;
+                                    note.content = data.content; note.title = data.title; note.shareMode = data.mode; hasChanges = true;
                                 }
                             }
                         } else {
-                            if (note.isSharedWithMe) {
-                                notes.splice(i, 1); i--; hasChanges = true;
-                            } else {
-                                delete note.shareId; delete note.shareMode; delete note.shareAccessType; delete note.sharedEmails; hasChanges = true;
-                            }
+                            if (note.isSharedWithMe) { notes.splice(i, 1); i--; hasChanges = true; } 
+                            else { delete note.shareId; delete note.shareMode; delete note.shareAccessType; delete note.sharedEmails; hasChanges = true; }
                         }
                     } catch(e) {}
                 }
@@ -954,25 +834,17 @@
 
         function pushUpdateToFirebase(note) {
             if (note.shareId && (!note.isSharedWithMe || note.shareMode === 'edit')) {
-                firebase.firestore().collection('shared_notes').doc(note.shareId).update({
-                    title: note.title, content: note.content, updatedAt: new Date().toISOString()
-                }).catch(e => {});
+                firebase.firestore().collection('shared_notes').doc(note.shareId).update({ title: note.title, content: note.content, updatedAt: new Date().toISOString() }).catch(e => {});
             }
         }
 
         // --- EDİTÖR İŞLEMLERİ ---
         function applySpellcheck() {
-            const editorEl = document.querySelector('.ql-editor');
-            if (editorEl) editorEl.setAttribute('spellcheck', spellcheckEnabled);
-            const toggle = document.getElementById('spellcheckToggle');
-            if (toggle) toggle.checked = spellcheckEnabled;
+            const editorEl = document.querySelector('.ql-editor'); if (editorEl) editorEl.setAttribute('spellcheck', spellcheckEnabled);
+            const toggle = document.getElementById('spellcheckToggle'); if (toggle) toggle.checked = spellcheckEnabled;
         }
 
-        function toggleSpellcheck() {
-            spellcheckEnabled = document.getElementById('spellcheckToggle').checked;
-            localStorage.setItem('notla_spellcheck', spellcheckEnabled);
-            applySpellcheck();
-        }
+        function toggleSpellcheck() { spellcheckEnabled = document.getElementById('spellcheckToggle').checked; localStorage.setItem('notla_spellcheck', spellcheckEnabled); applySpellcheck(); }
 
         function initEditor() {
             editor = new Quill('#quillEditor', {
@@ -983,10 +855,7 @@
             editor.on('text-change', () => {
                 if (currentNoteId) {
                     const note = notes.find(n => n.id === currentNoteId);
-                    if (note) {
-                        note.content = editor.root.innerHTML; note.updatedAt = new Date().toISOString();
-                        triggerAutoSaveUI(); pushUpdateToFirebase(note);
-                    }
+                    if (note) { note.content = editor.root.innerHTML; note.updatedAt = new Date().toISOString(); triggerAutoSaveUI(); pushUpdateToFirebase(note); }
                 }
             });
 
@@ -1011,90 +880,57 @@
         }
 
         function openEditor(id) {
-            currentNoteId = id;
-            const note = notes.find(n => n.id === id);
+            currentNoteId = id; const note = notes.find(n => n.id === id);
             if (note) {
-                const titleInput = document.getElementById('noteTitle');
-                titleInput.value = note.title;
-                titleInput.placeholder = note.type === 'task' ? 'Görev adı...' : 'Başlıksız Not';
-                document.getElementById('noteTags').value = (note.tags || []).join(', ');
-                document.getElementById('noteColor').value = note.color || 'white';
-                document.getElementById('noteLocation').value = note.location || '';
+                const titleInput = document.getElementById('noteTitle'); titleInput.value = note.title; titleInput.placeholder = note.type === 'task' ? 'Görev adı...' : 'Başlıksız Not';
+                document.getElementById('noteTags').value = (note.tags || []).join(', '); document.getElementById('noteColor').value = note.color || 'white'; document.getElementById('noteLocation').value = note.location || '';
                 
                 const isReadOnly = note.isSharedWithMe && note.shareMode === 'view';
-                
-                if(editor) editor.enable(!isReadOnly);
-                titleInput.readOnly = isReadOnly;
-                
-                const quillToolbar = document.querySelector('.ql-toolbar');
-                if (quillToolbar) quillToolbar.style.display = isReadOnly ? 'none' : 'block';
+                if(editor) editor.enable(!isReadOnly); titleInput.readOnly = isReadOnly;
+                const quillToolbar = document.querySelector('.ql-toolbar'); if (quillToolbar) quillToolbar.style.display = isReadOnly ? 'none' : 'block';
                 
                 if(isReadOnly) {
-                    titleInput.classList.add('text-slate-400');
-                    document.getElementById('noteTags').disabled = true;
-                    document.getElementById('noteColor').disabled = true;
+                    titleInput.classList.add('text-slate-400'); document.getElementById('noteTags').disabled = true; document.getElementById('noteColor').disabled = true;
                 } else {
-                    titleInput.classList.remove('text-slate-400');
-                    document.getElementById('noteTags').disabled = false;
-                    document.getElementById('noteColor').disabled = false;
+                    titleInput.classList.remove('text-slate-400'); document.getElementById('noteTags').disabled = false; document.getElementById('noteColor').disabled = false;
                 }
 
-                const reminderContainer = document.getElementById('reminderContainer');
-                const locationContainer = document.getElementById('locationContainer');
-                
+                const reminderContainer = document.getElementById('reminderContainer'); const locationContainer = document.getElementById('locationContainer');
                 if (note.type === 'task') {
-                    if (reminderContainer) reminderContainer.classList.remove('hidden');
-                    if (locationContainer) locationContainer.classList.remove('hidden');
+                    if (reminderContainer) reminderContainer.classList.remove('hidden'); if (locationContainer) locationContainer.classList.remove('hidden');
                     document.getElementById('noteReminder').value = note.reminder || '';
                 } else {
-                    if (reminderContainer) reminderContainer.classList.add('hidden');
-                    if (locationContainer) locationContainer.classList.add('hidden');
+                    if (reminderContainer) reminderContainer.classList.add('hidden'); if (locationContainer) locationContainer.classList.add('hidden');
                 }
 
                 if(editor) editor.root.innerHTML = note.content || '';
                 
                 const checkBtn = document.getElementById('modalTaskCheck');
                 if (note.type === 'task') {
-                    checkBtn.classList.remove('hidden');
-                    if(isReadOnly) checkBtn.disabled = true; else checkBtn.disabled = false;
-                    updateModalTaskCheck(note.completed);
-                } else {
-                    checkBtn.classList.add('hidden');
-                    titleInput.classList.remove('line-through', 'text-slate-400');
-                }
+                    checkBtn.classList.remove('hidden'); if(isReadOnly) checkBtn.disabled = true; else checkBtn.disabled = false; updateModalTaskCheck(note.completed);
+                } else { checkBtn.classList.add('hidden'); titleInput.classList.remove('line-through', 'text-slate-400'); }
 
                 renderAttachments();
-                
-                const modal = document.getElementById('editorModal');
-                const content = document.getElementById('editorModalContent');
-                modal.classList.remove('hidden'); void modal.offsetWidth;
-                modal.classList.remove('opacity-0'); modal.classList.add('opacity-100');
+                const modal = document.getElementById('editorModal'); const content = document.getElementById('editorModalContent');
+                modal.classList.remove('hidden'); void modal.offsetWidth; modal.classList.remove('opacity-0'); modal.classList.add('opacity-100');
                 content.classList.remove('scale-95', 'translate-y-4'); content.classList.add('scale-100', 'translate-y-0');
-                
                 if(window.innerWidth > 768 && !isReadOnly) { setTimeout(() => { if(editor) editor.focus(); }, 300); }
             }
         }
 
         function saveAndClose() {
-            const modal = document.getElementById('editorModal');
-            const content = document.getElementById('editorModalContent');
-            modal.classList.remove('opacity-100'); modal.classList.add('opacity-0');
-            content.classList.remove('scale-100'); content.classList.add('scale-95');
-            setTimeout(() => {
-                modal.classList.add('hidden'); currentNoteId = null;
-                if(currentFilter === 'calendar') renderCalendar(); else renderNotes();
-            }, 300);
+            const modal = document.getElementById('editorModal'); const content = document.getElementById('editorModalContent');
+            modal.classList.remove('opacity-100'); modal.classList.add('opacity-0'); content.classList.remove('scale-100'); content.classList.add('scale-95');
+            setTimeout(() => { modal.classList.add('hidden'); currentNoteId = null; if(currentFilter === 'calendar') renderCalendar(); else renderNotes(); }, 300);
         }
 
         function triggerAutoSaveUI() {
             const status = document.getElementById('saveStatus');
-            if(status) {
-                status.innerText = 'Kaydediliyor...';
-                status.classList.remove('text-slate-400'); status.classList.add('text-indigo-500');
-            }
+            if(status) { status.innerText = 'Kaydediliyor...'; status.classList.remove('text-slate-400'); status.classList.add('text-indigo-500'); }
             debouncedSaveToStorage(); 
         }
-       // --- GOOGLE TAKVİM ENTEGRASYONU ---
+
+        // --- GOOGLE TAKVİM ENTEGRASYONU ---
         async function addToGoogleCalendar() {
             if (!currentNoteId) return;
             const note = notes.find(n => n.id === currentNoteId);
@@ -1144,19 +980,6 @@
                         status.innerText = 'Takvim Hatası';
                         status.classList.replace('text-indigo-500', 'text-red-500');
                     }
-                    return;
-                }
-            }
-                    
-                    if(credential && credential.accessToken) {
-                        token = credential.accessToken;
-                        sessionStorage.setItem('google_api_token', token);
-                    } else {
-                        throw new Error("Erişim anahtarı alınamadı.");
-                    }
-                } catch (error) {
-                    console.error("Takvim yetkisi hatası:", error);
-                    alert("Takvim bağlantısı yapılamadı veya yetki penceresini kapattınız.");
                     return;
                 }
             }
@@ -1228,28 +1051,22 @@
         // --- AYARLAR VE DİĞER MODALLAR ---
         function openSettings() {
             if(window.innerWidth < 768) toggleSidebar();
-            const modal = document.getElementById('settingsModal');
-            const content = document.getElementById('settingsModalContent');
-            modal.classList.remove('hidden'); void modal.offsetWidth;
-            modal.classList.remove('opacity-0'); modal.classList.add('opacity-100');
+            const modal = document.getElementById('settingsModal'); const content = document.getElementById('settingsModalContent');
+            modal.classList.remove('hidden'); void modal.offsetWidth; modal.classList.remove('opacity-0'); modal.classList.add('opacity-100');
             content.classList.remove('scale-95'); content.classList.add('scale-100');
             document.querySelectorAll('[id^="theme-btn-"]').forEach(btn => btn.classList.remove('border-indigo-500', 'bg-indigo-50', 'dark:bg-indigo-900/30'));
             const activeBtn = document.getElementById('theme-btn-' + currentTheme);
-            if(activeBtn) activeBtn.classList.add('border-indigo-500', 'bg-indigo-50', 'dark:bg-indigo-900/30');
-            lucide.createIcons();
+            if(activeBtn) activeBtn.classList.add('border-indigo-500', 'bg-indigo-50', 'dark:bg-indigo-900/30'); lucide.createIcons();
         }
 
         function closeSettings() {
-            const modal = document.getElementById('settingsModal');
-            const content = document.getElementById('settingsModalContent');
-            modal.classList.remove('opacity-100'); modal.classList.add('opacity-0');
-            content.classList.remove('scale-100'); content.classList.add('scale-95');
+            const modal = document.getElementById('settingsModal'); const content = document.getElementById('settingsModalContent');
+            modal.classList.remove('opacity-100'); modal.classList.add('opacity-0'); content.classList.remove('scale-100'); content.classList.add('scale-95');
             setTimeout(() => modal.classList.add('hidden'), 300);
         }
 
         function setTheme(theme) {
-            if (theme === 'dynamic') theme = 'light';
-            currentTheme = theme; localStorage.setItem('notla_theme', theme);
+            if (theme === 'dynamic') theme = 'light'; currentTheme = theme; localStorage.setItem('notla_theme', theme);
             if (theme === 'dark') document.documentElement.classList.add('dark'); else document.documentElement.classList.remove('dark');
             document.body.classList.remove('theme-dark', 'bg-gray-50');
             if (theme === 'dark') document.body.classList.add('theme-dark'); else document.body.classList.add('bg-gray-50');
@@ -1261,62 +1078,47 @@
         // --- VERİ YÖNETİMİ (YEDEK/SİL) ---
         function exportBackup() {
             const data = { notes, trash, exportDate: new Date().toISOString() };
-            const blob = new Blob([JSON.stringify(data, null, 2)], {type: "application/json"});
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a'); a.href = url;
-            a.download = `NotLa_Yedek_${new Date().toLocaleDateString('tr-TR').replace(/\./g, '-')}.json`;
+            const blob = new Blob([JSON.stringify(data, null, 2)], {type: "application/json"}); const url = URL.createObjectURL(blob);
+            const a = document.createElement('a'); a.href = url; a.download = `NotLa_Yedek_${new Date().toLocaleDateString('tr-TR').replace(/\./g, '-')}.json`;
             a.click(); URL.revokeObjectURL(url);
         }
 
         function importBackup(e) {
-            const file = e.target.files[0]; if (!file) return;
-            const reader = new FileReader();
+            const file = e.target.files[0]; if (!file) return; const reader = new FileReader();
             reader.onload = function(evt) {
                 try {
                     const data = JSON.parse(evt.target.result);
                     if (data.notes && Array.isArray(data.notes)) {
                         if(confirm("DİKKAT: Mevcut notlarınızın üzerine yazılacak. Onaylıyor musunuz?")) {
-                            notes = data.notes; trash = data.trash || [];
-                            saveToStorage(); renderNotes(); closeSettings();
-                            alert("Yedek başarıyla yüklendi!");
+                            notes = data.notes; trash = data.trash || []; saveToStorage(); renderNotes(); closeSettings(); alert("Yedek başarıyla yüklendi!");
                         }
                     } else { alert("HATA: Geçersiz yedek dosyası."); }
                 } catch(err) { alert("Dosya okunurken hata oluştu."); }
-            };
-            reader.readAsText(file); e.target.value = '';
+            }; reader.readAsText(file); e.target.value = '';
         }
 
         async function clearAllData() {
             if(confirm("DİKKAT! Tüm veriler silinecek. Emin misin?")) {
                 if(confirm("Bu işlem GERİ ALINAMAZ. Onaylıyor musun?")) {
-                    notes = []; trash = []; await localforage.clear();
-                    saveToStorage(); renderNotes(); closeSettings(); alert("Tüm veriler silindi.");
+                    notes = []; trash = []; await localforage.clear(); saveToStorage(); renderNotes(); closeSettings(); alert("Tüm veriler silindi.");
                 }
             }
         }
-// --- ÇIKIŞ YAPMA İŞLEMİ ---
+
+        // --- ÇIKIŞ YAPMA İŞLEMİ ---
         function logoutUser() {
             if(confirm("Hesabınızdan çıkış yapmak istediğinize emin misiniz?")) {
                 firebase.auth().signOut().then(() => {
-                    // Çıkış başarılı olduğunda hafızayı temizle ve sayfayı yenile
-                    // Sayfa yenilenince otomatik olarak Giriş Ekranı (Login) tekrar gelecektir.
-                    notes = [];
-                    trash = [];
-                    localforage.clear().then(() => {
-                        window.location.reload();
-                    });
-                }).catch((error) => {
-                    console.error("Çıkış hatası:", error);
-                    alert("Çıkış yapılırken bir hata oluştu.");
-                });
+                    notes = []; trash = [];
+                    localforage.clear().then(() => { window.location.reload(); });
+                }).catch((error) => { console.error("Çıkış hatası:", error); alert("Çıkış yapılırken bir hata oluştu."); });
             }
         }
+
         function saveToStorage() {
             const user = firebase.auth().currentUser;
             if (user) {
-                firebase.firestore().collection('user_notes').doc(user.uid).set({
-                    notes: notes, trash: trash, updatedAt: new Date().toISOString()
-                }).catch(err => { console.error("Buluta kayıt hatası:", err); });
+                firebase.firestore().collection('user_notes').doc(user.uid).set({ notes: notes, trash: trash, updatedAt: new Date().toISOString() }).catch(err => { console.error("Buluta kayıt hatası:", err); });
             }
             localforage.setItem('notla_notes', notes).catch(err => console.error(err));
             localforage.setItem('notla_trash', trash).catch(err => console.error(err));
@@ -1324,10 +1126,8 @@
 
         // --- DOSYA EKLERİ ---
         function handleFileUpload(event) {
-            const files = event.target.files;
-            if(!files.length || !currentNoteId) return;
-            const note = notes.find(n => n.id === currentNoteId);
-            if(!note) return;
+            const files = event.target.files; if(!files.length || !currentNoteId) return;
+            const note = notes.find(n => n.id === currentNoteId); if(!note) return;
             Array.from(files).forEach(file => {
                 if(file.size > 5 * 1024 * 1024) { alert(`${file.name} çok büyük (Maks. 5MB).`); return; }
                 const reader = new FileReader();
@@ -1335,37 +1135,24 @@
                     if(!note.attachments) note.attachments = [];
                     note.attachments.push({ name: file.name, type: file.type, data: e.target.result, id: Date.now().toString() + Math.random().toString(36).substr(2, 5) });
                     triggerAutoSaveUI(); renderAttachments();
-                };
-                reader.readAsDataURL(file);
-            });
-            event.target.value = '';
+                }; reader.readAsDataURL(file);
+            }); event.target.value = '';
         }
 
         function renderAttachments() {
             const list = document.getElementById('attachmentList'); list.innerHTML = '';
-            const note = notes.find(n => n.id === currentNoteId);
-            if(!note || !note.attachments || note.attachments.length === 0) return;
+            const note = notes.find(n => n.id === currentNoteId); if(!note || !note.attachments || note.attachments.length === 0) return;
             note.attachments.forEach(att => {
-                const isImage = att.type.startsWith('image/');
-                const el = document.createElement('div');
+                const isImage = att.type.startsWith('image/'); const el = document.createElement('div');
                 el.className = 'flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-lg border dark:border-slate-700 text-xs sm:text-sm group';
-                el.innerHTML = `
-                    <i data-lucide="${isImage ? 'image' : 'file'}" class="w-3 h-3 sm:w-4 sm:h-4 text-slate-500"></i>
-                    <a href="${att.data}" download="${att.name}" class="text-indigo-600 dark:text-indigo-400 font-medium hover:underline truncate max-w-[100px] sm:max-w-[150px]">${att.name}</a>
-                    <button onclick="removeAttachment('${att.id}')" class="text-slate-400 hover:text-red-50 ml-1 sm:ml-2 p-1"><i data-lucide="x" class="w-3 h-3 sm:w-4 sm:h-4"></i></button>
-                `;
+                el.innerHTML = `<i data-lucide="${isImage ? 'image' : 'file'}" class="w-3 h-3 sm:w-4 sm:h-4 text-slate-500"></i><a href="${att.data}" download="${att.name}" class="text-indigo-600 dark:text-indigo-400 font-medium hover:underline truncate max-w-[100px] sm:max-w-[150px]">${att.name}</a><button onclick="removeAttachment('${att.id}')" class="text-slate-400 hover:text-red-50 ml-1 sm:ml-2 p-1"><i data-lucide="x" class="w-3 h-3 sm:w-4 sm:h-4"></i></button>`;
                 list.appendChild(el);
-            });
-            lucide.createIcons();
+            }); lucide.createIcons();
         }
 
         function removeAttachment(id) {
-            if(!currentNoteId) return;
-            const note = notes.find(n => n.id === currentNoteId);
-            if(note && note.attachments) {
-                note.attachments = note.attachments.filter(a => a.id !== id);
-                triggerAutoSaveUI(); renderAttachments();
-            }
+            if(!currentNoteId) return; const note = notes.find(n => n.id === currentNoteId);
+            if(note && note.attachments) { note.attachments = note.attachments.filter(a => a.id !== id); triggerAutoSaveUI(); renderAttachments(); }
         }
 
         // --- DİĞER FONKSİYONLAR ---
@@ -1374,44 +1161,32 @@
             notes.forEach(note => {
                 if (note.type === 'task' && note.reminder && !note.reminderShown) {
                     const reminderTime = new Date(note.reminder).getTime();
-                    if (now >= reminderTime) {
-                        showNotification(note.title || 'İsimsiz Görev', "Hatırlatıcı zamanı geldi!");
-                        note.reminderShown = true; changed = true;
-                    }
+                    if (now >= reminderTime) { showNotification(note.title || 'İsimsiz Görev', "Hatırlatıcı zamanı geldi!"); note.reminderShown = true; changed = true; }
                 }
-            });
-            if(changed) saveToStorage();
+            }); if(changed) saveToStorage();
         }
 
         function showNotification(title, body) {
-            if ("Notification" in window && Notification.permission === "granted") {
-                new Notification("NotLa: " + title, { body: body, icon: "https://cdn-icons-png.flaticon.com/512/3208/3208703.png" });
-            } else { alert(`🔔 HATIRLATICI: ${title}\n${body}`); }
+            if ("Notification" in window && Notification.permission === "granted") { new Notification("NotLa: " + title, { body: body, icon: "https://cdn-icons-png.flaticon.com/512/3208/3208703.png" }); } else { alert(`🔔 HATIRLATICI: ${title}\n${body}`); }
         }
 
         function toggleExportMenu() { document.getElementById('exportMenu').classList.toggle('hidden'); }
         function exportNote(type) {
-            const note = notes.find(n => n.id === currentNoteId); if(!note) return;
-            toggleExportMenu(); const title = note.title || 'NotLa_Belgesi';
+            const note = notes.find(n => n.id === currentNoteId); if(!note) return; toggleExportMenu(); const title = note.title || 'NotLa_Belgesi';
             if (type === 'txt') {
                 const tempDiv = document.createElement('div'); tempDiv.innerHTML = note.content;
                 const content = `${title.toUpperCase()}\n\n${tempDiv.innerText || tempDiv.textContent}\n\n---\nOluşturulma: ${new Date(note.createdAt).toLocaleString()}`;
-                const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-                const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `${title}.txt`; link.click();
+                const blob = new Blob([content], { type: 'text/plain;charset=utf-8' }); const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `${title}.txt`; link.click();
             } 
             else if (type === 'pdf') {
                 const container = document.getElementById('exportContainer');
                 container.innerHTML = `<div style="font-family: Arial, sans-serif; padding: 20px;"><h1 style="color: #4f46e5; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px;">${title}</h1><div style="margin-top: 20px; font-size: 14px; line-height: 1.6;">${note.content}</div><div style="margin-top: 40px; font-size: 10px; color: #9ca3af; text-align: center; border-top: 1px solid #e5e7eb; padding-top: 10px;">NotLa Uygulaması • ${new Date().toLocaleString()}</div></div>`;
                 container.classList.remove('hidden');
-                html2pdf().set({ margin: 1, filename: `${title}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } }).from(container).save().then(() => {
-                    container.classList.add('hidden'); container.innerHTML = '';
-                });
+                html2pdf().set({ margin: 1, filename: `${title}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } }).from(container).save().then(() => { container.classList.add('hidden'); container.innerHTML = ''; });
             }
         }
 
-        function destroySortable() {
-            if (sortableInstance) { try { if (sortableInstance.el) sortableInstance.destroy(); } catch(e) {} sortableInstance = null; }
-        }
+        function destroySortable() { if (sortableInstance) { try { if (sortableInstance.el) sortableInstance.destroy(); } catch(e) {} sortableInstance = null; } }
 
         function initSortable() {
             destroySortable(); const el = document.getElementById('notesContainer'); if (!el) return;
@@ -1458,8 +1233,7 @@
         }
 
         function toggleTaskCompletion(id, event) {
-            if(event) event.stopPropagation();
-            const item = notes.find(n => n.id === id);
+            if(event) event.stopPropagation(); const item = notes.find(n => n.id === id);
             if(item) { item.completed = !item.completed; saveToStorage(); if(currentFilter === 'calendar') renderCalendar(); else renderNotes(); }
         }
 
@@ -1486,12 +1260,8 @@
         function restoreFromTrash(id, e) { e.stopPropagation(); const noteIndex = trash.findIndex(n => n.id === id); if (noteIndex > -1) { notes.unshift(trash.splice(noteIndex, 1)[0]); saveToStorage(); renderNotes(); } }
         function permanentDelete(id, e) { e.stopPropagation(); if(confirm("Kalıcı olarak silinecek. Emin misin?")) { trash = trash.filter(n => n.id !== id); saveToStorage(); renderNotes(); } }
         function moveToTrash(id, e) {
-            if(e) e.stopPropagation();
-            const note = notes.find(n => n.id === id); const title = note ? (note.title || 'İsimsiz') : 'Öğe';
-            if (confirm(`"${title}" çöp kutusuna taşınsın mı?`)) {
-                const noteIndex = notes.findIndex(n => n.id === id);
-                if (noteIndex > -1) { trash.unshift(notes.splice(noteIndex, 1)[0]); saveToStorage(); renderNotes(); }
-            }
+            if(e) e.stopPropagation(); const note = notes.find(n => n.id === id); const title = note ? (note.title || 'İsimsiz') : 'Öğe';
+            if (confirm(`"${title}" çöp kutusuna taşınsın mı?`)) { const noteIndex = notes.findIndex(n => n.id === id); if (noteIndex > -1) { trash.unshift(notes.splice(noteIndex, 1)[0]); saveToStorage(); renderNotes(); } }
         }
 
         // --- UZUN BASMA / SAĞ TIK MENÜ SİSTEMİ (BAR İÇİNDE BAR) ---
@@ -1499,14 +1269,11 @@
             event.preventDefault(); const item = notes.find(n => n.id === id); if (!item) return;
             document.getElementById('activeCardId').value = id; switchToolbar('main');
             const toolbar = document.getElementById('cardToolbar');
-            toolbar.classList.remove('hidden'); void toolbar.offsetWidth;
-            toolbar.classList.remove('translate-y-10', 'opacity-0'); toolbar.classList.add('translate-y-0', 'opacity-100');
+            toolbar.classList.remove('hidden'); void toolbar.offsetWidth; toolbar.classList.remove('translate-y-10', 'opacity-0'); toolbar.classList.add('translate-y-0', 'opacity-100');
         }
 
         function closeCardToolbar() {
-            const toolbar = document.getElementById('cardToolbar');
-            toolbar.classList.add('translate-y-10', 'opacity-0');
-            setTimeout(() => toolbar.classList.add('hidden'), 300);
+            const toolbar = document.getElementById('cardToolbar'); toolbar.classList.add('translate-y-10', 'opacity-0'); setTimeout(() => toolbar.classList.add('hidden'), 300);
         }
 
         function switchToolbar(menuId) {
@@ -1514,9 +1281,7 @@
             menus.forEach(id => {
                 const el = document.getElementById(id + 'ToolbarActions');
                 if (el) { if (id === menuId) { el.classList.remove('hidden'); el.classList.add('flex'); } else { el.classList.add('hidden'); el.classList.remove('flex'); } }
-            });
-            lucide.createIcons();
-            if (menuId === 'tag') populateToolbarTags();
+            }); lucide.createIcons(); if (menuId === 'tag') populateToolbarTags();
         }
 
         function toolbarAction(action) {
@@ -1526,10 +1291,7 @@
 
         function handleEditAction(type) {
             const id = document.getElementById('activeCardId').value; const note = notes.find(n => n.id === id); if (!note) return;
-            if (type === 'title') {
-                const newTitle = prompt("Notun başlığını düzenleyin:", note.title || "");
-                if (newTitle !== null) { note.title = newTitle; saveToStorage(); renderNotes(); }
-            } else if (type === 'content') { closeCardToolbar(); openEditor(id); }
+            if (type === 'title') { const newTitle = prompt("Notun başlığını düzenleyin:", note.title || ""); if (newTitle !== null) { note.title = newTitle; saveToStorage(); renderNotes(); } } else if (type === 'content') { closeCardToolbar(); openEditor(id); }
         }
 
         function handleColorAction(colorCode) {
@@ -1539,8 +1301,7 @@
 
         function populateToolbarTags() {
             const id = document.getElementById('activeCardId').value; const note = notes.find(n => n.id === id); if (!note) return;
-            const allTags = [...new Set(notes.flatMap(n => n.tags || []))];
-            const container = document.getElementById('toolbarTagList'); container.innerHTML = '';
+            const allTags = [...new Set(notes.flatMap(n => n.tags || []))]; const container = document.getElementById('toolbarTagList'); container.innerHTML = '';
             if (allTags.length === 0) { container.innerHTML = '<span class="text-[10px] text-slate-400 italic">Etiket yok</span>'; return; }
             allTags.forEach(tag => {
                 const hasTag = (note.tags || []).includes(tag); const btn = document.createElement('button');
@@ -1565,23 +1326,17 @@
         let tempShareConfig = { emails: [], accessType: 'restricted', mode: 'view' };
 
         function openShareModal() {
-            closeCardToolbar();
-            const id = document.getElementById('activeCardId').value; const note = notes.find(n => n.id === id); if (!note) return;
-            tempShareConfig.emails = note.sharedEmails ? [...note.sharedEmails] : [];
-            tempShareConfig.accessType = note.shareAccessType || 'restricted';
-            tempShareConfig.mode = note.shareMode || 'view';
+            closeCardToolbar(); const id = document.getElementById('activeCardId').value; const note = notes.find(n => n.id === id); if (!note) return;
+            tempShareConfig.emails = note.sharedEmails ? [...note.sharedEmails] : []; tempShareConfig.accessType = note.shareAccessType || 'restricted'; tempShareConfig.mode = note.shareMode || 'view';
             renderShareModalContent();
             const modal = document.getElementById('shareModal'); const content = document.getElementById('shareModalContent');
-            modal.classList.remove('hidden'); void modal.offsetWidth;
-            modal.classList.remove('opacity-0'); modal.classList.add('opacity-100');
-            content.classList.remove('scale-95'); content.classList.add('scale-100');
-            lucide.createIcons();
+            modal.classList.remove('hidden'); void modal.offsetWidth; modal.classList.remove('opacity-0'); modal.classList.add('opacity-100');
+            content.classList.remove('scale-95'); content.classList.add('scale-100'); lucide.createIcons();
         }
 
         function closeShareModal() {
             const modal = document.getElementById('shareModal'); const content = document.getElementById('shareModalContent');
-            modal.classList.remove('opacity-100'); modal.classList.add('opacity-0');
-            content.classList.remove('scale-100'); content.classList.add('scale-95');
+            modal.classList.remove('opacity-100'); modal.classList.add('opacity-0'); content.classList.remove('scale-100'); content.classList.add('scale-95');
             setTimeout(() => modal.classList.add('hidden'), 300); renderNotes();
         }
 
@@ -1590,40 +1345,29 @@
             const emailsList = document.getElementById('sharedEmailsList'); emailsList.innerHTML = '';
             if (tempShareConfig.emails.length > 0) {
                 tempShareConfig.emails.forEach(email => {
-                    emailsList.innerHTML += `
-                        <div class="flex items-center justify-between bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-lg border border-slate-100 dark:border-slate-700">
-                            <div class="flex items-center gap-2"><i data-lucide="user" class="w-4 h-4 text-slate-400"></i><span class="text-sm font-medium dark:text-slate-200">${email}</span></div>
-                            <button onclick="removeEmailFromShare('${email}')" class="text-slate-400 hover:text-red-500"><i data-lucide="x" class="w-4 h-4"></i></button>
-                        </div>`;
+                    emailsList.innerHTML += `<div class="flex items-center justify-between bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-lg border border-slate-100 dark:border-slate-700"><div class="flex items-center gap-2"><i data-lucide="user" class="w-4 h-4 text-slate-400"></i><span class="text-sm font-medium dark:text-slate-200">${email}</span></div><button onclick="removeEmailFromShare('${email}')" class="text-slate-400 hover:text-red-500"><i data-lucide="x" class="w-4 h-4"></i></button></div>`;
                 });
             } else { emailsList.innerHTML = '<span class="text-xs text-slate-400 italic">Henüz özel kişi eklenmedi.</span>'; }
 
-            const copyBtn = document.getElementById('copyLinkBtn');
-            if (note && note.shareId) copyBtn.classList.remove('hidden'); else copyBtn.classList.add('hidden');
+            const copyBtn = document.getElementById('copyLinkBtn'); if (note && note.shareId) copyBtn.classList.remove('hidden'); else copyBtn.classList.add('hidden');
 
             const linkSection = document.getElementById('shareLinkSection');
             linkSection.innerHTML = `
                 <div class="flex flex-col gap-3 p-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl">
                     <div class="flex items-center gap-3">
-                        <div class="p-2 ${tempShareConfig.accessType === 'public' ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/50 dark:text-blue-400' : 'bg-slate-200 text-slate-500 dark:bg-slate-700 dark:text-slate-400'} rounded-full transition-colors">
-                            <i data-lucide="${tempShareConfig.accessType === 'public' ? 'globe' : 'lock'}" class="w-5 h-5"></i>
-                        </div>
+                        <div class="p-2 ${tempShareConfig.accessType === 'public' ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/50 dark:text-blue-400' : 'bg-slate-200 text-slate-500 dark:bg-slate-700 dark:text-slate-400'} rounded-full transition-colors"><i data-lucide="${tempShareConfig.accessType === 'public' ? 'globe' : 'lock'}" class="w-5 h-5"></i></div>
                         <div class="flex-1">
                             <select onchange="updateTempSetting('accessType', this.value)" class="w-full text-sm font-bold bg-transparent outline-none cursor-pointer dark:text-white">
-                                <option value="restricted" ${tempShareConfig.accessType === 'restricted' ? 'selected' : ''}>Kısıtlanmış (Yalnızca kişiler)</option>
-                                <option value="public" ${tempShareConfig.accessType === 'public' ? 'selected' : ''}>Bağlantıya sahip herkes</option>
+                                <option value="restricted" ${tempShareConfig.accessType === 'restricted' ? 'selected' : ''}>Kısıtlanmış (Yalnızca kişiler)</option><option value="public" ${tempShareConfig.accessType === 'public' ? 'selected' : ''}>Bağlantıya sahip herkes</option>
                             </select>
-                            <div class="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 mt-1">
-                                ${tempShareConfig.accessType === 'public' ? 'İnternetteki herkes erişebilir.' : 'Sadece listedeki e-postalar erişebilir.'}
-                            </div>
+                            <div class="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 mt-1">${tempShareConfig.accessType === 'public' ? 'İnternetteki herkes erişebilir.' : 'Sadece listedeki e-postalar erişebilir.'}</div>
                         </div>
                     </div>
                     <div class="w-full h-px bg-slate-200 dark:bg-slate-700 my-1"></div>
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-semibold text-slate-600 dark:text-slate-300">İzin Verilen Yetki:</span>
                         <select onchange="updateTempSetting('mode', this.value)" class="text-xs bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg px-2 py-1.5 font-medium outline-none cursor-pointer dark:text-white">
-                            <option value="view" ${tempShareConfig.mode === 'view' ? 'selected' : ''}>👁️ Görüntüleyen</option>
-                            <option value="edit" ${tempShareConfig.mode === 'edit' ? 'selected' : ''}>✏️ Düzenleyen</option>
+                            <option value="view" ${tempShareConfig.mode === 'view' ? 'selected' : ''}>👁️ Görüntüleyen</option><option value="edit" ${tempShareConfig.mode === 'edit' ? 'selected' : ''}>✏️ Düzenleyen</option>
                         </select>
                     </div>
                 </div>
@@ -1675,8 +1419,7 @@
             const id = document.getElementById('activeCardId').value; const note = notes.find(n => n.id === id); if (!note || !note.shareId) return;
             const publicLink = window.location.origin + window.location.pathname + `?shared=${note.shareId}`;
             navigator.clipboard.writeText(publicLink).then(() => {
-                const btn = document.getElementById('copyLinkBtn');
-                btn.innerHTML = `<i data-lucide="check" class="w-4 h-4"></i> Kopyalandı!`;
+                const btn = document.getElementById('copyLinkBtn'); btn.innerHTML = `<i data-lucide="check" class="w-4 h-4"></i> Kopyalandı!`;
                 btn.classList.replace('bg-slate-200', 'bg-green-600'); btn.classList.replace('text-slate-700', 'text-white'); lucide.createIcons();
                 setTimeout(() => {
                     btn.innerHTML = `<i data-lucide="copy" class="w-4 h-4"></i> Kopyala`;
@@ -1750,23 +1493,14 @@
                 let notesHtml = dayNotes.map(n => {
                     const colorClass = colorMap[n.color || 'white']; const isCompleted = n.completed;
                     const checkIcon = isCompleted ? '<i data-lucide="check-circle" class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-indigo-500 shrink-0"></i>' : '<i data-lucide="circle" class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-slate-400 group-hover/event:text-indigo-400 shrink-0 transition-colors"></i>';
-                    return `
-                    <div onclick="openEditor('${n.id}'); event.stopPropagation();" class="calendar-event mt-1 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-md border ${colorClass} ${isCompleted ? 'opacity-50 bg-slate-50 dark:bg-slate-800/50' : ''} shadow-sm flex items-center gap-1.5 transition-all hover:scale-[1.02] hover:shadow-md cursor-pointer group/event">
-                        <div onclick="toggleTaskCompletion('${n.id}', event)" class="shrink-0 flex items-center justify-center hover:scale-110 transition-transform">${checkIcon}</div>
-                        <span class="truncate font-semibold text-[9px] sm:text-[11px] group-hover/event:opacity-100 opacity-90 ${isCompleted ? 'line-through' : ''}">${n.title || 'İsimsiz Görev'}</span>
-                    </div>`;
+                    return `<div onclick="openEditor('${n.id}'); event.stopPropagation();" class="calendar-event mt-1 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-md border ${colorClass} ${isCompleted ? 'opacity-50 bg-slate-50 dark:bg-slate-800/50' : ''} shadow-sm flex items-center gap-1.5 transition-all hover:scale-[1.02] hover:shadow-md cursor-pointer group/event"><div onclick="toggleTaskCompletion('${n.id}', event)" class="shrink-0 flex items-center justify-center hover:scale-110 transition-transform">${checkIcon}</div><span class="truncate font-semibold text-[9px] sm:text-[11px] group-hover/event:opacity-100 opacity-90 ${isCompleted ? 'line-through' : ''}">${n.title || 'İsimsiz Görev'}</span></div>`;
                 }).join('');
 
                 const isToday = (i === today.getDate() && month === today.getMonth() && year === today.getFullYear());
                 const cellBgClass = isToday ? 'bg-indigo-50/40 dark:bg-indigo-900/20' : 'bg-white dark:bg-slate-800';
                 const dayNumClass = isToday ? 'bg-indigo-600 text-white w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center shadow-md' : 'text-slate-700 dark:text-slate-300 w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors';
 
-                html += `
-                    <div onclick="createNewNoteWithDate('${currentDateStr}')" class="calendar-day ${cellBgClass} min-h-[55px] sm:min-h-[110px] p-1 sm:p-2 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors cursor-pointer flex flex-col group relative">
-                        <div class="font-bold text-[11px] sm:text-sm mb-1 ${dayNumClass}">${i}</div>
-                        <div class="flex-1 flex flex-col gap-0.5 sm:gap-1 overflow-y-auto custom-scrollbar pr-0.5 relative z-10">${notesHtml}</div>
-                        <div class="hidden sm:flex absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"><div class="bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 rounded-md p-1 shadow-sm"><i data-lucide="plus" class="w-3 h-3"></i></div></div>
-                    </div>`;
+                html += `<div onclick="createNewNoteWithDate('${currentDateStr}')" class="calendar-day ${cellBgClass} min-h-[55px] sm:min-h-[110px] p-1 sm:p-2 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors cursor-pointer flex flex-col group relative"><div class="font-bold text-[11px] sm:text-sm mb-1 ${dayNumClass}">${i}</div><div class="flex-1 flex flex-col gap-0.5 sm:gap-1 overflow-y-auto custom-scrollbar pr-0.5 relative z-10">${notesHtml}</div><div class="hidden sm:flex absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"><div class="bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 rounded-md p-1 shadow-sm"><i data-lucide="plus" class="w-3 h-3"></i></div></div></div>`;
             }
             const totalCells = startDay + daysInMonth; const remainingCells = Math.ceil(totalCells / 7) * 7 - totalCells;
             for (let i = 0; i < remainingCells; i++) { html += `<div class="bg-slate-50/50 dark:bg-slate-900/30 p-1 sm:p-2"></div>`; }
@@ -1969,4 +1703,4 @@
         }
     </script>
 </body>
-</html> 
+</html>
