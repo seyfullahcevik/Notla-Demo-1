@@ -676,82 +676,66 @@
             const sharedId = urlParams.get('shared');
 
             if (user) {
-                window.continueAsGuest(); // Giriş ekranını kapat
-                
+                window.continueAsGuest();
                 try {
-                    // Kendi bulut verilerini çek
                     const doc = await firebase.firestore().collection('user_notes').doc(user.uid).get();
                     if (doc.exists) {
                         const data = doc.data();
-                        notes = data.notes || [];
-                        trash = data.trash || [];
+                        notes = data.notes || []; trash = data.trash || [];
                         await localforage.setItem('notla_notes', notes);
                         await localforage.setItem('notla_trash', trash);
                     }
-                } catch (e) { console.error("Veri çekme hatası:", e); }
+                } catch (e) {}
 
-                // Eğer linkle geldiyse paylaşım ekranını göster, gelmediyse normal başlat
                 if (sharedId) {
-                    renderSharedScreen(sharedId);
+                    renderSharedScreen(sharedId, user.email);
                 } else {
                     renderNotes();
-                    syncSharedNotes(); // Arka planda paylaşılan notları eşitle
+                    syncSharedNotes();
                 }
             } else {
                 // KULLANICI GİRİŞ YAPMAMIŞSA
                 if (sharedId) {
-                    const status = document.getElementById('loginStatusMsg');
-                    if(status) {
-                        status.innerText = "Bu paylaşılan notu görmek ve kaydetmek için lütfen giriş yapın.";
-                        status.classList.remove('hidden');
-                        status.classList.add('text-indigo-600', 'font-bold');
-                    }
+                    try {
+                        const doc = await firebase.firestore().collection('shared_notes').doc(sharedId).get();
+                        if (doc.exists && doc.data().accessType === 'public') {
+                            renderSharedScreen(sharedId, null); // Public ise girişsiz göster
+                        } else {
+                            const status = document.getElementById('loginStatusMsg');
+                            if(status) {
+                                status.innerText = "🔐 Bu not kısıtlı erişime sahip. Lütfen mail adresinizle giriş yapın.";
+                                status.classList.remove('hidden');
+                                status.classList.add('text-indigo-600', 'font-bold');
+                            }
+                        }
+                    } catch(e) {}
                 }
             }
         });
 
-        window.onload = async () => {
-            localforage.config({ name: 'NotLaApp', storeName: 'notla_data' });
-            
-            try {
-                // Eski verileri taşıma
-                let legacyNotes = localStorage.getItem('notla_notes');
-                let legacyTrash = localStorage.getItem('notla_trash');
-                
-                if (legacyNotes) {
-                    notes = JSON.parse(legacyNotes);
-                    await localforage.setItem('notla_notes', notes);
-                    localStorage.removeItem('notla_notes');
-                } else {
-                    notes = (await localforage.getItem('notla_notes')) || [];
-                }
-
-                if (legacyTrash) {
-                    trash = JSON.parse(legacyTrash);
-                    await localforage.setItem('notla_trash', trash);
-                    localStorage.removeItem('notla_trash');
-                } else {
-                    trash = (await localforage.getItem('notla_trash')) || [];
-                }
-            } catch (e) {}
-
-            lucide.createIcons();
-            initEditor();
-            applySpellcheck();
-            setTheme(currentTheme);
-            setFilter(currentFilter); 
-            setInterval(checkReminders, 30000);
-            checkReminders();
-        };
-
         // --- PAYLAŞILAN NOT EKRANI ---
-        async function renderSharedScreen(sharedId) {
+        async function renderSharedScreen(sharedId, userEmail) {
             try {
                 const doc = await firebase.firestore().collection('shared_notes').doc(sharedId).get();
                 if (doc.exists) {
                     const sharedNote = doc.data();
+
+                    // --- YENİ GÜVENLİK (KISITLAMA) KONTROLÜ ---
+                    if (sharedNote.accessType === 'restricted') {
+                        if (!userEmail) {
+                            alert("Bu not kısıtlı erişime sahip. Görmek için Google ile giriş yapmalısınız.");
+                            window.location.href = window.location.origin + window.location.pathname;
+                            return;
+                        }
+                        if (!sharedNote.sharedEmails || !sharedNote.sharedEmails.includes(userEmail.toLowerCase())) {
+                            alert(`🔒 Erişim Reddedildi!\n\nBu nota erişim yetkiniz (${userEmail}) bulunmuyor. Not sahibi sizi listeye eklemelidir.`);
+                            window.location.href = window.location.origin + window.location.pathname;
+                            return;
+                        }
+                    }
+                    // ------------------------------------------
+
                     document.getElementById('loginScreen').style.display = 'none';
-                    
                     document.getElementById('app').innerHTML = `
                         <div class="flex-1 flex flex-col h-screen bg-slate-50 dark:bg-slate-900 overflow-y-auto p-4 sm:p-12 custom-scrollbar">
                             <div class="max-w-3xl mx-auto w-full bg-white dark:bg-slate-800 p-6 sm:p-10 rounded-3xl shadow-xl border dark:border-slate-700">
@@ -784,12 +768,10 @@
                     `;
                     lucide.createIcons();
                 } else {
-                    alert("Bu paylaşılan not bulunamadı, erişime kapatılmış veya silinmiş.");
+                    alert("Bu paylaşılan not bulunamadı veya silinmiş.");
                     window.location.href = window.location.origin + window.location.pathname;
                 }
-            } catch (e) {
-                console.error("Hata:", e);
-            }
+            } catch (e) { console.error("Hata:", e); }
         }
 
         function applySpellcheck() {
