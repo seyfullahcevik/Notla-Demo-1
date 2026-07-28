@@ -1104,10 +1104,36 @@
                 return;
             }
 
-            const token = sessionStorage.getItem('google_api_token');
+            let token = sessionStorage.getItem('google_api_token');
+            
+            // AKILLI KONTROL: Eğer token yoksa (sayfa yenilenmişse), anında kullanıcıdan tekrar izin iste.
             if (!token) {
-                alert("Takvim bağlantısı yok!\n\nLütfen sayfayı yenileyip 'Google ile Devam Et' butonuna tıklayarak tekrar giriş yapın (Ekranda Takvim izni isteyecektir).");
-                return;
+                try {
+                    const status = document.getElementById('saveStatus');
+                    if(status) {
+                        status.innerText = 'Takvim İzni İsteniyor...';
+                        status.classList.remove('text-slate-400');
+                        status.classList.add('text-indigo-500');
+                    }
+                    
+                    const provider = new firebase.auth.GoogleAuthProvider();
+                    provider.addScope('https://www.googleapis.com/auth/calendar.events');
+                    
+                    // Giriş ekranına atmadan anında pop-up açarak izni tazele
+                    const result = await firebase.auth().signInWithPopup(provider);
+                    const credential = firebase.auth.GoogleAuthProvider.credentialFromResult(result);
+                    
+                    if(credential && credential.accessToken) {
+                        token = credential.accessToken;
+                        sessionStorage.setItem('google_api_token', token);
+                    } else {
+                        throw new Error("Erişim anahtarı alınamadı.");
+                    }
+                } catch (error) {
+                    console.error("Takvim yetkisi hatası:", error);
+                    alert("Takvim bağlantısı yapılamadı veya yetki penceresini kapattınız.");
+                    return;
+                }
             }
 
             const status = document.getElementById('saveStatus');
@@ -1161,16 +1187,18 @@
                     const errData = await response.json();
                     console.error("Takvim Hatası:", errData);
                     if (errData.error && errData.error.code === 401) {
-                         alert("Yetki süreniz dolmuş veya izniniz yok. Lütfen sayfayı yenileyip 'Google ile Devam Et' diyerek tekrar giriş yapın.");
+                         // Süre dolduysa (1 saat geçer) bellekteki eski token'ı sil
+                         sessionStorage.removeItem('google_api_token');
+                         alert("Takvim erişim izninizin süresi dolmuş. Lütfen butona tekrar basarak izni tazeleyin.");
                     } else {
                          alert("Takvime eklenirken hata oluştu.");
                     }
                 }
             } catch (e) {
                 console.error("Fetch hatası:", e);
-                alert("Google Takvim'e bağlanılamadı. Lütfen internetinizi kontrol edin.");
+                alert("Google Takvim'e bağlanılamadı. Lütfen internet bağlantınızı kontrol edin.");
             }
-        } 
+        }
 
         // --- AYARLAR VE DİĞER MODALLAR ---
         function openSettings() {
