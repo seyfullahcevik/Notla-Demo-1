@@ -482,10 +482,7 @@
         </div>
     </div>
 
-    <!-- Export İçin Görünmez Konteyner -->
-    <div id="exportContainer" class="hidden bg-white p-8 text-black w-[800px]"></div>
-
-<!-- Kartlar İçin Uzun Basma / Sağ Tık Araç Çubuğu -->
+    <!-- Kartlar İçin Uzun Basma / Sağ Tık Araç Çubuğu -->
     <div id="cardToolbar" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900/90 dark:bg-slate-800/90 backdrop-blur-md text-white px-4 py-3 rounded-2xl shadow-2xl z-50 hidden border border-slate-700 transition-all transform translate-y-10 opacity-0 max-w-[90vw] overflow-hidden">
         <input type="hidden" id="activeCardId">
         
@@ -501,8 +498,8 @@
                 <i data-lucide="tag" class="w-5 h-5 text-green-400"></i> Etiket
             </button>
             <button onclick="openShareModal()" class="flex flex-col items-center gap-1 p-2 hover:bg-white/10 rounded-xl transition text-xs font-medium">
-    <i data-lucide="users" class="w-5 h-5 text-blue-400"></i> Erişimi Yönet
-</button>
+                <i data-lucide="users" class="w-5 h-5 text-blue-400"></i> Erişimi Yönet
+            </button>
             <div class="w-px h-8 bg-slate-700"></div>
             <button onclick="toolbarAction('trash')" class="flex flex-col items-center gap-1 p-2 hover:bg-red-500/20 rounded-xl transition text-xs font-medium text-red-400">
                 <i data-lucide="trash-2" class="w-5 h-5"></i> Sil
@@ -553,30 +550,58 @@
                 <i data-lucide="plus" class="w-5 h-5"></i>
             </button>
         </div>
+    </div>
 
-        <!-- 4. ALT MENÜ: PAYLAŞIM -->
-        <div id="shareToolbarActions" class="hidden items-center gap-1 sm:gap-2">
-            <button onclick="switchToolbar('main')" class="p-2 hover:bg-white/10 rounded-xl transition text-slate-400 sm:mr-1">
-                <i data-lucide="arrow-left" class="w-5 h-5"></i>
-            </button>
-            <button onclick="handleShareAction('reshare')" class="flex flex-col items-center gap-1 p-2 hover:bg-white/10 rounded-xl transition text-[10px] font-medium text-blue-400" title="Yeni bir link üretir ve eskisini iptal eder">
-                <i data-lucide="refresh-cw" class="w-4 h-4"></i> Yeni Link
-            </button>
-            <button onclick="handleShareAction('copy')" class="flex flex-col items-center gap-1 p-2 hover:bg-white/10 rounded-xl transition text-[10px] font-medium text-emerald-400">
-                <i data-lucide="copy" class="w-4 h-4"></i> Kopyala
-            </button>
-            <div class="w-px h-6 bg-slate-700 mx-1"></div>
-            <button id="shareModeViewBtn" onclick="handleShareAction('view')" class="flex flex-col items-center gap-1 p-2 hover:bg-white/10 rounded-xl transition text-[10px] font-medium text-slate-300">
-                <i data-lucide="eye" class="w-4 h-4"></i> İzle
-            </button>
-            <button id="shareModeEditBtn" onclick="handleShareAction('edit')" class="flex flex-col items-center gap-1 p-2 hover:bg-white/10 rounded-xl transition text-[10px] font-medium text-slate-300">
-                <i data-lucide="edit-2" class="w-4 h-4"></i> Düzenle
-            </button>
+    <!-- Google Docs Tarzı Paylaşım ve Erişim Yönetimi Modalı -->
+    <div id="shareModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+        <div class="bg-white dark:bg-slate-900 w-full max-w-lg rounded-3xl shadow-2xl flex flex-col overflow-hidden transform transition-transform duration-300 scale-95" id="shareModalContent">
+            <!-- Modal Başlık -->
+            <div class="p-5 sm:p-6 border-b flex items-center justify-between dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50">
+                <h2 class="text-lg sm:text-xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                    <i data-lucide="users" class="w-5 h-5 text-blue-500"></i> Erişimi Yönet
+                </h2>
+                <button onclick="closeShareModal()" class="p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full transition dark:text-slate-300">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            
+            <div class="p-5 sm:p-6 flex flex-col gap-6">
+                <!-- Kişi / Mail Ekleme Alanı -->
+                <div>
+                    <label class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 block">Kişi veya E-posta Ekle</label>
+                    <div class="flex gap-2">
+                        <input type="email" id="shareEmailInput" placeholder="ornek@mail.com" class="flex-1 px-4 py-2.5 bg-slate-100 dark:bg-slate-800 border border-transparent dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-sm dark:text-white">
+                        <button onclick="addEmailToShare()" class="px-4 py-2.5 bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-white rounded-xl text-sm font-semibold transition">Ekle</button>
+                    </div>
+                    <div id="sharedEmailsList" class="mt-3 flex flex-col gap-2 max-h-32 overflow-y-auto custom-scrollbar">
+                        <!-- Eklenen mailler buraya gelecek -->
+                    </div>
+                </div>
+
+                <div class="w-full h-px bg-slate-100 dark:bg-slate-800"></div>
+
+                <!-- Genel Erişim (Bağlantı) Alanı -->
+                <div>
+                    <label class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 block">Genel Erişim</label>
+                    <div id="shareLinkSection" class="flex flex-col gap-3">
+                        <!-- JS ile Duruma Göre Doldurulacak -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Modal Alt Bilgi ve Butonlar -->
+            <div class="p-4 sm:p-5 border-t dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 flex justify-between items-center gap-2">
+                <button id="copyLinkBtn" onclick="copyModalShareLink()" class="px-4 py-2.5 bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-white rounded-xl text-sm font-semibold transition flex items-center gap-2 hidden">
+                    <i data-lucide="copy" class="w-4 h-4"></i> Bağlantıyı Kopyala
+                </button>
+                <div class="flex-1"></div>
+                <span id="shareStatusText" class="text-xs text-slate-500 font-medium mr-3"></span>
+                <button onclick="saveShareSettings()" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-semibold transition shadow-md shadow-blue-500/30 flex items-center gap-2">
+                    <i data-lucide="save" class="w-4 h-4"></i> Güncelle
+                </button>
+            </div>
         </div>
     </div>
-    
-    <!-- Firebase (Garantili Eski Yöntem) -->
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
     
