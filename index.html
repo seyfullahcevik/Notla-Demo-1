@@ -1007,6 +1007,17 @@
         }
     }
 }
+        // Sağ tık (Web) veya Uzun Basma (Mobil) ile silme onayı
+function handleCardContext(event, id) {
+    event.preventDefault(); // Tarayıcının varsayılan sağ tık menüsünü engelle
+    const item = notes.find(n => n.id === id);
+    if (!item) return;
+    
+    const title = item.title || 'İsimsiz';
+    if (confirm(`"${title}" çöp kutusuna taşınsın mı?`)) {
+        moveToTrash(id, event);
+    }
+}
         function restoreFromTrash(id, e) { e.stopPropagation(); const noteIndex = trash.findIndex(n => n.id === id); if (noteIndex > -1) { notes.unshift(trash.splice(noteIndex, 1)[0]); saveToStorage(); renderNotes(); } }
         function permanentDelete(id, e) { e.stopPropagation(); if(confirm("Kalıcı olarak silinecek. Emin misin?")) { trash = trash.filter(n => n.id !== id); saveToStorage(); renderNotes(); } }
 
