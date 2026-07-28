@@ -1071,12 +1071,39 @@
             currentNoteId = id;
             const note = notes.find(n => n.id === id);
             if (note) {
-                document.getElementById('noteTitle').value = note.title;
-                document.getElementById('noteTitle').placeholder = note.type === 'task' ? 'Görev adı...' : 'Başlıksız Not';
+                const titleInput = document.getElementById('noteTitle');
+                titleInput.value = note.title;
+                titleInput.placeholder = note.type === 'task' ? 'Görev adı...' : 'Başlıksız Not';
                 document.getElementById('noteTags').value = (note.tags || []).join(', ');
                 document.getElementById('noteColor').value = note.color || 'white';
                 document.getElementById('noteLocation').value = note.location || '';
                 
+                // --- İZİN KONTROLÜ VE KİLİT MEKANİZMASI (READ-ONLY) ---
+                // Eğer not başkası tarafından "Sadece Görüntüleme" izniyle bize paylaşıldıysa:
+                const isReadOnly = note.isSharedWithMe && note.shareMode === 'view';
+                
+                // 1. Editörün içine yazı yazılmasını engelle
+                if(editor) editor.enable(!isReadOnly);
+                
+                // 2. Başlığın değiştirilmesini engelle
+                titleInput.readOnly = isReadOnly;
+                
+                // 3. Editörün üstündeki kalın/eğik yapma (toolbar) çubuğunu gizle
+                const quillToolbar = document.querySelector('.ql-toolbar');
+                if (quillToolbar) quillToolbar.style.display = isReadOnly ? 'none' : 'block';
+                
+                // 4. Renk ve Etiket ayarlarını soluklaştırıp değiştirilmesini engelle
+                if(isReadOnly) {
+                    titleInput.classList.add('text-slate-400'); // Başlığı soluk yap
+                    document.getElementById('noteTags').disabled = true;
+                    document.getElementById('noteColor').disabled = true;
+                } else {
+                    titleInput.classList.remove('text-slate-400');
+                    document.getElementById('noteTags').disabled = false;
+                    document.getElementById('noteColor').disabled = false;
+                }
+                // ------------------------------------------------------------
+
                 const reminderContainer = document.getElementById('reminderContainer');
                 const locationContainer = document.getElementById('locationContainer');
                 
@@ -1089,15 +1116,17 @@
                     if (locationContainer) locationContainer.classList.add('hidden');
                 }
 
-                editor.root.innerHTML = note.content || '';
+                if(editor) editor.root.innerHTML = note.content || '';
                 
                 const checkBtn = document.getElementById('modalTaskCheck');
                 if (note.type === 'task') {
                     checkBtn.classList.remove('hidden');
+                    // Görüntüleme modunda checkbox'ı da kilitle
+                    if(isReadOnly) checkBtn.disabled = true; else checkBtn.disabled = false;
                     updateModalTaskCheck(note.completed);
                 } else {
                     checkBtn.classList.add('hidden');
-                    document.getElementById('noteTitle').classList.remove('line-through', 'text-slate-400');
+                    titleInput.classList.remove('line-through', 'text-slate-400');
                 }
 
                 renderAttachments();
@@ -1111,10 +1140,10 @@
                 content.classList.remove('scale-95', 'translate-y-4');
                 content.classList.add('scale-100', 'translate-y-0');
                 
-                if(window.innerWidth > 768) { setTimeout(() => editor.focus(), 300); }
+                // Sadece düzenlenebilir modda otomatik imleci odakla (telefonda klavye açılmasın diye read-only engellenir)
+                if(window.innerWidth > 768 && !isReadOnly) { setTimeout(() => { if(editor) editor.focus(); }, 300); }
             }
         }
-
         function saveAndClose() {
             const modal = document.getElementById('editorModal');
             const content = document.getElementById('editorModalContent');
