@@ -994,7 +994,19 @@
         }
 
         function toggleFavorite(id, e) { e.stopPropagation(); const note = notes.find(n => n.id === id); if (note) { note.isFavorite = !note.isFavorite; saveToStorage(); renderNotes(); } }
-        function moveToTrash(id, e) { e.stopPropagation(); const noteIndex = notes.findIndex(n => n.id === id); if (noteIndex > -1) { trash.unshift(notes.splice(noteIndex, 1)[0]); saveToStorage(); renderNotes(); } }
+        function moveToTrash(id, e) {
+    if(e) e.stopPropagation();
+    const note = notes.find(n => n.id === id);
+    const title = note ? (note.title || 'İsimsiz') : 'Öğe';
+    if (confirm(`"${title}" çöp kutusuna taşınsın mı?`)) {
+        const noteIndex = notes.findIndex(n => n.id === id);
+        if (noteIndex > -1) { 
+            trash.unshift(notes.splice(noteIndex, 1)[0]); 
+            saveToStorage(); 
+            renderNotes(); 
+        }
+    }
+}
         function restoreFromTrash(id, e) { e.stopPropagation(); const noteIndex = trash.findIndex(n => n.id === id); if (noteIndex > -1) { notes.unshift(trash.splice(noteIndex, 1)[0]); saveToStorage(); renderNotes(); } }
         function permanentDelete(id, e) { e.stopPropagation(); if(confirm("Kalıcı olarak silinecek. Emin misin?")) { trash = trash.filter(n => n.id !== id); saveToStorage(); renderNotes(); } }
 
