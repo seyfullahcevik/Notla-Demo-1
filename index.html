@@ -388,28 +388,51 @@
     <div id="exportContainer" class="hidden bg-white p-8 text-black w-[800px]"></div>
 
 <!-- Kartlar İçin Uzun Basma / Sağ Tık Araç Çubuğu -->
-    <div id="cardToolbar" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900/90 dark:bg-slate-800/90 backdrop-blur-md text-white px-4 py-3 rounded-2xl shadow-2xl z-50 hidden flex items-center gap-3 border border-slate-700 transition-all transform translate-y-10 opacity-0">
+    <div id="cardToolbar" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900/90 dark:bg-slate-800/90 backdrop-blur-md text-white px-4 py-3 rounded-2xl shadow-2xl z-50 hidden border border-slate-700 transition-all transform translate-y-10 opacity-0">
         <input type="hidden" id="activeCardId">
-        <button onclick="toolbarAction('edit')" class="flex flex-col items-center gap-1 p-2 hover:bg-white/10 rounded-xl transition text-xs font-medium">
-            <i data-lucide="edit-3" class="w-5 h-5 text-indigo-400"></i> Düzenle
-        </button>
-        <button onclick="toolbarAction('color')" class="flex flex-col items-center gap-1 p-2 hover:bg-white/10 rounded-xl transition text-xs font-medium">
-            <i data-lucide="palette" class="w-5 h-5 text-yellow-400"></i> Renk
-        </button>
-        <button onclick="toolbarAction('tag')" class="flex flex-col items-center gap-1 p-2 hover:bg-white/10 rounded-xl transition text-xs font-medium">
-            <i data-lucide="tag" class="w-5 h-5 text-green-400"></i> Etiket
-        </button>
-        <!-- Yeni Paylaş Butonu Eklendi -->
-        <button onclick="toolbarAction('share')" class="flex flex-col items-center gap-1 p-2 hover:bg-white/10 rounded-xl transition text-xs font-medium">
-            <i data-lucide="share-2" class="w-5 h-5 text-blue-400"></i> Paylaş
-        </button>
-        <div class="w-px h-8 bg-slate-700"></div>
-        <button onclick="toolbarAction('trash')" class="flex flex-col items-center gap-1 p-2 hover:bg-red-500/20 rounded-xl transition text-xs font-medium text-red-400">
-            <i data-lucide="trash-2" class="w-5 h-5"></i> Sil
-        </button>
-        <button onclick="closeCardToolbar()" class="p-1.5 hover:bg-white/10 rounded-full transition text-slate-400 ml-1">
-            <i data-lucide="x" class="w-4 h-4"></i>
-        </button>
+        
+        <!-- Ana Araç Çubuğu -->
+        <div id="mainToolbarActions" class="flex items-center gap-3">
+            <button onclick="toolbarAction('edit')" class="flex flex-col items-center gap-1 p-2 hover:bg-white/10 rounded-xl transition text-xs font-medium">
+                <i data-lucide="edit-3" class="w-5 h-5 text-indigo-400"></i> Düzenle
+            </button>
+            <button onclick="toolbarAction('color')" class="flex flex-col items-center gap-1 p-2 hover:bg-white/10 rounded-xl transition text-xs font-medium">
+                <i data-lucide="palette" class="w-5 h-5 text-yellow-400"></i> Renk
+            </button>
+            <button onclick="toolbarAction('tag')" class="flex flex-col items-center gap-1 p-2 hover:bg-white/10 rounded-xl transition text-xs font-medium">
+                <i data-lucide="tag" class="w-5 h-5 text-green-400"></i> Etiket
+            </button>
+            <button onclick="openShareMenu()" class="flex flex-col items-center gap-1 p-2 hover:bg-white/10 rounded-xl transition text-xs font-medium">
+                <i data-lucide="share-2" class="w-5 h-5 text-blue-400"></i> Paylaş
+            </button>
+            <div class="w-px h-8 bg-slate-700"></div>
+            <button onclick="toolbarAction('trash')" class="flex flex-col items-center gap-1 p-2 hover:bg-red-500/20 rounded-xl transition text-xs font-medium text-red-400">
+                <i data-lucide="trash-2" class="w-5 h-5"></i> Sil
+            </button>
+            <button onclick="closeCardToolbar()" class="p-1.5 hover:bg-white/10 rounded-full transition text-slate-400 ml-1">
+                <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+        </div>
+
+        <!-- Paylaşım Alt Menüsü (Başlangıçta Gizli) -->
+        <div id="shareToolbarActions" class="hidden items-center gap-1 sm:gap-2">
+            <button onclick="closeShareMenu()" class="p-2 hover:bg-white/10 rounded-xl transition text-slate-400 sm:mr-1">
+                <i data-lucide="arrow-left" class="w-5 h-5"></i>
+            </button>
+            <button onclick="handleShareAction('reshare')" class="flex flex-col items-center gap-1 p-2 hover:bg-white/10 rounded-xl transition text-[10px] font-medium text-blue-400" title="Yeni bir link üretir ve eskisini iptal eder">
+                <i data-lucide="refresh-cw" class="w-4 h-4"></i> Yeni Link
+            </button>
+            <button onclick="handleShareAction('copy')" class="flex flex-col items-center gap-1 p-2 hover:bg-white/10 rounded-xl transition text-[10px] font-medium text-emerald-400">
+                <i data-lucide="copy" class="w-4 h-4"></i> Kopyala
+            </button>
+            <div class="w-px h-6 bg-slate-700 mx-1"></div>
+            <button id="shareModeViewBtn" onclick="handleShareAction('view')" class="flex flex-col items-center gap-1 p-2 hover:bg-white/10 rounded-xl transition text-[10px] font-medium text-slate-300">
+                <i data-lucide="eye" class="w-4 h-4"></i> İzle
+            </button>
+            <button id="shareModeEditBtn" onclick="handleShareAction('edit')" class="flex flex-col items-center gap-1 p-2 hover:bg-white/10 rounded-xl transition text-[10px] font-medium text-slate-300">
+                <i data-lucide="edit-2" class="w-4 h-4"></i> Düzenle
+            </button>
+        </div>
     </div>
     
     <!-- Firebase (Garantili Eski Yöntem) -->
