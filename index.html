@@ -6,10 +6,16 @@
     <title>NotLa | Hepsi Bir Arada Akıllı Not & Görev Asistanı</title>
     <!-- Sekme İkonu (Favicon) -->
 <link rel="icon" type="image/svg+xml" href="https://api.iconify.design/lucide:check-square.svg?color=%234f46e5">
-    <!-- Tailwind CSS -->
+   <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = { darkMode: 'class' };
+        
+        // TEMA DÜZELTMESİ: Sayfa HTML'i okunurken temayı anında uygula (Gecikmeyi önler)
+        const savedTheme = localStorage.getItem('notla_theme');
+        if (savedTheme === 'dark') {
+            document.documentElement.classList.add('dark');
+        }
     </script>
     <!-- Quill.js (Zengin Metin Editörü) -->
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
