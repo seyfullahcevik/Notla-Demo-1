@@ -1269,6 +1269,7 @@ function handleCardContext(event, id) {
                 const themeColorClass = (note.color && noteColorClassMap[note.color]) ? noteColorClassMap[note.color] : '';
                 div.className = `note-card bg-card p-5 sm:p-6 rounded-2xl border ${viewMode === 'list' ? 'flex items-center gap-4' : ''} dark:border-slate-800 ${themeColorClass} ${note.completed ? 'opacity-60' : ''}`;
                 div.onclick = () => currentFilter !== 'trash' && openEditor(note.id);
+                div.oncontextmenu = (e) => currentFilter !== 'trash' && handleCardContext(e, note.id);
                 
                 const tempDiv = document.createElement('div');
                 tempDiv.innerHTML = note.content || '';
