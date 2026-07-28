@@ -161,20 +161,16 @@
                     <i data-lucide="trash-2" class="w-5 h-5 md:w-4 md:h-4"></i> Çöp Kutusu
                 </button>
 
-                <div class="mt-8 mb-2 px-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Etiketler</div>
+                <!-- Ayarlar Butonu Etiketlerin Üstüne Taşındı -->
+                <button onclick="openSettings()" class="w-full flex items-center gap-3 px-3 py-3 md:py-2.5 rounded-xl hover:bg-indigo-50 dark:hover:bg-slate-800 text-left transition text-sm font-medium text-slate-700 dark:text-slate-300 mt-6">
+                    <i data-lucide="settings" class="w-5 h-5 md:w-4 md:h-4 text-slate-500"></i> Ayarlar
+                </button>
+
+                <div class="mt-6 mb-2 px-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Etiketler</div>
                 <div id="tagList" class="space-y-1">
                     <!-- Dinamik Etiketler -->
                 </div>
             </nav>
-
-          <button onclick="setFilter('trash')" class="nav-btn w-full flex items-center gap-3 px-3 py-3 md:py-2.5 rounded-xl hover:bg-indigo-50 dark:hover:bg-slate-800 text-left transition text-sm font-medium text-red-500 dark:text-red-400" data-filter="trash">
-    <i data-lucide="trash-2" class="w-5 h-5 md:w-4 md:h-4"></i> Çöp Kutusu
-</button>
-
-<!-- Ayarlar Butonu Yukarı Taşındı -->
-<button onclick="openSettings()" class="w-full flex items-center gap-3 px-3 py-3 md:py-2.5 rounded-xl hover:bg-indigo-50 dark:hover:bg-slate-800 text-left transition text-sm font-medium text-slate-700 dark:text-slate-300 mt-2">
-    <i data-lucide="settings" class="w-5 h-5 md:w-4 md:h-4 text-slate-500"></i> Ayarlar
-</button>  
         </aside>
 
         <!-- Ana Alan -->
