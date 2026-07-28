@@ -647,40 +647,46 @@
         };
 
         window.sendSMSCode = function() {
-            let phoneNumber = document.getElementById('phoneNumberInput').value.trim();
+            const countryCode = document.getElementById('countryCodeSelect').value;
+            let rawNumber = document.getElementById('phoneNumberInput').value.trim();
             const statusMsg = document.getElementById('loginStatusMsg');
-            
-            // Numara formatı kontrolü (Eğer + yoksa TR kodu ekle varsayımı yapabiliriz)
-            if (!phoneNumber.startsWith('+')) {
-                phoneNumber = '+' + phoneNumber.replace(/[^0-9]/g, '');
+
+            // 1. Kullanıcı numaranın içine boşluk veya harf koyduysa hepsini temizle, sadece rakamları al
+            rawNumber = rawNumber.replace(/[^0-9]/g, '');
+
+            // 2. Eğer Türkiye (+90) seçiliyse ve kullanıcı başında '0' yazdıysa onu sil (Örn: 0555 -> 555)
+            if (countryCode === '+90' && rawNumber.startsWith('0')) {
+                rawNumber = rawNumber.substring(1);
             }
 
-            if (phoneNumber.length < 10) {
-                alert("Lütfen geçerli bir telefon numarası girin (Örn: +90 555 123 4567)");
+            // Temel uzunluk doğrulaması
+            if (rawNumber.length < 7) {
+                alert("Lütfen geçerli bir telefon numarası girin.");
                 return;
             }
+
+            // Firebase'in tam olarak istediği format: +905551234567
+            const fullPhoneNumber = countryCode + rawNumber;
             
             statusMsg.classList.remove('hidden', 'text-red-500');
             statusMsg.classList.add('text-indigo-500');
             statusMsg.innerText = "Doğrulama SMS'i gönderiliyor...";
 
-            firebase.auth().signInWithPhoneNumber(phoneNumber, window.recaptchaVerifier)
+            firebase.auth().signInWithPhoneNumber(fullPhoneNumber, window.recaptchaVerifier)
             .then((result) => {
                 window.confirmationResult = result;
                 statusMsg.innerText = "SMS başarıyla gönderildi.";
                 
-                // 1. adımı gizle, 2. adımı aç
                 document.getElementById('phoneStep1').classList.add('hidden');
                 document.getElementById('phoneStep1').classList.remove('flex');
                 document.getElementById('phoneStep2').classList.remove('hidden');
                 document.getElementById('phoneStep2').classList.add('flex');
             }).catch((error) => {
-                statusMsg.innerText = "SMS Gönderilemedi: Numara formatını (+90...) kontrol edin veya daha sonra tekrar deneyin.";
+                statusMsg.innerText = "SMS Gönderilemedi. Lütfen numarayı doğru yazdığınızdan emin olun.";
                 statusMsg.classList.remove('text-indigo-500');
                 statusMsg.classList.add('text-red-500');
                 console.error("SMS Hatası:", error);
                 
-                // Hata olursa Recaptcha'yı sıfırlamak gerekir
                 if(window.recaptchaVerifier) window.recaptchaVerifier.render().then((widgetId) => grecaptcha.reset(widgetId));
             });
         };
