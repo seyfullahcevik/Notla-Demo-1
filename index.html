@@ -437,10 +437,27 @@
             }
         };
 
-        // Önceden giriş yapıldıysa ekranı otomatik gizle
-        firebase.auth().onAuthStateChanged((user) => {
+       // Kullanıcı giriş durumunu takip et ve buluttan verileri çek
+        firebase.auth().onAuthStateChanged(async (user) => {
             if (user) {
-                window.continueAsGuest();
+                window.continueAsGuest(); // Giriş ekranını kapat
+                
+                try {
+                    // Buluttan kullanıcının verilerini al
+                    const doc = await firebase.firestore().collection('user_notes').doc(user.uid).get();
+                    if (doc.exists) {
+                        const data = doc.data();
+                        notes = data.notes || [];
+                        trash = data.trash || [];
+                        // Yerel hafızayı da buluttan gelenle güncelle
+                        await localforage.setItem('notla_notes', notes);
+                        await localforage.setItem('notla_trash', trash);
+                        renderNotes();
+                        console.log("Notlar buluttan başarıyla yüklendi!");
+                    }
+                } catch (e) {
+                    console.error("Buluttan veri çekerken hata:", e);
+                }
             }
         });
 
