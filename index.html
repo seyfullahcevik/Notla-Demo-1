@@ -1119,9 +1119,34 @@
                     const provider = new firebase.auth.GoogleAuthProvider();
                     provider.addScope('https://www.googleapis.com/auth/calendar.events');
                     
+                    // KRİTİK EKLENTİ: Google'ı her seferinde izin ekranını göstermeye ZORLA!
+                    provider.setCustomParameters({
+                        prompt: 'consent'
+                    });
+                    
                     // Giriş ekranına atmadan anında pop-up açarak izni tazele
                     const result = await firebase.auth().signInWithPopup(provider);
                     const credential = firebase.auth.GoogleAuthProvider.credentialFromResult(result);
+                    
+                    if(credential && credential.accessToken) {
+                        token = credential.accessToken;
+                        sessionStorage.setItem('google_api_token', token);
+                    } else {
+                        throw new Error("Erişim anahtarı alınamadı.");
+                    }
+                } catch (error) {
+                    console.error("Takvim yetkisi hatası:", error);
+                    // Hatanın tam sebebini ekrana yazdırıyoruz ki pop-up mı engellendi bilelim.
+                    alert("Takvim İzni Alınamadı!\n\nHata: " + error.message + "\n\nLütfen tarayıcınızın 'Açılır Pencere (Pop-up)' engelleyicisini kapatıp tekrar deneyin.");
+                    
+                    const status = document.getElementById('saveStatus');
+                    if(status) {
+                        status.innerText = 'Takvim Hatası';
+                        status.classList.replace('text-indigo-500', 'text-red-500');
+                    }
+                    return;
+                }
+            }
                     
                     if(credential && credential.accessToken) {
                         token = credential.accessToken;
