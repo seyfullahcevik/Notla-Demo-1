@@ -1393,13 +1393,24 @@
             renderNotes();
         }
 
+        // --- Bulut ve Yerel Depolama Yönlendiricisi ---
         function saveToStorage() {
-            localforage.setItem('notla_notes', notes).catch(err => {
-                console.error("Kayıt Hatası (Notes):", err);
-            });
-            localforage.setItem('notla_trash', trash).catch(err => {
-                console.error("Kayıt Hatası (Trash):", err);
-            });
+            const user = firebase.auth().currentUser;
+            
+            if (user) {
+                // Kullanıcı giriş yapmışsa buluta (Firestore) kaydet
+                firebase.firestore().collection('user_notes').doc(user.uid).set({
+                    notes: notes,
+                    trash: trash,
+                    updatedAt: new Date().toISOString()
+                }).catch(err => {
+                    console.error("Buluta kayıt hatası:", err);
+                });
+            }
+            
+            // Cihazda da yerel olarak sakla (yedek olarak)
+            localforage.setItem('notla_notes', notes).catch(err => { console.error(err); });
+            localforage.setItem('notla_trash', trash).catch(err => { console.error(err); });
         }
 
         window.onclick = function(event) {
