@@ -376,6 +376,24 @@
         if ("Notification" in window && Notification.permission !== "granted" && Notification.permission !== "denied") {
             Notification.requestPermission();
         }
+        // BEKÇİ KODU: İşlemleri geciktirir
+        const debounce = (func, delay) => {
+            let timer;
+            return function (...args) {
+                clearTimeout(timer);
+                timer = setTimeout(() => func.apply(this, args), delay);
+            };
+        };
+
+        const debouncedSaveToStorage = debounce(() => {
+            saveToStorage();
+            const status = document.getElementById('saveStatus');
+            if(!status) return;
+            status.innerText = 'Kaydedildi';
+            status.classList.remove('text-indigo-500');
+            status.classList.add('text-slate-400');
+            if(currentFilter === 'calendar') renderCalendar();
+        }, 800);
 
         // --- Mobil Sidebar Kontrolü ---
         function toggleSidebar() {
@@ -589,23 +607,14 @@
             }
         }
 
-        let saveTimeout;
         function triggerAutoSaveUI() {
-            saveToStorage();
             const status = document.getElementById('saveStatus');
-            if(!status) return;
-            status.innerText = 'Kaydediliyor...';
-            status.classList.remove('text-slate-400');
-            status.classList.add('text-indigo-500');
-            
-            clearTimeout(saveTimeout);
-            saveTimeout = setTimeout(() => {
-                status.innerText = 'Kaydedildi';
-                status.classList.remove('text-indigo-500');
-                status.classList.add('text-slate-400');
-                if(currentFilter === 'calendar') renderCalendar();
-                else renderNotes();
-            }, 1000);
+            if(status) {
+                status.innerText = 'Kaydediliyor...';
+                status.classList.remove('text-slate-400');
+                status.classList.add('text-indigo-500');
+            }
+            debouncedSaveToStorage(); 
         }
 
         function destroySortable() {
