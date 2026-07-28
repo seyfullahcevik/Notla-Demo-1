@@ -1539,6 +1539,11 @@
             if (event.target.id === 'settingsModal') {
                 closeSettings();
             }
+            // Araç çubuğu açıkken dışarı bir yere tıklanırsa kapat
+            const toolbar = document.getElementById('cardToolbar');
+            if (toolbar && !toolbar.classList.contains('hidden') && !event.target.closest('.note-card') && !event.target.closest('#cardToolbar')) {
+                closeCardToolbar();
+            }
         }
     </script>
 </body>
