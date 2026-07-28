@@ -1967,9 +1967,11 @@
                 const preview = plainText.substring(0, 100) + (plainText.length > 100 ? '...' : '');
                 
                 const hasAttachment = note.attachments && note.attachments.length > 0 ? `<i data-lucide="paperclip" class="w-3 h-3 text-indigo-500"></i>` : '';
-
+                const isSharedBadge = note.shareId && !note.isSharedWithMe ? `<div class="absolute -top-2 -right-2 bg-blue-500 text-white rounded-full p-1.5 shadow-md flex items-center justify-center z-10" title="Paylaşıma Açık"><i data-lucide="users" class="w-3 h-3"></i></div>` : '';
+               
                 div.innerHTML = `
-                    <div class="flex-1 min-w-0 flex flex-col h-full">
+                    ${isSharedBadge}
+<div class="flex-1 min-w-0 flex flex-col h-full">
                         <div class="flex justify-between items-start mb-2 sm:mb-3">
                             <div class="flex items-center min-w-0 flex-1">
                                 <h3 class="font-bold truncate pr-2 sm:pr-4 text-slate-800 dark:text-white text-base sm:text-lg">${note.title || 'Başlıksız Not'}</h3>
