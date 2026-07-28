@@ -360,6 +360,34 @@
     <!-- Export İçin Görünmez Konteyner -->
     <div id="exportContainer" class="hidden bg-white p-8 text-black w-[800px]"></div>
 
+   <!-- Firebase ve Google Giriş Sistemi -->
+    <script type="module">
+        // Firebase kütüphanelerini internet üzerinden çağırıyoruz
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+        // Sizin projenize ait kimlik anahtarları
+        const firebaseConfig = {
+            apiKey: "AIzaSyAgGkWbVmkslos_GzU_4_sJV4FOWX8CWuY",
+            authDomain: "notlauygulama.firebaseapp.com",
+            projectId: "notlauygulama",
+            storageBucket: "notlauygulama.firebasestorage.app",
+            messagingSenderId: "3425944822",
+            appId: "1:3425944822:web:90cf3e9e8c1c8d6efd98d7"
+        };
+
+        // Firebase'i başlat
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
+
+        // Sistemi diğer kodların (sizin kodlarınızın) kullanımına açıyoruz
+        window.googleAuth = auth;
+        window.googleProvider = provider;
+        window.signInWithPopup = signInWithPopup;
+        window.signOut = signOut;
+        window.onAuthStateChanged = onAuthStateChanged;
+    </script>
     <script>
         // --- Uygulama Durumu (State) ---
         let notes = [];
