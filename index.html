@@ -337,8 +337,10 @@
                     <div id="reminderContainer" class="flex items-center gap-1 sm:gap-2 bg-white dark:bg-slate-800 px-2 sm:px-3 py-1.5 rounded-lg border dark:border-slate-700 flex-1 sm:flex-none hidden">
                         <i data-lucide="clock" class="w-4 h-4 text-slate-400 shrink-0"></i>
                         <input type="datetime-local" id="noteReminder" class="text-xs sm:text-sm bg-transparent outline-none dark:text-white cursor-pointer text-slate-600 w-full">
+                        <button onclick="addToGoogleCalendar()" class="ml-1 p-1 sm:p-1.5 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-900/30 dark:hover:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 rounded-md transition" title="Google Takvim'e Ekle">
+                            <i data-lucide="calendar-plus" class="w-4 h-4"></i>
+                        </button>
                     </div>
-
                     <!-- Konum (Sadece Görevlerde Görünür) -->
                     <div id="locationContainer" class="flex items-center gap-1 sm:gap-2 bg-white dark:bg-slate-800 px-2 sm:px-3 py-1.5 rounded-lg border dark:border-slate-700 flex-1 sm:flex-none hidden">
                         <i data-lucide="map-pin" class="w-4 h-4 text-slate-400 shrink-0"></i>
@@ -574,18 +576,28 @@
         window.loginWithGoogle = function() {
             const statusMsg = document.getElementById('loginStatusMsg');
             if(statusMsg) {
-                statusMsg.classList.remove('hidden');
+                statusMsg.classList.remove('hidden', 'text-red-500', 'text-green-500');
                 statusMsg.innerText = "Google ile bağlantı kuruluyor...";
+                
                 const provider = new firebase.auth.GoogleAuthProvider();
+                // TAKVİM İZNİ EKLENDİ
+                provider.addScope('https://www.googleapis.com/auth/calendar.events'); 
+
                 firebase.auth().signInWithPopup(provider)
                 .then((result) => {
+                    // Google API Token'ı (Anahtarını) al ve tarayıcı belleğine (session) kaydet
+                    const credential = firebase.auth.GoogleAuthProvider.credentialFromResult(result);
+                    if(credential && credential.accessToken) {
+                        sessionStorage.setItem('google_api_token', credential.accessToken);
+                    }
+                    
                     statusMsg.innerText = "Giriş başarılı! Yönlendiriliyorsunuz...";
-                    statusMsg.classList.remove('text-red-500');
                     statusMsg.classList.add('text-green-500');
                     setTimeout(window.continueAsGuest, 1000);
                 }).catch((error) => {
                     statusMsg.innerText = "Firebase Hatası: " + error.message;
                     statusMsg.classList.add('text-red-500');
+                    console.error("Detaylı Hata:", error);
                 });
             }
         };
