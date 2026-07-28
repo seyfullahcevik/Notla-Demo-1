@@ -1135,13 +1135,20 @@
         }
     }
 }
-// Sağ tık (Web) veya Uzun Basma (Mobil) ile Araç Çubuğunu Aç
+// Kart menüsünü aç
         function handleCardContext(event, id) {
-            event.preventDefault(); // Tarayıcının varsayılan menüsünü engelle
+            event.preventDefault(); 
             const item = notes.find(n => n.id === id);
             if (!item) return;
 
             document.getElementById('activeCardId').value = id;
+            
+            // Alt menüyü sıfırlayıp ana menüyü getir
+            document.getElementById('mainToolbarActions').classList.remove('hidden');
+            document.getElementById('mainToolbarActions').classList.add('flex');
+            document.getElementById('shareToolbarActions').classList.add('hidden');
+            document.getElementById('shareToolbarActions').classList.remove('flex');
+
             const toolbar = document.getElementById('cardToolbar');
             toolbar.classList.remove('hidden');
             void toolbar.offsetWidth;
@@ -1156,19 +1163,20 @@
             setTimeout(() => toolbar.classList.add('hidden'), 300);
         }
 
-        // Araç Çubuğu Butonlarının İşlevleri
+        // Ana Menü İşlemleri
         function toolbarAction(action) {
             const id = document.getElementById('activeCardId').value;
             if (!id) return;
-            closeCardToolbar();
-
+            
             const note = notes.find(n => n.id === id);
             if (!note) return;
 
             if (action === 'edit') {
+                closeCardToolbar();
                 openEditor(id);
             } 
             else if (action === 'trash') {
+                closeCardToolbar();
                 const title = note.title || 'İsimsiz';
                 if (confirm(`"${title}" çöp kutusuna taşınsın mı?`)) {
                     moveToTrash(id);
@@ -1177,50 +1185,109 @@
             else if (action === 'color') {
                 const colors = ['white', '#fee2e2', '#fef3c7', '#dcfce7', '#dbeafe', '#f3e8ff'];
                 const currentIndex = colors.indexOf(note.color || 'white');
-                const nextColor = colors[(currentIndex + 1) % colors.length];
-                note.color = nextColor;
-                saveAndCloseToolbarAction();
+                note.color = colors[(currentIndex + 1) % colors.length];
+                saveToStorage(); renderNotes();
             } 
             else if (action === 'tag') {
+                closeCardToolbar();
                 const newTag = prompt("Eklemek istediğiniz etiket adı:", "");
                 if (newTag && newTag.trim() !== "") {
                     if (!note.tags) note.tags = [];
                     const trimmedTag = newTag.trim();
                     if (!note.tags.includes(trimmedTag)) {
                         note.tags.push(trimmedTag);
-                        saveAndCloseToolbarAction();
+                        saveToStorage(); renderNotes(); renderTags();
                     }
                 }
-            } 
-            else if (action === 'share') {
-                const permission = prompt("Bu not için izin türünü seçin:\n1 -> Sadece Görüntüleme\n2 -> Düzenleme Yetkisi", "1");
-                if (permission !== "1" && permission !== "2") return;
+            }
+        }
 
-                const accessMode = permission === "2" ? "edit" : "view";
-                const shareId = 'share_' + Math.random().toString(36).substr(2, 9);
+        // --- BAR İÇİNDE BAR: PAYLAŞIM MENÜSÜ YÖNETİMİ ---
+
+        function openShareMenu() {
+            document.getElementById('mainToolbarActions').classList.add('hidden');
+            document.getElementById('mainToolbarActions').classList.remove('flex');
+            document.getElementById('shareToolbarActions').classList.remove('hidden');
+            document.getElementById('shareToolbarActions').classList.add('flex');
+            
+            const id = document.getElementById('activeCardId').value;
+            const note = notes.find(n => n.id === id);
+            
+            // Renkleri/Durumu Sıfırla
+            document.getElementById('shareModeViewBtn').classList.replace('text-indigo-400', 'text-slate-300');
+            document.getElementById('shareModeEditBtn').classList.replace('text-indigo-400', 'text-slate-300');
+            
+            // Eğer bir mod varsa onu renklendir
+            if (note && note.shareMode === 'edit') {
+                document.getElementById('shareModeEditBtn').classList.replace('text-slate-300', 'text-indigo-400');
+            } else if (note && note.shareId) {
+                document.getElementById('shareModeViewBtn').classList.replace('text-slate-300', 'text-indigo-400');
+            }
+        }
+
+        function closeShareMenu() {
+            document.getElementById('shareToolbarActions').classList.add('hidden');
+            document.getElementById('shareToolbarActions').classList.remove('flex');
+            document.getElementById('mainToolbarActions').classList.remove('hidden');
+            document.getElementById('mainToolbarActions').classList.add('flex');
+        }
+
+        function handleShareAction(action) {
+            const id = document.getElementById('activeCardId').value;
+            const note = notes.find(n => n.id === id);
+            if (!note) return;
+
+            if (action === 'reshare') {
+                // Eski linki firebase'den temizle
+                if (note.shareId) firebase.firestore().collection('shared_notes').doc(note.shareId).delete().catch(e => {});
+                
+                // Yeni link üret
+                note.shareId = 'share_' + Math.random().toString(36).substr(2, 9);
+                note.shareMode = note.shareMode || 'view'; // Varsayılan view
                 
                 const shareData = {
                     title: note.title || 'Başlıksız Not',
                     content: note.content || '',
-                    mode: accessMode, // 'view' veya 'edit'
+                    mode: note.shareMode,
                     originalId: note.id,
                     updatedAt: note.updatedAt,
                     createdAt: note.createdAt
                 };
-
-                if (confirm(`Bu notu "${accessMode === 'edit' ? 'Düzenleme' : 'Görüntüleme'}" yetkisiyle paylaşmak istiyor musunuz?`)) {
-                    firebase.firestore().collection('shared_notes').doc(shareId).set(shareData)
-                    .then(() => {
-                        const publicLink = window.location.origin + window.location.pathname + `?shared=${shareId}`;
-                        navigator.clipboard.writeText(publicLink).then(() => {
-                            alert("🔗 Paylaşım linki panoya kopyalandı!\n\nBağlantı Türü: " + (accessMode === 'edit' ? 'Düzenlenebilir' : 'Salt Okunur') + "\n" + publicLink);
-                        });
-                    })
-                    .catch(err => {
-                        console.error("Paylaşım hatası:", err);
-                        alert("Paylaşım linki oluşturulamadı.");
-                    });
+                
+                firebase.firestore().collection('shared_notes').doc(note.shareId).set(shareData).then(() => {
+                    saveToStorage();
+                    const publicLink = window.location.origin + window.location.pathname + `?shared=${note.shareId}`;
+                    navigator.clipboard.writeText(publicLink);
+                    alert("✅ Yeni paylaşım linki oluşturuldu ve panoya kopyalandı!\nEski link iptal edildi.");
+                    openShareMenu(); // Arayüz renklerini güncelle
+                });
+            }
+            else if (action === 'copy') {
+                if (!note.shareId) {
+                    alert("Bu not henüz paylaşılmadı. Önce 'Yeni Link' butonuna tıklayın.");
+                    return;
                 }
+                const publicLink = window.location.origin + window.location.pathname + `?shared=${note.shareId}`;
+                navigator.clipboard.writeText(publicLink);
+                alert("🔗 Mevcut link panoya kopyalandı!");
+            }
+            else if (action === 'view' || action === 'edit') {
+                if (!note.shareId) {
+                    alert("Önce 'Yeni Link' butonuna basarak bir bağlantı üretmelisiniz.");
+                    return;
+                }
+                note.shareMode = action; // Local notumuzu güncelle
+                
+                // Firebase'deki belgenin sadece 'mode' (yetki) kısmını güncelle
+                firebase.firestore().collection('shared_notes').doc(note.shareId).update({
+                    mode: action
+                }).then(() => {
+                    saveToStorage();
+                    openShareMenu(); // Aktif butonu mavi yapmak için UI yenile
+                    alert(`✅ Yetki güncellendi: ${action === 'edit' ? 'Düzenleme' : 'Sadece Görüntüleme'}`);
+                }).catch(err => {
+                    console.error("Güncelleme hatası", err);
+                });
             }
         }
     
