@@ -428,9 +428,10 @@
                     statusMsg.classList.add('text-green-500');
                     setTimeout(window.continueAsGuest, 1000);
                 }).catch((error) => {
-                    statusMsg.innerText = "Hata: Cihazınız veya tarayıcınız bu işlemi engelledi.";
+                    // BURASI DEĞİŞTİ: Google'ın verdiği gerçek hatayı ekrana yazdırıyoruz
+                    statusMsg.innerText = "Firebase Hatası: " + error.message;
                     statusMsg.classList.add('text-red-500');
-                    console.error(error);
+                    console.error("Detaylı Hata:", error);
                 });
             }
         };
