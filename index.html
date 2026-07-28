@@ -1030,17 +1030,70 @@
         }
     }
 }
-        // Sağ tık (Web) veya Uzun Basma (Mobil) ile silme onayı
-function handleCardContext(event, id) {
-    event.preventDefault(); // Tarayıcının varsayılan sağ tık menüsünü engelle
-    const item = notes.find(n => n.id === id);
-    if (!item) return;
-    
-    const title = item.title || 'İsimsiz';
-    if (confirm(`"${title}" çöp kutusuna taşınsın mı?`)) {
-        moveToTrash(id, event);
-    }
-}
+// Sağ tık (Web) veya Uzun Basma (Mobil) ile Araç Çubuğunu Aç
+        function handleCardContext(event, id) {
+            event.preventDefault(); // Tarayıcının varsayılan menüsünü engelle
+            const item = notes.find(n => n.id === id);
+            if (!item) return;
+
+            document.getElementById('activeCardId').value = id;
+            const toolbar = document.getElementById('cardToolbar');
+            toolbar.classList.remove('hidden');
+            void toolbar.offsetWidth;
+            toolbar.classList.remove('translate-y-10', 'opacity-0');
+            toolbar.classList.add('translate-y-0', 'opacity-100');
+            lucide.createIcons();
+        }
+
+        function closeCardToolbar() {
+            const toolbar = document.getElementById('cardToolbar');
+            toolbar.classList.add('translate-y-10', 'opacity-0');
+            setTimeout(() => toolbar.classList.add('hidden'), 300);
+        }
+
+        // Araç Çubuğu Butonlarının İşlevleri
+        function toolbarAction(action) {
+            const id = document.getElementById('activeCardId').value;
+            if (!id) return;
+            closeCardToolbar();
+
+            const note = notes.find(n => n.id === id);
+            if (!note) return;
+
+            if (action === 'edit') {
+                openEditor(id);
+            } 
+            else if (action === 'trash') {
+                const title = note.title || 'İsimsiz';
+                if (confirm(`"${title}" çöp kutusuna taşınsın mı?`)) {
+                    moveToTrash(id);
+                }
+            } 
+            else if (action === 'color') {
+                const colors = ['white', '#fee2e2', '#fef3c7', '#dcfce7', '#dbeafe', '#f3e8ff'];
+                const currentIndex = colors.indexOf(note.color || 'white');
+                const nextColor = colors[(currentIndex + 1) % colors.length];
+                note.color = nextColor;
+                saveAndCloseToolbarAction();
+            } 
+            else if (action === 'tag') {
+                const newTag = prompt("Eklemek istediğiniz etiket adı:", "");
+                if (newTag && newTag.trim() !== "") {
+                    if (!note.tags) note.tags = [];
+                    const trimmedTag = newTag.trim();
+                    if (!note.tags.includes(trimmedTag)) {
+                        note.tags.push(trimmedTag);
+                        saveAndCloseToolbarAction();
+                    }
+                }
+            }
+        }
+
+        function saveAndCloseToolbarAction() {
+            saveToStorage();
+            renderNotes();
+            renderTags(); // Etiketler listesini günceller ki sol menüye anında yansısın
+        }
         function restoreFromTrash(id, e) { e.stopPropagation(); const noteIndex = trash.findIndex(n => n.id === id); if (noteIndex > -1) { notes.unshift(trash.splice(noteIndex, 1)[0]); saveToStorage(); renderNotes(); } }
         function permanentDelete(id, e) { e.stopPropagation(); if(confirm("Kalıcı olarak silinecek. Emin misin?")) { trash = trash.filter(n => n.id !== id); saveToStorage(); renderNotes(); } }
 
