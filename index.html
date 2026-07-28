@@ -1219,26 +1219,21 @@
         }
     }
 }
-// Kart menüsünü aç
+// --- UZUN BASMA / SAĞ TIK MENÜ SİSTEMİ (BAR İÇİNDE BAR) ---
+        
         function handleCardContext(event, id) {
             event.preventDefault(); 
             const item = notes.find(n => n.id === id);
             if (!item) return;
 
             document.getElementById('activeCardId').value = id;
-            
-            // Alt menüyü sıfırlayıp ana menüyü getir
-            document.getElementById('mainToolbarActions').classList.remove('hidden');
-            document.getElementById('mainToolbarActions').classList.add('flex');
-            document.getElementById('shareToolbarActions').classList.add('hidden');
-            document.getElementById('shareToolbarActions').classList.remove('flex');
+            switchToolbar('main'); // Her açılışta ana menüyü getir
 
             const toolbar = document.getElementById('cardToolbar');
             toolbar.classList.remove('hidden');
             void toolbar.offsetWidth;
             toolbar.classList.remove('translate-y-10', 'opacity-0');
             toolbar.classList.add('translate-y-0', 'opacity-100');
-            lucide.createIcons();
         }
 
         function closeCardToolbar() {
@@ -1247,73 +1242,136 @@
             setTimeout(() => toolbar.classList.add('hidden'), 300);
         }
 
-        // Ana Menü İşlemleri
+        // Ana Geçiş Yönlendiricisi (Bar içinde Bar mantığı)
+        function switchToolbar(menuId) {
+            const menus = ['main', 'edit', 'color', 'tag', 'share'];
+            menus.forEach(id => {
+                const el = document.getElementById(id + 'ToolbarActions');
+                if (el) {
+                    if (id === menuId) {
+                        el.classList.remove('hidden');
+                        el.classList.add('flex');
+                    } else {
+                        el.classList.add('hidden');
+                        el.classList.remove('flex');
+                    }
+                }
+            });
+            lucide.createIcons();
+
+            // Alt menüler açıldığında UI güncellemeleri
+            if (menuId === 'tag') populateToolbarTags();
+            if (menuId === 'share') updateShareMenuUI();
+        }
+
+        // Ana Menüdeki Direkt Aksiyonlar (Silme)
         function toolbarAction(action) {
             const id = document.getElementById('activeCardId').value;
-            if (!id) return;
-            
             const note = notes.find(n => n.id === id);
             if (!note) return;
 
-            if (action === 'edit') {
-                closeCardToolbar();
-                openEditor(id);
-            } 
-            else if (action === 'trash') {
+            if (action === 'trash') {
                 closeCardToolbar();
                 const title = note.title || 'İsimsiz';
                 if (confirm(`"${title}" çöp kutusuna taşınsın mı?`)) {
                     moveToTrash(id);
                 }
-            } 
-            else if (action === 'color') {
-                const colors = ['white', '#fee2e2', '#fef3c7', '#dcfce7', '#dbeafe', '#f3e8ff'];
-                const currentIndex = colors.indexOf(note.color || 'white');
-                note.color = colors[(currentIndex + 1) % colors.length];
-                saveToStorage(); renderNotes();
-            } 
-            else if (action === 'tag') {
-                closeCardToolbar();
-                const newTag = prompt("Eklemek istediğiniz etiket adı:", "");
-                if (newTag && newTag.trim() !== "") {
-                    if (!note.tags) note.tags = [];
-                    const trimmedTag = newTag.trim();
-                    if (!note.tags.includes(trimmedTag)) {
-                        note.tags.push(trimmedTag);
-                        saveToStorage(); renderNotes(); renderTags();
-                    }
-                }
             }
         }
 
-        // --- BAR İÇİNDE BAR: PAYLAŞIM MENÜSÜ YÖNETİMİ ---
-
-        function openShareMenu() {
-            document.getElementById('mainToolbarActions').classList.add('hidden');
-            document.getElementById('mainToolbarActions').classList.remove('flex');
-            document.getElementById('shareToolbarActions').classList.remove('hidden');
-            document.getElementById('shareToolbarActions').classList.add('flex');
-            
+        // --- ALT MENÜ 1: DÜZENLEME İŞLEMLERİ ---
+        function handleEditAction(type) {
             const id = document.getElementById('activeCardId').value;
             const note = notes.find(n => n.id === id);
+            if (!note) return;
+
+            if (type === 'title') {
+                const newTitle = prompt("Notun başlığını düzenleyin:", note.title || "");
+                if (newTitle !== null) {
+                    note.title = newTitle;
+                    saveToStorage(); renderNotes();
+                }
+            } else if (type === 'content') {
+                closeCardToolbar();
+                openEditor(id); // Klasik tam ekran editörü açar
+            }
+        }
+
+        // --- ALT MENÜ 2: RENK İŞLEMLERİ ---
+        function handleColorAction(colorCode) {
+            const id = document.getElementById('activeCardId').value;
+            const note = notes.find(n => n.id === id);
+            if (!note) return;
             
-            // Renkleri/Durumu Sıfırla
+            note.color = colorCode;
+            saveToStorage(); renderNotes();
+            // İsterseniz renk seçince closeCardToolbar() ile kapatabilirsiniz, şu an açık kalıp anında önizleme yapıyor.
+        }
+
+        // --- ALT MENÜ 3: ETİKET İŞLEMLERİ ---
+        function populateToolbarTags() {
+            const id = document.getElementById('activeCardId').value;
+            const note = notes.find(n => n.id === id);
+            if (!note) return;
+
+            // Global tüm etiketleri bul
+            const allTags = [...new Set(notes.flatMap(n => n.tags || []))];
+            const container = document.getElementById('toolbarTagList');
+            container.innerHTML = '';
+            
+            if (allTags.length === 0) {
+                container.innerHTML = '<span class="text-[10px] text-slate-400 italic">Etiket yok</span>';
+                return;
+            }
+
+            // Mevcut etiketleri listele (nota aitse yeşil, değilse gri)
+            allTags.forEach(tag => {
+                const hasTag = (note.tags || []).includes(tag);
+                const btn = document.createElement('button');
+                btn.className = `px-3 py-1.5 rounded-lg text-xs font-bold uppercase transition whitespace-nowrap ${hasTag ? 'bg-green-500 text-white shadow-md' : 'bg-white/10 text-slate-300 hover:bg-white/20'}`;
+                btn.innerText = tag;
+                btn.onclick = () => handleTagAction('toggle', tag);
+                container.appendChild(btn);
+            });
+        }
+
+        function handleTagAction(type, tagValue = '') {
+            const id = document.getElementById('activeCardId').value;
+            const note = notes.find(n => n.id === id);
+            if (!note) return;
+            if (!note.tags) note.tags = [];
+
+            if (type === 'new') {
+                const newTag = prompt("Yeni oluşturulacak etiket adını girin:");
+                if (newTag && newTag.trim() !== "") {
+                    const trimmed = newTag.trim();
+                    if (!note.tags.includes(trimmed)) note.tags.push(trimmed);
+                    saveToStorage(); renderNotes(); renderTags(); populateToolbarTags();
+                }
+            } else if (type === 'toggle') {
+                if (note.tags.includes(tagValue)) {
+                    note.tags = note.tags.filter(t => t !== tagValue); // Çıkar
+                } else {
+                    note.tags.push(tagValue); // Ekle
+                }
+                saveToStorage(); renderNotes(); renderTags(); populateToolbarTags();
+            }
+        }
+
+        // --- ALT MENÜ 4: PAYLAŞIM İŞLEMLERİ ---
+        function updateShareMenuUI() {
+            const id = document.getElementById('activeCardId').value;
+            const note = notes.find(n => n.id === id);
+            if (!note) return;
+            
             document.getElementById('shareModeViewBtn').classList.replace('text-indigo-400', 'text-slate-300');
             document.getElementById('shareModeEditBtn').classList.replace('text-indigo-400', 'text-slate-300');
             
-            // Eğer bir mod varsa onu renklendir
-            if (note && note.shareMode === 'edit') {
+            if (note.shareMode === 'edit') {
                 document.getElementById('shareModeEditBtn').classList.replace('text-slate-300', 'text-indigo-400');
-            } else if (note && note.shareId) {
+            } else if (note.shareId) {
                 document.getElementById('shareModeViewBtn').classList.replace('text-slate-300', 'text-indigo-400');
             }
-        }
-
-        function closeShareMenu() {
-            document.getElementById('shareToolbarActions').classList.add('hidden');
-            document.getElementById('shareToolbarActions').classList.remove('flex');
-            document.getElementById('mainToolbarActions').classList.remove('hidden');
-            document.getElementById('mainToolbarActions').classList.add('flex');
         }
 
         function handleShareAction(action) {
@@ -1322,21 +1380,36 @@
             if (!note) return;
 
             if (action === 'reshare') {
-                // Eski linki firebase'den temizle
                 if (note.shareId) firebase.firestore().collection('shared_notes').doc(note.shareId).delete().catch(e => {});
                 
-                // Yeni link üret
                 note.shareId = 'share_' + Math.random().toString(36).substr(2, 9);
-                note.shareMode = note.shareMode || 'view'; // Varsayılan view
+                note.shareMode = note.shareMode || 'view'; 
                 
-                const shareData = {
-                    title: note.title || 'Başlıksız Not',
-                    content: note.content || '',
-                    mode: note.shareMode,
-                    originalId: note.id,
-                    updatedAt: note.updatedAt,
-                    createdAt: note.createdAt
-                };
+                const shareData = { title: note.title || 'Başlıksız Not', content: note.content || '', mode: note.shareMode, originalId: note.id, updatedAt: note.updatedAt, createdAt: note.createdAt };
+                
+                firebase.firestore().collection('shared_notes').doc(note.shareId).set(shareData).then(() => {
+                    saveToStorage(); updateShareMenuUI();
+                    const publicLink = window.location.origin + window.location.pathname + `?shared=${note.shareId}`;
+                    navigator.clipboard.writeText(publicLink);
+                    alert("✅ Yeni paylaşım linki oluşturuldu ve panoya kopyalandı!");
+                });
+            }
+            else if (action === 'copy') {
+                if (!note.shareId) return alert("Önce 'Yeni Link' butonuna tıklayarak bağlantı oluşturun.");
+                navigator.clipboard.writeText(window.location.origin + window.location.pathname + `?shared=${note.shareId}`);
+                alert("🔗 Mevcut link panoya kopyalandı!");
+            }
+            else if (action === 'view' || action === 'edit') {
+                if (!note.shareId) return alert("Lütfen önce bağlantı üretin.");
+                note.shareMode = action;
+                
+                firebase.firestore().collection('shared_notes').doc(note.shareId).update({ mode: action })
+                .then(() => {
+                    saveToStorage(); updateShareMenuUI();
+                    alert(`✅ Yetki güncellendi: ${action === 'edit' ? 'Düzenleme' : 'Sadece Görüntüleme'}`);
+                });
+            }
+        };
                 
                 firebase.firestore().collection('shared_notes').doc(note.shareId).set(shareData).then(() => {
                     saveToStorage();
