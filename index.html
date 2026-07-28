@@ -779,6 +779,39 @@
             }
         }
 
+        // Paylaşılan notu kişinin kendi local/bulut defterine aktaran fonksiyon
+        async function importSharedNoteToMyNotes(sId) {
+            try {
+                const doc = await firebase.firestore().collection('shared_notes').doc(sId).get();
+                if(doc.exists) {
+                    const data = doc.data();
+                    const newNote = {
+                        id: Date.now().toString(),
+                        type: 'note',
+                        title: data.title + " (Paylaşılan)",
+                        content: data.content,
+                        tags: ['Paylaşılan'],
+                        color: 'white',
+                        isFavorite: false,
+                        reminder: null,
+                        location: '',
+                        attachments: [],
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString()
+                    };
+                    
+                    let localNotes = (await localforage.getItem('notla_notes')) || [];
+                    localNotes.unshift(newNote);
+                    await localforage.setItem('notla_notes', localNotes);
+                    
+                    alert("✅ Not başarıyla kendi not defterinize eklendi!");
+                    window.location.href = window.location.origin + window.location.pathname;
+                }
+            } catch(err) {
+                console.error(err);
+                alert("Not eklenirken hata oluştu.");
+            }
+        }
         function triggerAutoSaveUI() {
             const status = document.getElementById('saveStatus');
             if(status) {
