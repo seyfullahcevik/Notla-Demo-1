@@ -502,15 +502,15 @@
             ['noteTitle', 'noteTags', 'noteColor', 'noteReminder', 'noteLocation'].forEach(id => {
                 const element = document.getElementById(id);
                 if (element) {
-                    element.addEventListener('input', () => {
+                    element.addEventListener('input', (e) => {
                         if (currentNoteId) {
                             const note = notes.find(n => n.id === currentNoteId);
                             if(note) {
-                                note.title = document.getElementById('noteTitle').value;
-                                note.tags = document.getElementById('noteTags').value.split(',').map(t => t.trim()).filter(t => t !== '');
-                                note.color = document.getElementById('noteColor').value;
-                                note.reminder = document.getElementById('noteReminder').value || null;
-                                note.location = document.getElementById('noteLocation').value || '';
+                                if (id === 'noteTitle') note.title = e.target.value;
+                                if (id === 'noteTags') note.tags = e.target.value.split(',').map(t => t.trim()).filter(t => t !== '');
+                                if (id === 'noteColor') note.color = e.target.value;
+                                if (id === 'noteReminder') note.reminder = e.target.value || null;
+                                if (id === 'noteLocation') note.location = e.target.value || '';
                                 note.reminderShown = false;
                                 triggerAutoSaveUI();
                             }
