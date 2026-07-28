@@ -735,6 +735,8 @@
                         note.content = editor.root.innerHTML;
                         note.updatedAt = new Date().toISOString();
                         triggerAutoSaveUI();
+                        // Ortak çalışma (collaboration) anlık güncellemesi
+                        if (typeof pushUpdateToFirebase === 'function') pushUpdateToFirebase(note);
                     }
                 }
             });
@@ -753,13 +755,14 @@
                                 if (id === 'noteLocation') note.location = e.target.value || '';
                                 note.reminderShown = false;
                                 triggerAutoSaveUI();
+                                // Ortak çalışma (collaboration) anlık güncellemesi
+                                if (typeof pushUpdateToFirebase === 'function') pushUpdateToFirebase(note);
                             }
                         }
                     });
                 }
             });
         }
-
         function openSettings() {
             if(window.innerWidth < 768) toggleSidebar();
             const modal = document.getElementById('settingsModal');
