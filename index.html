@@ -1289,7 +1289,9 @@ function handleCardContext(event, id) {
                                     <button onclick="restoreFromTrash('${note.id}', event)" title="Geri Yükle" class="p-1.5 hover:bg-green-100 rounded-lg text-green-600 transition"><i data-lucide="rotate-ccw" class="w-4 h-4"></i></button>
                                     <button onclick="permanentDelete('${note.id}', event)" title="Tamamen Sil" class="p-1.5 hover:bg-red-100 rounded-lg text-red-600 transition"><i data-lucide="x-circle" class="w-4 h-4"></i></button>
                                 ` : `
-                                    <button onclick="toggleFavorite('${note.id}', event)" class="p-1.5 hover:bg-orange-50 dark:hover:bg-slate-700 rounded-lg ${note.isFavorite ? 'text-orange-500' : 'text-slate-400'} transition"><i data-lucide="star" class="w-4 h-4" ${note.isFavorite ? 'fill="currentColor"' : ''}></button>
+                                    <button onclick="toggleFavorite('${note.id}', event)" class="p-1.5 hover:bg-orange-50 dark:hover:bg-slate-700 rounded-lg ${note.isFavorite ? 'text-orange-500' : 'text-slate-400'} transition">
+    <i data-lucide="star" class="w-4 h-4" ${note.isFavorite ? 'fill="currentColor"' : ''}></i>
+</button>
                                     <button onclick="moveToTrash('${note.id}', event)" class="p-1.5 hover:bg-red-50 dark:hover:bg-slate-700 rounded-lg text-slate-400 hover:text-red-500 transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                                 `}
                             </div>
