@@ -1089,9 +1089,36 @@
                         note.tags.push(trimmedTag);
                         saveAndCloseToolbarAction();
                     }
+            else if (action === 'share') {
+                // Benzersiz bir paylaşım kodu üret
+                const shareId = 'share_' + Math.random().toString(36).substr(2, 9);
+                const shareData = {
+                    title: note.title || 'Başlıksız Not',
+                    content: note.content || '',
+                    updatedAt: note.updatedAt,
+                    createdAt: note.createdAt
+                };
+
+                // Firebase Firestore'a bu notu public olarak kaydet
+                const statusMsg = document.getElementById('saveStatus'); // geçici bilgi göstermek için
+                if(confirm(`"${note.title || 'Bu not'}" için herkese açık bir bağlantı oluşturulsun mu?`)) {
+                    firebase.firestore().collection('shared_notes').doc(shareId).set(shareData)
+                    .then(() => {
+                        // Mevcut sayfanın adresini al ve paylaşım parametresini ekle
+                        const publicLink = window.location.origin + window.location.pathname + `?shared=${shareId}`;
+                        
+                        // Panoya kopyala
+                        navigator.clipboard.writeText(publicLink).then(() => {
+                            alert("🔗 Paylaşım linki panoya kopyalandı!\n\nBu linki açan herkes bu notu okuyabilir:\n" + publicLink);
+                        });
+                    })
+                    .catch(err => {
+                        console.error("Paylaşım hatası:", err);
+                        alert("Paylaşım linki oluşturulamadı.");
+                    });
                 }
             }
-        }
+    
 
         function saveAndCloseToolbarAction() {
             saveToStorage();
