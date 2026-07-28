@@ -1502,57 +1502,204 @@
             }
         }
 
-        // --- ALT MENÜ 4: PAYLAŞIM İŞLEMLERİ ---
-        function updateShareMenuUI() {
+        // --- GOOGLE DOCS TARZI ERİŞİM YÖNETİMİ ---
+        
+        let tempShareConfig = { emails: [], accessType: 'restricted', mode: 'view' };
+
+        function openShareModal() {
+            closeCardToolbar();
             const id = document.getElementById('activeCardId').value;
             const note = notes.find(n => n.id === id);
             if (!note) return;
-            
-            document.getElementById('shareModeViewBtn').classList.replace('text-indigo-400', 'text-slate-300');
-            document.getElementById('shareModeEditBtn').classList.replace('text-indigo-400', 'text-slate-300');
-            
-            if (note.shareMode === 'edit') {
-                document.getElementById('shareModeEditBtn').classList.replace('text-slate-300', 'text-indigo-400');
-            } else if (note.shareId) {
-                document.getElementById('shareModeViewBtn').classList.replace('text-slate-300', 'text-indigo-400');
-            }
+
+            // Geçici ayarları nota göre yükle
+            tempShareConfig.emails = note.sharedEmails ? [...note.sharedEmails] : [];
+            tempShareConfig.accessType = note.shareAccessType || 'restricted';
+            tempShareConfig.mode = note.shareMode || 'view';
+
+            renderShareModalContent();
+
+            const modal = document.getElementById('shareModal');
+            const content = document.getElementById('shareModalContent');
+            modal.classList.remove('hidden');
+            void modal.offsetWidth;
+            modal.classList.remove('opacity-0');
+            modal.classList.add('opacity-100');
+            content.classList.remove('scale-95');
+            content.classList.add('scale-100');
+            lucide.createIcons();
         }
 
-        function handleShareAction(action) {
+        function closeShareModal() {
+            const modal = document.getElementById('shareModal');
+            const content = document.getElementById('shareModalContent');
+            modal.classList.remove('opacity-100');
+            modal.classList.add('opacity-0');
+            content.classList.remove('scale-100');
+            content.classList.add('scale-95');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+
+        function renderShareModalContent() {
+            const id = document.getElementById('activeCardId').value;
+            const note = notes.find(n => n.id === id);
+            
+            // Kişi listesi
+            const emailsList = document.getElementById('sharedEmailsList');
+            emailsList.innerHTML = '';
+            if (tempShareConfig.emails.length > 0) {
+                tempShareConfig.emails.forEach(email => {
+                    emailsList.innerHTML += `
+                        <div class="flex items-center justify-between bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-lg border border-slate-100 dark:border-slate-700">
+                            <div class="flex items-center gap-2"><i data-lucide="user" class="w-4 h-4 text-slate-400"></i><span class="text-sm font-medium dark:text-slate-200">${email}</span></div>
+                            <button onclick="removeEmailFromShare('${email}')" class="text-slate-400 hover:text-red-500"><i data-lucide="x" class="w-4 h-4"></i></button>
+                        </div>
+                    `;
+                });
+            } else {
+                emailsList.innerHTML = '<span class="text-xs text-slate-400 italic">Henüz özel kişi eklenmedi.</span>';
+            }
+
+            // Kopyala Butonu Görünürlüğü
+            const copyBtn = document.getElementById('copyLinkBtn');
+            if (note && note.shareId) copyBtn.classList.remove('hidden'); else copyBtn.classList.add('hidden');
+
+            // Genel Erişim Paneli
+            const linkSection = document.getElementById('shareLinkSection');
+            linkSection.innerHTML = `
+                <div class="flex flex-col gap-3 p-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2 ${tempShareConfig.accessType === 'public' ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/50 dark:text-blue-400' : 'bg-slate-200 text-slate-500 dark:bg-slate-700 dark:text-slate-400'} rounded-full transition-colors">
+                            <i data-lucide="${tempShareConfig.accessType === 'public' ? 'globe' : 'lock'}" class="w-5 h-5"></i>
+                        </div>
+                        <div class="flex-1">
+                            <select onchange="updateTempSetting('accessType', this.value)" class="w-full text-sm font-bold bg-transparent outline-none cursor-pointer dark:text-white">
+                                <option value="restricted" ${tempShareConfig.accessType === 'restricted' ? 'selected' : ''}>Kısıtlanmış (Yalnızca kişiler)</option>
+                                <option value="public" ${tempShareConfig.accessType === 'public' ? 'selected' : ''}>Bağlantıya sahip herkes</option>
+                            </select>
+                            <div class="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 mt-1">
+                                ${tempShareConfig.accessType === 'public' ? 'İnternetteki herkes erişebilir.' : 'Sadece listedeki e-postalar erişebilir.'}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="w-full h-px bg-slate-200 dark:bg-slate-700 my-1"></div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold text-slate-600 dark:text-slate-300">İzin Verilen Yetki:</span>
+                        <select onchange="updateTempSetting('mode', this.value)" class="text-xs bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg px-2 py-1.5 font-medium outline-none cursor-pointer dark:text-white">
+                            <option value="view" ${tempShareConfig.mode === 'view' ? 'selected' : ''}>👁️ Görüntüleyen</option>
+                            <option value="edit" ${tempShareConfig.mode === 'edit' ? 'selected' : ''}>✏️ Düzenleyen</option>
+                        </select>
+                    </div>
+                </div>
+                ${note && note.shareId ? `<button onclick="disableSharing()" class="text-xs text-red-500 hover:text-red-600 font-semibold mt-2 self-start flex items-center gap-1"><i data-lucide="trash" class="w-3 h-3"></i> Paylaşımı Kapat</button>` : ''}
+            `;
+            lucide.createIcons();
+        }
+
+        function updateTempSetting(key, value) {
+            tempShareConfig[key] = value;
+            renderShareModalContent();
+        }
+
+        // --- Mail ve Kaydetme İşlemleri ---
+        function addEmailToShare() {
+            const input = document.getElementById('shareEmailInput');
+            const email = input.value.trim().toLowerCase();
+            
+            if (email && email.includes('@')) {
+                if (!tempShareConfig.emails.includes(email)) {
+                    tempShareConfig.emails.push(email);
+                    input.value = '';
+                    renderShareModalContent();
+                    
+                    // Bildirim Maili Gönderme Onayı
+                    if(confirm(`${email} adresine davet e-postası göndermek ister misiniz?\n(Varsayılan mail uygulamanız açılacaktır)`)) {
+                        const id = document.getElementById('activeCardId').value;
+                        const note = notes.find(n => n.id === id);
+                        // Eğer shareId yoksa, geçici bir id göster (Güncelle'ye basınca asıl oluşacak)
+                        const link = window.location.origin + window.location.pathname + `?shared=${note.shareId || 'LINK_GUNCELLENINCE_OLUSACAK'}`;
+                        const subject = encodeURIComponent(`"${note.title || 'Not'}" sizinle paylaşıldı`);
+                        const body = encodeURIComponent(`Merhaba,\n\nBir not sizinle paylaşıldı. Erişmek için tıklayın:\n\n${link}\n\nNotLa Uygulaması`);
+                        window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+                    }
+                } else { alert("Bu e-posta zaten listede!"); }
+            } else { alert("Lütfen geçerli bir e-posta adresi girin."); }
+        }
+
+        function removeEmailFromShare(email) {
+            tempShareConfig.emails = tempShareConfig.emails.filter(e => e !== email);
+            renderShareModalContent();
+        }
+
+        function saveShareSettings() {
             const id = document.getElementById('activeCardId').value;
             const note = notes.find(n => n.id === id);
             if (!note) return;
 
-            if (action === 'reshare') {
-                if (note.shareId) firebase.firestore().collection('shared_notes').doc(note.shareId).delete().catch(e => {});
-                
-                note.shareId = 'share_' + Math.random().toString(36).substr(2, 9);
-                note.shareMode = note.shareMode || 'view'; 
-                
-                const shareData = { title: note.title || 'Başlıksız Not', content: note.content || '', mode: note.shareMode, originalId: note.id, updatedAt: note.updatedAt, createdAt: note.createdAt };
-                
-                firebase.firestore().collection('shared_notes').doc(note.shareId).set(shareData).then(() => {
-                    saveToStorage(); updateShareMenuUI();
-                    const publicLink = window.location.origin + window.location.pathname + `?shared=${note.shareId}`;
-                    navigator.clipboard.writeText(publicLink);
-                    alert("✅ Yeni paylaşım linki oluşturuldu ve panoya kopyalandı!");
-                });
-            }
-            else if (action === 'copy') {
-                if (!note.shareId) return alert("Önce 'Yeni Link' butonuna tıklayarak bağlantı oluşturun.");
-                navigator.clipboard.writeText(window.location.origin + window.location.pathname + `?shared=${note.shareId}`);
-                alert("🔗 Mevcut link panoya kopyalandı!");
-            }
-            else if (action === 'view' || action === 'edit') {
-                if (!note.shareId) return alert("Lütfen önce bağlantı üretin.");
-                note.shareMode = action;
-                
-                firebase.firestore().collection('shared_notes').doc(note.shareId).update({ mode: action })
-                .then(() => {
-                    saveToStorage(); updateShareMenuUI();
-                    alert(`✅ Yetki güncellendi: ${action === 'edit' ? 'Düzenleme' : 'Sadece Görüntüleme'}`);
-                });
-            }
+            document.getElementById('shareStatusText').innerText = "Kaydediliyor...";
+
+            // Ayarları nota aktar
+            note.sharedEmails = [...tempShareConfig.emails];
+            note.shareAccessType = tempShareConfig.accessType;
+            note.shareMode = tempShareConfig.mode;
+
+            if (!note.shareId) note.shareId = 'share_' + Math.random().toString(36).substr(2, 10);
+
+            const shareData = {
+                title: note.title || 'Başlıksız Not',
+                content: note.content || '',
+                mode: note.shareMode,
+                accessType: note.shareAccessType,
+                sharedEmails: note.sharedEmails,
+                originalId: note.id,
+                updatedAt: note.updatedAt,
+                createdAt: note.createdAt
+            };
+
+            firebase.firestore().collection('shared_notes').doc(note.shareId).set(shareData).then(() => {
+                saveToStorage();
+                renderShareModalContent(); // Kopya butonunun çıkması için
+                document.getElementById('shareStatusText').innerHTML = "<span class='text-green-500'>✅ Güncellendi!</span>";
+                setTimeout(() => { document.getElementById('shareStatusText').innerText = ""; }, 3000);
+            });
+        }
+
+        function copyModalShareLink() {
+            const id = document.getElementById('activeCardId').value;
+            const note = notes.find(n => n.id === id);
+            if (!note || !note.shareId) return;
+
+            const publicLink = window.location.origin + window.location.pathname + `?shared=${note.shareId}`;
+            navigator.clipboard.writeText(publicLink).then(() => {
+                const btn = document.getElementById('copyLinkBtn');
+                btn.innerHTML = `<i data-lucide="check" class="w-4 h-4"></i> Kopyalandı!`;
+                btn.classList.replace('bg-slate-200', 'bg-green-600');
+                btn.classList.replace('text-slate-700', 'text-white');
+                lucide.createIcons();
+                setTimeout(() => {
+                    btn.innerHTML = `<i data-lucide="copy" class="w-4 h-4"></i> Kopyala`;
+                    btn.classList.replace('bg-green-600', 'bg-slate-200');
+                    btn.classList.replace('text-white', 'text-slate-700');
+                    lucide.createIcons();
+                }, 2000);
+            });
+        }
+
+        function disableSharing() {
+            if(!confirm("Erişimi kapatmak istediğinize emin misiniz?")) return;
+            const id = document.getElementById('activeCardId').value;
+            const note = notes.find(n => n.id === id);
+            if (!note || !note.shareId) return;
+
+            firebase.firestore().collection('shared_notes').doc(note.shareId).delete().then(() => {
+                delete note.shareId;
+                delete note.shareMode;
+                delete note.shareAccessType;
+                delete note.sharedEmails;
+                saveToStorage();
+                closeShareModal();
+                alert("Bağlantı iptal edildi ve erişim kapatıldı.");
+            });
         }
 
         // --- TAKVİM (CALENDAR) RENDER ---
