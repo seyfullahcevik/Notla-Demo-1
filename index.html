@@ -425,37 +425,42 @@
         let currentCalendarDate = new Date();
         let editor;
         let sortableInstance = null;
-     // --- Giriş Sistemi Fonksiyonları ---
-        function continueAsGuest() {
+     // --- Giriş Sistemi Fonksiyonları (Garantili Yöntem) ---
+        window.continueAsGuest = function() {
             const loginScreen = document.getElementById('loginScreen');
-            loginScreen.classList.add('opacity-0');
-            setTimeout(() => {
-                loginScreen.classList.add('hidden');
-                // Karşılama ekranı kalkınca arka plandaki ikonların düzgün yüklenmesi için:
-                lucide.createIcons(); 
-            }, 500);
-        }
-
-        function loginWithGoogle() {
-            const statusMsg = document.getElementById('loginStatusMsg');
-            statusMsg.classList.remove('hidden');
-            statusMsg.innerText = "Google ile bağlantı kuruluyor...";
-            
-            if (window.signInWithPopup && window.googleAuth && window.googleProvider) {
-                window.signInWithPopup(window.googleAuth, window.googleProvider)
-                .then((result) => {
-                    statusMsg.innerText = "Giriş başarılı! Uygulamaya geçiliyor...";
-                    statusMsg.classList.remove('text-red-500');
-                    statusMsg.classList.add('text-green-500');
-                    setTimeout(continueAsGuest, 1000); // Başarılı olunca ekranı kapat
-                }).catch((error) => {
-                    statusMsg.innerText = "Giriş yapılamadı: Pencereyi kapattınız veya hata oluştu.";
-                    statusMsg.classList.add('text-red-500');
-                });
-            } else {
-                statusMsg.innerText = "Sistem yükleniyor, lütfen birkaç saniye bekleyip tekrar tıklayın.";
+            if(loginScreen) {
+                loginScreen.classList.add('opacity-0');
+                setTimeout(() => {
+                    loginScreen.classList.add('hidden');
+                    if (typeof lucide !== 'undefined') lucide.createIcons(); 
+                }, 500);
             }
-        }   
+        };
+
+        window.loginWithGoogle = function() {
+            const statusMsg = document.getElementById('loginStatusMsg');
+            if(statusMsg) {
+                statusMsg.classList.remove('hidden');
+                statusMsg.innerText = "Google ile bağlantı kuruluyor...";
+                
+                // Firebase dosyalarının yüklenip yüklenmediğini kontrol ediyoruz
+                if (window.signInWithPopup && window.googleAuth && window.googleProvider) {
+                    window.signInWithPopup(window.googleAuth, window.googleProvider)
+                    .then((result) => {
+                        statusMsg.innerText = "Giriş başarılı! Uygulamaya geçiliyor...";
+                        statusMsg.classList.remove('text-red-500');
+                        statusMsg.classList.add('text-green-500');
+                        setTimeout(window.continueAsGuest, 1000); 
+                    }).catch((error) => {
+                        statusMsg.innerText = "Giriş yapılamadı: İşlemi iptal ettiniz veya yetki verilmedi.";
+                        statusMsg.classList.add('text-red-500');
+                    });
+                } else {
+                    statusMsg.innerText = "Sistem henüz yüklenmedi veya bir eklenti (AdBlock vb.) tarafından engellendi.";
+                    statusMsg.classList.add('text-red-500');
+                }
+            }
+        };
 
         if ("Notification" in window && Notification.permission !== "granted" && Notification.permission !== "denied") {
             Notification.requestPermission();
