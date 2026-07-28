@@ -98,7 +98,7 @@
     </style>
 </head>
 <body class="bg-gray-50 text-slate-900 overflow-hidden">
-<!-- Giriş Ekranı (Landing Page) -->
+    <!-- Giriş Ekranı (Landing Page) -->
     <div id="loginScreen" class="fixed inset-0 bg-slate-50 dark:bg-slate-900 z-[100] flex flex-col items-center justify-center p-4 transition-opacity duration-500">
         <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-2xl max-w-md w-full text-center border border-slate-100 dark:border-slate-700">
             <div class="w-16 h-16 bg-indigo-600 text-white rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-indigo-500/50">
@@ -124,6 +124,7 @@
             <p id="loginStatusMsg" class="mt-4 text-xs text-slate-400 hidden"></p>
         </div>
     </div>
+
     <div id="app" class="flex h-screen w-full relative">
         
         <!-- Mobil Sidebar Arka Plan Karartması -->
@@ -385,7 +386,7 @@
     <!-- Export İçin Görünmez Konteyner -->
     <div id="exportContainer" class="hidden bg-white p-8 text-black w-[800px]"></div>
 
-   <!-- Firebase (Garantili Eski Yöntem) -->
+    <!-- Firebase (Garantili Eski Yöntem) -->
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     
@@ -402,7 +403,7 @@
         firebase.initializeApp(firebaseConfig);
 
         // Giriş Butonu Fonksiyonları
-        function continueAsGuest() {
+        window.continueAsGuest = function() {
             const loginScreen = document.getElementById('loginScreen');
             if(loginScreen) {
                 loginScreen.classList.add('opacity-0');
@@ -411,9 +412,9 @@
                     if (typeof lucide !== 'undefined') lucide.createIcons();
                 }, 500);
             }
-        }
+        };
 
-        function loginWithGoogle() {
+        window.loginWithGoogle = function() {
             const statusMsg = document.getElementById('loginStatusMsg');
             if(statusMsg) {
                 statusMsg.classList.remove('hidden');
@@ -425,19 +426,19 @@
                     statusMsg.innerText = "Giriş başarılı! Yönlendiriliyorsunuz...";
                     statusMsg.classList.remove('text-red-500');
                     statusMsg.classList.add('text-green-500');
-                    setTimeout(continueAsGuest, 1000);
+                    setTimeout(window.continueAsGuest, 1000);
                 }).catch((error) => {
                     statusMsg.innerText = "Hata: Cihazınız veya tarayıcınız bu işlemi engelledi.";
                     statusMsg.classList.add('text-red-500');
                     console.error(error);
                 });
             }
-        }
+        };
 
         // Önceden giriş yapıldıysa ekranı otomatik gizle
         firebase.auth().onAuthStateChanged((user) => {
             if (user) {
-                continueAsGuest();
+                window.continueAsGuest();
             }
         });
 
@@ -453,34 +454,10 @@
         let editor;
         let sortableInstance = null;
 
-        window.loginWithGoogle = function() {
-            const statusMsg = document.getElementById('loginStatusMsg');
-            if(statusMsg) {
-                statusMsg.classList.remove('hidden');
-                statusMsg.innerText = "Google ile bağlantı kuruluyor...";
-                
-                // Firebase dosyalarının yüklenip yüklenmediğini kontrol ediyoruz
-                if (window.signInWithPopup && window.googleAuth && window.googleProvider) {
-                    window.signInWithPopup(window.googleAuth, window.googleProvider)
-                    .then((result) => {
-                        statusMsg.innerText = "Giriş başarılı! Uygulamaya geçiliyor...";
-                        statusMsg.classList.remove('text-red-500');
-                        statusMsg.classList.add('text-green-500');
-                        setTimeout(window.continueAsGuest, 1000); 
-                    }).catch((error) => {
-                        statusMsg.innerText = "Giriş yapılamadı: İşlemi iptal ettiniz veya yetki verilmedi.";
-                        statusMsg.classList.add('text-red-500');
-                    });
-                } else {
-                    statusMsg.innerText = "Sistem henüz yüklenmedi veya bir eklenti (AdBlock vb.) tarafından engellendi.";
-                    statusMsg.classList.add('text-red-500');
-                }
-            }
-        };
-
         if ("Notification" in window && Notification.permission !== "granted" && Notification.permission !== "denied") {
             Notification.requestPermission();
         }
+
         // BEKÇİ KODU: İşlemleri geciktirir
         const debounce = (func, delay) => {
             let timer;
@@ -653,7 +630,7 @@
         }
 
         function setTheme(theme) {
-            if (theme === 'dynamic') theme = 'light'; // Eskiden kalan ayarları sıfırla
+            if (theme === 'dynamic') theme = 'light';
             currentTheme = theme;
             localStorage.setItem('notla_theme', theme);
             if (theme === 'dark') document.documentElement.classList.add('dark');
@@ -1114,7 +1091,7 @@
 
             html += `</div></div></div>`;
             container.innerHTML = html;
-            lucide.createIcons();
+            lucide.createIcons({ root: document.getElementById('notesContainer') });
         }
 
         // --- TASKS (GÖREVLER) RENDER ---
@@ -1128,7 +1105,7 @@
             
             container.className = 'flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar pb-24 md:pb-8 max-w-4xl mx-auto w-full';
             
-            // To-Do Organizasyon Mantığı (Microsoft To Do Stili)
+            // To-Do Organizasyon Mantığı
             const now = new Date();
             const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
             const tomorrowStart = todayStart + 86400000;
@@ -1270,7 +1247,7 @@
                                     <button onclick="restoreFromTrash('${note.id}', event)" title="Geri Yükle" class="p-1.5 hover:bg-green-100 rounded-lg text-green-600 transition"><i data-lucide="rotate-ccw" class="w-4 h-4"></i></button>
                                     <button onclick="permanentDelete('${note.id}', event)" title="Tamamen Sil" class="p-1.5 hover:bg-red-100 rounded-lg text-red-600 transition"><i data-lucide="x-circle" class="w-4 h-4"></i></button>
                                 ` : `
-                                    <button onclick="toggleFavorite('${note.id}', event)" class="p-1.5 hover:bg-orange-50 dark:hover:bg-slate-700 rounded-lg ${note.isFavorite ? 'text-orange-500' : 'text-slate-400'} transition"><i data-lucide="star" class="w-4 h-4" ${note.isFavorite ? 'fill="currentColor"' : ''}></i></button>
+                                    <button onclick="toggleFavorite('${note.id}', event)" class="p-1.5 hover:bg-orange-50 dark:hover:bg-slate-700 rounded-lg ${note.isFavorite ? 'text-orange-500' : 'text-slate-400'} transition"><i data-lucide="star" class="w-4 h-4" ${note.isFavorite ? 'fill="currentColor"' : ''}></button>
                                     <button onclick="moveToTrash('${note.id}', event)" class="p-1.5 hover:bg-red-50 dark:hover:bg-slate-700 rounded-lg text-slate-400 hover:text-red-500 transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                                 `}
                             </div>
@@ -1290,7 +1267,7 @@
                 `;
                 container.appendChild(div);
             });
-            lucide.createIcons();
+            lucide.createIcons({ root: document.getElementById('notesContainer') });
             renderTags();
             initSortable();
         }
@@ -1311,12 +1288,12 @@
             } else if (currentFilter === 'tasks') {
                 filtered = dataList.filter(n => n.type === 'task');
             } else if (currentFilter === 'favorites') {
-                filtered = dataList.filter(n => n.isFavorite); // Her ikisini de gösterir
+                filtered = dataList.filter(n => n.isFavorite); 
             } else if (currentFilter.startsWith('tag:')) {
                 const tag = currentFilter.replace('tag:', '');
                 filtered = dataList.filter(n => (n.tags || []).includes(tag));
             } else {
-                filtered = dataList; // 'all' durumu
+                filtered = dataList; 
             }
 
             if (searchVal) {
@@ -1364,7 +1341,6 @@
         }
 
         function setFilter(filter) {
-            // Eğer çöpte değilsek, seçimi hafızaya kaydet
             if(filter !== 'trash' && !filter.startsWith('tag:')) {
                 localStorage.setItem('notla_filter', filter);
             }
@@ -1384,7 +1360,6 @@
                 }
             });
 
-            // "Yeni Ekle" Buton Metnini Güncelle (Takvimdeyken veya görevdeyken "Yeni Görev" yazar)
             const addBtnText = document.getElementById('mainAddBtnText');
             if (addBtnText) {
                 addBtnText.innerText = (filter === 'tasks' || filter === 'calendar') ? 'Yeni Görev' : 'Yeni Not';
