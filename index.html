@@ -309,7 +309,7 @@
         </div>
     </div>
 
-    <!-- Google Docs Tarzı Paylaşım ve Erişim Yönetimi Modalı (Duplicate block 1) -->
+   <!-- Google Docs Tarzı Paylaşım ve Erişim Yönetimi Modalı -->
     <div id="shareModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
         <div class="bg-white dark:bg-slate-900 w-full max-w-lg rounded-3xl shadow-2xl flex flex-col overflow-hidden transform transition-transform duration-300 scale-95" id="shareModalContent">
             <!-- Modal Başlık -->
@@ -330,9 +330,7 @@
                         <input type="email" id="shareEmailInput" placeholder="ornek@mail.com" class="flex-1 px-4 py-2.5 bg-slate-100 dark:bg-slate-800 border border-transparent dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-sm dark:text-white">
                         <button onclick="addEmailToShare()" class="px-4 py-2.5 bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-white rounded-xl text-sm font-semibold transition">Ekle</button>
                     </div>
-                    <div id="sharedEmailsList" class="mt-3 flex flex-col gap-2 max-h-32 overflow-y-auto custom-scrollbar">
-                        <!-- Eklenen mailler buraya gelecek -->
-                    </div>
+                    <div id="sharedEmailsList" class="mt-3 flex flex-col gap-2 max-h-32 overflow-y-auto custom-scrollbar"></div>
                 </div>
 
                 <div class="w-full h-px bg-slate-100 dark:bg-slate-800"></div>
@@ -340,53 +338,7 @@
                 <!-- Genel Erişim (Bağlantı) Alanı -->
                 <div>
                     <label class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 block">Genel Erişim</label>
-                    <div id="shareLinkSection" class="flex flex-col gap-3">
-                        <!-- JS ile Duruma Göre Doldurulacak -->
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Modal Alt Bilgi ve Kopyala Butonu -->
-            <div class="p-4 sm:p-5 border-t dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 flex justify-between items-center">
-                <span id="shareStatusText" class="text-xs text-slate-500 font-medium">Değişiklikler anında kaydedilir.</span>
-                <button id="copyLinkBtn" onclick="copyModalShareLink()" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-semibold transition shadow-md shadow-blue-500/30 flex items-center gap-2 hidden">
-                    <i data-lucide="link" class="w-4 h-4"></i> Bağlantıyı Kopyala
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Google Docs Tarzı Paylaşım ve Erişim Yönetimi Modalı (Duplicate block 2) -->
-    <div id="shareModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
-        <div class="bg-white dark:bg-slate-900 w-full max-w-lg rounded-3xl shadow-2xl flex flex-col overflow-hidden transform transition-transform duration-300 scale-95" id="shareModalContent">
-            <!-- Modal Başlık -->
-            <div class="p-5 sm:p-6 border-b flex items-center justify-between dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50">
-                <h2 class="text-lg sm:text-xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
-                    <i data-lucide="users" class="w-5 h-5 text-blue-500"></i> Erişimi Yönet
-                </h2>
-                <button onclick="closeShareModal()" class="p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full transition dark:text-slate-300">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
-            </div>
-            
-            <div class="p-5 sm:p-6 flex flex-col gap-6">
-                <!-- Kişi / Mail Ekleme Alanı -->
-                <div>
-                    <label class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 block">Kişi veya E-posta Ekle</label>
-                    <div class="flex gap-2">
-                        <input type="email" id="shareEmailInput" placeholder="ornek@mail.com" class="flex-1 px-4 py-2.5 bg-slate-100 dark:bg-slate-800 border border-transparent dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-sm dark:text-white">
-                        <button onclick="addEmailToShare()" class="px-4 py-2.5 bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-white rounded-xl text-sm font-semibold transition">Ekle</button>
-                    </div>
-                    <div id="sharedEmailsList" class="mt-3 flex flex-col gap-2 max-h-32 overflow-y-auto custom-scrollbar">
-                        <!-- Eklenen mailler buraya gelecek -->
-                    </div>
-                </div>
-
-                <div class="w-full h-px bg-slate-100 dark:bg-slate-800"></div>
-
-                <!-- Genel Erişim (Bağlantı) Alanı -->
-                <div id="shareLinkSection" class="flex flex-col gap-3">
-                    <!-- JS ile Duruma Göre Doldurulacak -->
+                    <div id="shareLinkSection" class="flex flex-col gap-3"></div>
                 </div>
             </div>
             
@@ -402,18 +354,14 @@
                 </button>
             </div>
         </div>
-    </div> 
+    </div>
 
     <!-- Ayarlar Modalı -->
     <div id="settingsModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
         <div class="bg-white dark:bg-slate-900 w-full max-w-md max-h-[90vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden transform transition-transform duration-300 scale-95" id="settingsModalContent">
             <div class="p-4 sm:p-6 border-b flex items-center justify-between dark:border-slate-800 shrink-0">
-                <h2 class="text-lg sm:text-xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
-                    <i data-lucide="settings" class="w-5 h-5 text-indigo-500"></i> Ayarlar
-                </h2>
-                <button onclick="closeSettings()" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition dark:text-slate-300">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
+                <h2 class="text-lg sm:text-xl font-bold text-slate-800 dark:text-white flex items-center gap-2"><i data-lucide="settings" class="w-5 h-5 text-indigo-500"></i> Ayarlar</h2>
+                <button onclick="closeSettings()" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition dark:text-slate-300"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             
             <div class="p-4 sm:p-6 overflow-y-auto custom-scrollbar flex-1">
@@ -452,7 +400,6 @@
                             <div class="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400">Tüm notlarını cihaza kaydet.</div>
                         </div>
                     </button>
-                    
                     <label class="w-full flex items-center gap-3 p-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer group">
                         <i data-lucide="upload-cloud" class="w-5 h-5 text-indigo-500 group-hover:scale-110 transition-transform"></i>
                         <div class="text-left flex-1">
@@ -461,7 +408,6 @@
                         </div>
                         <input type="file" id="backupInput" accept=".json" class="hidden" onchange="importBackup(event)">
                     </label>
-
                     <button onclick="clearAllData()" class="w-full flex items-center gap-3 p-3 rounded-xl border border-red-200 dark:border-red-900/50 hover:bg-red-50 dark:hover:bg-red-900/20 transition text-red-600 dark:text-red-400 mt-4 group">
                         <i data-lucide="alert-triangle" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
                         <div class="text-left">
@@ -474,55 +420,32 @@
         </div>
     </div>
 
-   <!-- Export İçin Görünmez Konteyner -->
+    <!-- Export İçin Görünmez Konteyner -->
     <div id="exportContainer" class="hidden bg-white p-8 text-black w-[800px]"></div>
 
     <!-- Kartlar İçin Uzun Basma / Sağ Tık Araç Çubuğu -->
     <div id="cardToolbar" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900/90 dark:bg-slate-800/90 backdrop-blur-md text-white px-4 py-3 rounded-2xl shadow-2xl z-50 hidden border border-slate-700 transition-all transform translate-y-10 opacity-0 max-w-[90vw] overflow-hidden">
         <input type="hidden" id="activeCardId">
-        
         <!-- ANA MENÜ -->
         <div id="mainToolbarActions" class="flex items-center gap-3">
-            <button onclick="switchToolbar('edit')" class="flex flex-col items-center gap-1 p-2 hover:bg-white/10 rounded-xl transition text-xs font-medium">
-                <i data-lucide="edit-3" class="w-5 h-5 text-indigo-400"></i> Düzenle
-            </button>
-            <button onclick="switchToolbar('color')" class="flex flex-col items-center gap-1 p-2 hover:bg-white/10 rounded-xl transition text-xs font-medium">
-                <i data-lucide="palette" class="w-5 h-5 text-yellow-400"></i> Renk
-            </button>
-            <button onclick="switchToolbar('tag')" class="flex flex-col items-center gap-1 p-2 hover:bg-white/10 rounded-xl transition text-xs font-medium">
-                <i data-lucide="tag" class="w-5 h-5 text-green-400"></i> Etiket
-            </button>
-            <button onclick="openShareModal()" class="flex flex-col items-center gap-1 p-2 hover:bg-white/10 rounded-xl transition text-xs font-medium">
-                <i data-lucide="users" class="w-5 h-5 text-blue-400"></i> Erişimi Yönet
-            </button>
+            <button onclick="switchToolbar('edit')" class="flex flex-col items-center gap-1 p-2 hover:bg-white/10 rounded-xl transition text-xs font-medium"><i data-lucide="edit-3" class="w-5 h-5 text-indigo-400"></i> Düzenle</button>
+            <button onclick="switchToolbar('color')" class="flex flex-col items-center gap-1 p-2 hover:bg-white/10 rounded-xl transition text-xs font-medium"><i data-lucide="palette" class="w-5 h-5 text-yellow-400"></i> Renk</button>
+            <button onclick="switchToolbar('tag')" class="flex flex-col items-center gap-1 p-2 hover:bg-white/10 rounded-xl transition text-xs font-medium"><i data-lucide="tag" class="w-5 h-5 text-green-400"></i> Etiket</button>
+            <button onclick="openShareModal()" class="flex flex-col items-center gap-1 p-2 hover:bg-white/10 rounded-xl transition text-xs font-medium"><i data-lucide="users" class="w-5 h-5 text-blue-400"></i> Erişimi Yönet</button>
             <div class="w-px h-8 bg-slate-700"></div>
-            <button onclick="toolbarAction('trash')" class="flex flex-col items-center gap-1 p-2 hover:bg-red-500/20 rounded-xl transition text-xs font-medium text-red-400">
-                <i data-lucide="trash-2" class="w-5 h-5"></i> Sil
-            </button>
-            <button onclick="closeCardToolbar()" class="p-1.5 hover:bg-white/10 rounded-full transition text-slate-400 ml-1">
-                <i data-lucide="x" class="w-4 h-4"></i>
-            </button>
+            <button onclick="toolbarAction('trash')" class="flex flex-col items-center gap-1 p-2 hover:bg-red-500/20 rounded-xl transition text-xs font-medium text-red-400"><i data-lucide="trash-2" class="w-5 h-5"></i> Sil</button>
+            <button onclick="closeCardToolbar()" class="p-1.5 hover:bg-white/10 rounded-full transition text-slate-400 ml-1"><i data-lucide="x" class="w-4 h-4"></i></button>
         </div>
-
         <!-- 1. ALT MENÜ: DÜZENLEME -->
         <div id="editToolbarActions" class="hidden items-center gap-2 sm:gap-4">
-            <button onclick="switchToolbar('main')" class="p-2 hover:bg-white/10 rounded-xl transition text-slate-400">
-                <i data-lucide="arrow-left" class="w-5 h-5"></i>
-            </button>
+            <button onclick="switchToolbar('main')" class="p-2 hover:bg-white/10 rounded-xl transition text-slate-400"><i data-lucide="arrow-left" class="w-5 h-5"></i></button>
             <div class="w-px h-6 bg-slate-700"></div>
-            <button onclick="handleEditAction('title')" class="flex flex-col items-center gap-1 p-2 hover:bg-white/10 rounded-xl transition text-[10px] sm:text-xs font-medium text-indigo-300">
-                <i data-lucide="type" class="w-5 h-5"></i> Başlığı Düzenle
-            </button>
-            <button onclick="handleEditAction('content')" class="flex flex-col items-center gap-1 p-2 hover:bg-white/10 rounded-xl transition text-[10px] sm:text-xs font-medium text-indigo-400">
-                <i data-lucide="file-edit" class="w-5 h-5"></i> İçeriğe Gir
-            </button>
+            <button onclick="handleEditAction('title')" class="flex flex-col items-center gap-1 p-2 hover:bg-white/10 rounded-xl transition text-[10px] sm:text-xs font-medium text-indigo-300"><i data-lucide="type" class="w-5 h-5"></i> Başlığı Düzenle</button>
+            <button onclick="handleEditAction('content')" class="flex flex-col items-center gap-1 p-2 hover:bg-white/10 rounded-xl transition text-[10px] sm:text-xs font-medium text-indigo-400"><i data-lucide="file-edit" class="w-5 h-5"></i> İçeriğe Gir</button>
         </div>
-
         <!-- 2. ALT MENÜ: RENKLER -->
         <div id="colorToolbarActions" class="hidden items-center gap-3">
-            <button onclick="switchToolbar('main')" class="p-2 hover:bg-white/10 rounded-xl transition text-slate-400">
-                <i data-lucide="arrow-left" class="w-5 h-5"></i>
-            </button>
+            <button onclick="switchToolbar('main')" class="p-2 hover:bg-white/10 rounded-xl transition text-slate-400"><i data-lucide="arrow-left" class="w-5 h-5"></i></button>
             <div class="w-px h-6 bg-slate-700 mr-1"></div>
             <button onclick="handleColorAction('white')" class="w-7 h-7 rounded-full bg-white border-2 border-slate-300 hover:scale-110 transition"></button>
             <button onclick="handleColorAction('#fee2e2')" class="w-7 h-7 rounded-full bg-red-100 border-2 border-red-300 hover:scale-110 transition"></button>
@@ -531,72 +454,16 @@
             <button onclick="handleColorAction('#dbeafe')" class="w-7 h-7 rounded-full bg-blue-100 border-2 border-blue-300 hover:scale-110 transition"></button>
             <button onclick="handleColorAction('#f3e8ff')" class="w-7 h-7 rounded-full bg-purple-100 border-2 border-purple-300 hover:scale-110 transition"></button>
         </div>
-
         <!-- 3. ALT MENÜ: ETİKETLER -->
         <div id="tagToolbarActions" class="hidden items-center gap-2">
-            <button onclick="switchToolbar('main')" class="p-2 hover:bg-white/10 rounded-xl transition text-slate-400 shrink-0">
-                <i data-lucide="arrow-left" class="w-5 h-5"></i>
-            </button>
+            <button onclick="switchToolbar('main')" class="p-2 hover:bg-white/10 rounded-xl transition text-slate-400 shrink-0"><i data-lucide="arrow-left" class="w-5 h-5"></i></button>
             <div class="w-px h-6 bg-slate-700 shrink-0"></div>
-            <div id="toolbarTagList" class="flex items-center gap-2 overflow-x-auto custom-scrollbar max-w-[150px] sm:max-w-[250px] px-1 py-1">
-                <!-- Etiketler JS ile Buraya Gelecek -->
-            </div>
-            <button onclick="handleTagAction('new')" class="p-2 bg-green-500/20 hover:bg-green-500/40 rounded-full transition text-green-400 shrink-0" title="Yeni Etiket Oluştur">
-                <i data-lucide="plus" class="w-5 h-5"></i>
-            </button>
+            <div id="toolbarTagList" class="flex items-center gap-2 overflow-x-auto custom-scrollbar max-w-[150px] sm:max-w-[250px] px-1 py-1"></div>
+            <button onclick="handleTagAction('new')" class="p-2 bg-green-500/20 hover:bg-green-500/40 rounded-full transition text-green-400 shrink-0" title="Yeni Etiket Oluştur"><i data-lucide="plus" class="w-5 h-5"></i></button>
         </div>
     </div>
 
-    <!-- Google Docs Tarzı Paylaşım Modalı -->
-    <div id="shareModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
-        <div class="bg-white dark:bg-slate-900 w-full max-w-lg rounded-3xl shadow-2xl flex flex-col overflow-hidden transform transition-transform duration-300 scale-95" id="shareModalContent">
-            <!-- Modal Başlık -->
-            <div class="p-5 sm:p-6 border-b flex items-center justify-between dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50">
-                <h2 class="text-lg sm:text-xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
-                    <i data-lucide="users" class="w-5 h-5 text-blue-500"></i> Erişimi Yönet
-                </h2>
-                <button onclick="closeShareModal()" class="p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full transition dark:text-slate-300">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
-            </div>
-            
-            <div class="p-5 sm:p-6 flex flex-col gap-6">
-                <!-- Kişi / Mail Ekleme Alanı -->
-                <div>
-                    <label class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 block">Kişi veya E-posta Ekle</label>
-                    <div class="flex gap-2">
-                        <input type="email" id="shareEmailInput" placeholder="ornek@mail.com" class="flex-1 px-4 py-2.5 bg-slate-100 dark:bg-slate-800 border border-transparent dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-sm dark:text-white">
-                        <button onclick="addEmailToShare()" class="px-4 py-2.5 bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-white rounded-xl text-sm font-semibold transition">Ekle</button>
-                    </div>
-                    <div id="sharedEmailsList" class="mt-3 flex flex-col gap-2 max-h-32 overflow-y-auto custom-scrollbar">
-                        <!-- Eklenen mailler buraya gelecek -->
-                    </div>
-                </div>
-
-                <div class="w-full h-px bg-slate-100 dark:bg-slate-800"></div>
-
-                <!-- Genel Erişim (Bağlantı) Alanı -->
-                <div>
-                    <label class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 block">Genel Erişim</label>
-                    <div id="shareLinkSection" class="flex flex-col gap-3">
-                        <!-- JS ile Duruma Göre Doldurulacak -->
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Modal Alt Bilgi ve Butonlar -->
-            <div class="p-4 sm:p-5 border-t dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 flex justify-between items-center gap-2">
-                <button id="copyLinkBtn" onclick="copyModalShareLink()" class="px-4 py-2.5 bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-white rounded-xl text-sm font-semibold transition flex items-center gap-2 hidden">
-                    <i data-lucide="copy" class="w-4 h-4"></i> Bağlantıyı Kopyala
-                </button>
-                <div class="flex-1"></div>
-                <span id="shareStatusText" class="text-xs text-slate-500 font-medium mr-3"></span>
-                <button onclick="saveShareSettings()" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-semibold transition shadow-md shadow-blue-500/30 flex items-center gap-2">
-                    <i data-lucide="save" class="w-4 h-4"></i> Güncelle
-                </button>
-            </div>
-        </div>
-    </div>
+    <!-- Firebase Kütüphaneleri -->
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -613,41 +480,6 @@
         };
         firebase.initializeApp(firebaseConfig);
 
-        // Giriş Butonu Fonksiyonları
-        window.continueAsGuest = function() {
-            const loginScreen = document.getElementById('loginScreen');
-            if(loginScreen) {
-                loginScreen.classList.add('opacity-0');
-                setTimeout(() => {
-                    loginScreen.classList.add('hidden');
-                    if (typeof lucide !== 'undefined') lucide.createIcons();
-                }, 500);
-            }
-        };
-
-        window.loginWithGoogle = function() {
-            const statusMsg = document.getElementById('loginStatusMsg');
-            if(statusMsg) {
-                statusMsg.classList.remove('hidden');
-                statusMsg.innerText = "Google ile bağlantı kuruluyor...";
-                
-                const provider = new firebase.auth.GoogleAuthProvider();
-                firebase.auth().signInWithPopup(provider)
-                .then((result) => {
-                    statusMsg.innerText = "Giriş başarılı! Yönlendiriliyorsunuz...";
-                    statusMsg.classList.remove('text-red-500');
-                    statusMsg.classList.add('text-green-500');
-                    setTimeout(window.continueAsGuest, 1000);
-                }).catch((error) => {
-                    // BURASI DEĞİŞTİ: Google'ın verdiği gerçek hatayı ekrana yazdırıyoruz
-                    statusMsg.innerText = "Firebase Hatası: " + error.message;
-                    statusMsg.classList.add('text-red-500');
-                    console.error("Detaylı Hata:", error);
-                });
-            }
-        };
-
-        // --- Uygulama Durumu (State) --- 
         let notes = [];
         let trash = [];
         let currentNoteId = null;
@@ -663,7 +495,6 @@
             Notification.requestPermission();
         }
 
-        // BEKÇİ KODU: İşlemleri geciktirir
         const debounce = (func, delay) => {
             let timer;
             return function (...args) {
@@ -682,7 +513,36 @@
             if(currentFilter === 'calendar') renderCalendar();
         }, 800);
 
-        // --- Mobil Sidebar Kontrolü ---
+        window.continueAsGuest = function() {
+            const loginScreen = document.getElementById('loginScreen');
+            if(loginScreen) {
+                loginScreen.classList.add('opacity-0');
+                setTimeout(() => {
+                    loginScreen.classList.add('hidden');
+                    if (typeof lucide !== 'undefined') lucide.createIcons();
+                }, 500);
+            }
+        };
+
+        window.loginWithGoogle = function() {
+            const statusMsg = document.getElementById('loginStatusMsg');
+            if(statusMsg) {
+                statusMsg.classList.remove('hidden');
+                statusMsg.innerText = "Google ile bağlantı kuruluyor...";
+                const provider = new firebase.auth.GoogleAuthProvider();
+                firebase.auth().signInWithPopup(provider)
+                .then((result) => {
+                    statusMsg.innerText = "Giriş başarılı! Yönlendiriliyorsunuz...";
+                    statusMsg.classList.remove('text-red-500');
+                    statusMsg.classList.add('text-green-500');
+                    setTimeout(window.continueAsGuest, 1000);
+                }).catch((error) => {
+                    statusMsg.innerText = "Firebase Hatası: " + error.message;
+                    statusMsg.classList.add('text-red-500');
+                });
+            }
+        };
+
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const backdrop = document.getElementById('sidebarBackdrop');
@@ -721,74 +581,83 @@
                     syncSharedNotes();
                 }
             } else {
-                // KULLANICI GİRİŞ YAPMAMIŞSA YİNE DE EKRANA YÖNLENDİR (Erişim kilit ekranını göstermek için)
-                if (sharedId) {
-                    renderSharedScreen(sharedId, null); 
-                }
+                if (sharedId) { renderSharedScreen(sharedId, null); }
             }
         });
 
-        // --- PAYLAŞILAN NOT EKRANI ---
+        window.onload = async () => {
+            localforage.config({ name: 'NotLaApp', storeName: 'notla_data' });
+            try {
+                let legacyNotes = localStorage.getItem('notla_notes');
+                let legacyTrash = localStorage.getItem('notla_trash');
+                if (legacyNotes) {
+                    notes = JSON.parse(legacyNotes);
+                    await localforage.setItem('notla_notes', notes);
+                    localStorage.removeItem('notla_notes');
+                } else {
+                    notes = (await localforage.getItem('notla_notes')) || [];
+                }
+                if (legacyTrash) {
+                    trash = JSON.parse(legacyTrash);
+                    await localforage.setItem('notla_trash', trash);
+                    localStorage.removeItem('notla_trash');
+                } else {
+                    trash = (await localforage.getItem('notla_trash')) || [];
+                }
+            } catch (e) {}
+
+            lucide.createIcons();
+            initEditor();
+            applySpellcheck();
+            setTheme(currentTheme);
+            setFilter(currentFilter); 
+            setInterval(checkReminders, 30000);
+            checkReminders();
+        };
+
+        // --- PAYLAŞILAN NOT EKRANI & KONTROLLERİ ---
         async function renderSharedScreen(sharedId, userEmail) {
             try {
                 const doc = await firebase.firestore().collection('shared_notes').doc(sharedId).get();
                 if (doc.exists) {
                     const sharedNote = doc.data();
 
-                    // --- GOOGLE DOCS TARZI ERİŞİM KONTROLÜ VE KİLİT EKRANI ---
                     if (sharedNote.accessType === 'restricted') {
-                        // 1. Durum: Linke tıkladı ama giriş yapmamış
                         if (!userEmail) {
                             document.getElementById('loginScreen').style.display = 'none';
                             document.getElementById('app').innerHTML = `
                                 <div class="flex-1 flex items-center justify-center bg-slate-50 dark:bg-slate-900 h-screen p-4">
                                     <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-xl max-w-md w-full text-center border border-slate-200 dark:border-slate-700">
-                                        <div class="w-16 h-16 bg-slate-100 dark:bg-slate-700 text-slate-400 rounded-full flex items-center justify-center mx-auto mb-4">
-                                            <i data-lucide="lock" class="w-8 h-8"></i>
-                                        </div>
+                                        <div class="w-16 h-16 bg-slate-100 dark:bg-slate-700 text-slate-400 rounded-full flex items-center justify-center mx-auto mb-4"><i data-lucide="lock" class="w-8 h-8"></i></div>
                                         <h2 class="text-xl font-bold text-slate-800 dark:text-white mb-2">Giriş Yapmanız Gerekiyor</h2>
                                         <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Bu not kısıtlı erişime sahip. Görüntüleyebilmek için lütfen hesabınıza giriş yapın.</p>
-                                        <button onclick="window.location.reload()" class="w-full flex items-center justify-center gap-3 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3.5 rounded-xl font-semibold transition shadow-md">
-                                            Giriş Ekranına Dön
-                                        </button>
+                                        <button onclick="window.location.reload()" class="w-full flex items-center justify-center gap-3 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3.5 rounded-xl font-semibold transition shadow-md">Giriş Ekranına Dön</button>
                                     </div>
-                                </div>
-                            `;
+                                </div>`;
                             lucide.createIcons();
                             return;
                         }
                         
-                        // 2. Durum: Giriş yapmış ama maili yetkili listede YOK
                         if (!sharedNote.sharedEmails || !sharedNote.sharedEmails.includes(userEmail.toLowerCase())) {
                             document.getElementById('loginScreen').style.display = 'none';
                             document.getElementById('app').innerHTML = `
                                 <div class="flex-1 flex items-center justify-center bg-slate-50 dark:bg-slate-900 h-screen p-4">
                                     <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-xl max-w-md w-full text-center border border-slate-200 dark:border-slate-700">
-                                        <div class="w-16 h-16 bg-red-50 dark:bg-red-900/30 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                                            <i data-lucide="shield-alert" class="w-8 h-8"></i>
-                                        </div>
+                                        <div class="w-16 h-16 bg-red-50 dark:bg-red-900/30 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4"><i data-lucide="shield-alert" class="w-8 h-8"></i></div>
                                         <h2 class="text-xl font-bold text-slate-800 dark:text-white mb-2">Erişim İzni Gerekiyor</h2>
                                         <p class="text-sm text-slate-500 dark:text-slate-400 mb-2">Şu anki hesabınızla (<b>${userEmail}</b>) bu nota erişim yetkiniz bulunmuyor.</p>
                                         <p class="text-xs text-slate-400 dark:text-slate-500 mb-6">Aşağıdaki butona tıklayarak not sahibinden e-posta ile erişim izni isteyebilirsiniz.</p>
-                                        
                                         <div class="flex flex-col gap-3">
-                                            <button onclick="requestAccess('${sharedNote.ownerEmail || ''}', '${sharedNote.title || 'İsimsiz Not'}', '${userEmail}')" class="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3.5 rounded-xl font-semibold transition shadow-md">
-                                                <i data-lucide="mail" class="w-5 h-5"></i> Erişim İste
-                                            </button>
-                                            <button onclick="window.location.href = window.location.origin + window.location.pathname" class="w-full flex items-center justify-center gap-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-white px-6 py-3.5 rounded-xl font-semibold transition">
-                                                Kendi Notlarıma Dön
-                                            </button>
+                                            <button onclick="requestAccess('${sharedNote.ownerEmail || ''}', '${sharedNote.title || 'İsimsiz Not'}', '${userEmail}')" class="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3.5 rounded-xl font-semibold transition shadow-md"><i data-lucide="mail" class="w-5 h-5"></i> Erişim İste</button>
+                                            <button onclick="window.location.href = window.location.origin + window.location.pathname" class="w-full flex items-center justify-center gap-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-white px-6 py-3.5 rounded-xl font-semibold transition">Kendi Notlarıma Dön</button>
                                         </div>
                                     </div>
-                                </div>
-                            `;
+                                </div>`;
                             lucide.createIcons();
                             return;
                         }
                     }
-                    // ------------------------------------------
 
-                    // Eğer yetkisi varsa veya herkese açıksa notu normal göster:
                     document.getElementById('loginScreen').style.display = 'none';
                     document.getElementById('app').innerHTML = `
                         <div class="flex-1 flex flex-col h-screen bg-slate-50 dark:bg-slate-900 overflow-y-auto p-4 sm:p-12 custom-scrollbar">
@@ -800,26 +669,17 @@
                                         </span>
                                     </div>
                                     <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-                                        <button onclick="importSharedNote('${sharedId}', 'copy')" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-white rounded-xl text-xs font-semibold transition shadow-sm flex items-center justify-center gap-2">
-                                            <i data-lucide="copy" class="w-4 h-4"></i> Bağımsız Kopya Al
-                                        </button>
-                                        <button onclick="importSharedNote('${sharedId}', 'linked')" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold transition shadow-sm flex items-center justify-center gap-2" title="Orijinal not silinirse sizden de silinir">
-                                            <i data-lucide="link" class="w-4 h-4"></i> Defterime Ekle (Senkronize)
-                                        </button>
+                                        <button onclick="importSharedNote('${sharedId}', 'copy')" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-white rounded-xl text-xs font-semibold transition shadow-sm flex items-center justify-center gap-2"><i data-lucide="copy" class="w-4 h-4"></i> Bağımsız Kopya Al</button>
+                                        <button onclick="importSharedNote('${sharedId}', 'linked')" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold transition shadow-sm flex items-center justify-center gap-2" title="Orijinal not silinirse sizden de silinir"><i data-lucide="link" class="w-4 h-4"></i> Defterime Ekle (Senkronize)</button>
                                     </div>
                                 </div>
                                 <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-6">${sharedNote.title}</h1>
-                                <div class="prose dark:prose-invert max-w-none text-slate-700 dark:text-slate-300 text-base leading-relaxed">
-                                    ${sharedNote.content}
-                                </div>
+                                <div class="prose dark:prose-invert max-w-none text-slate-700 dark:text-slate-300 text-base leading-relaxed">${sharedNote.content}</div>
                                 <div class="mt-10 pt-6 border-t dark:border-slate-700 text-center">
-                                    <a href="${window.location.origin + window.location.pathname}" class="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold transition shadow-lg shadow-indigo-500/30 text-sm">
-                                        Kendi NotLa Uygulamanıza Dönün
-                                    </a>
+                                    <a href="${window.location.origin + window.location.pathname}" class="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold transition shadow-lg shadow-indigo-500/30 text-sm">Kendi NotLa Uygulamanıza Dönün</a>
                                 </div>
                             </div>
-                        </div>
-                    `;
+                        </div>`;
                     lucide.createIcons();
                 } else {
                     alert("Bu paylaşılan not bulunamadı veya silinmiş.");
@@ -839,6 +699,76 @@
             alert("Erişim isteği e-postası göndermek için varsayılan mail uygulamanız açılıyor...");
         }
 
+        // --- SENKRONİZASYON & VERİTABANI İŞLEMLERİ ---
+        async function importSharedNote(sId, type) {
+            try {
+                const doc = await firebase.firestore().collection('shared_notes').doc(sId).get();
+                if(doc.exists) {
+                    const data = doc.data();
+                    const noteId = type === 'linked' ? sId : Date.now().toString(); 
+                    
+                    const newNote = {
+                        id: noteId, type: 'note',
+                        title: type === 'linked' ? data.title : data.title + " (Kopya)",
+                        content: data.content,
+                        tags: type === 'linked' ? ['Ortak Not'] : ['Kopya'],
+                        color: type === 'linked' ? '#dbeafe' : 'white',
+                        isFavorite: false, reminder: null, location: '', attachments: [],
+                        createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
+                    };
+
+                    if (type === 'linked') {
+                        newNote.isSharedWithMe = true;
+                        newNote.shareId = sId;
+                        newNote.shareMode = data.mode;
+                    }
+                    
+                    notes = notes.filter(n => n.id !== newNote.id);
+                    notes.unshift(newNote);
+                    saveToStorage();
+                    alert(type === 'linked' ? "✅ Ortak not eklendi! Orijinal değişiklikler buraya yansıyacaktır." : "✅ Notun bağımsız bir kopyası defterinize eklendi.");
+                    window.location.href = window.location.origin + window.location.pathname;
+                }
+            } catch(err) { console.error(err); alert("Not eklenirken hata oluştu."); }
+        }
+
+        async function syncSharedNotes() {
+            let hasChanges = false;
+            for (let i = 0; i < notes.length; i++) {
+                let note = notes[i];
+                if (note.shareId) {
+                    try {
+                        const doc = await firebase.firestore().collection('shared_notes').doc(note.shareId).get();
+                        if (doc.exists) {
+                            const data = doc.data();
+                            if (note.isSharedWithMe) {
+                                if (note.content !== data.content || note.title !== data.title || note.shareMode !== data.mode) {
+                                    note.content = data.content; note.title = data.title; note.shareMode = data.mode;
+                                    hasChanges = true;
+                                }
+                            }
+                        } else {
+                            if (note.isSharedWithMe) {
+                                notes.splice(i, 1); i--; hasChanges = true;
+                            } else {
+                                delete note.shareId; delete note.shareMode; delete note.shareAccessType; delete note.sharedEmails; hasChanges = true;
+                            }
+                        }
+                    } catch(e) {}
+                }
+            }
+            if (hasChanges) { saveToStorage(); renderNotes(); }
+        }
+
+        function pushUpdateToFirebase(note) {
+            if (note.shareId && (!note.isSharedWithMe || note.shareMode === 'edit')) {
+                firebase.firestore().collection('shared_notes').doc(note.shareId).update({
+                    title: note.title, content: note.content, updatedAt: new Date().toISOString()
+                }).catch(e => {});
+            }
+        }
+
+        // --- EDİTÖR İŞLEMLERİ ---
         function applySpellcheck() {
             const editorEl = document.querySelector('.ql-editor');
             if (editorEl) editorEl.setAttribute('spellcheck', spellcheckEnabled);
@@ -854,28 +784,16 @@
 
         function initEditor() {
             editor = new Quill('#quillEditor', {
-                theme: 'snow',
-                placeholder: 'Detayları yaz...',
-                modules: {
-                    toolbar: [
-                        [{ 'header': [1, 2, false] }],
-                        ['bold', 'italic', 'underline'],
-                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                        [{ 'color': [] }, { 'background': [] }],
-                        ['link', 'image']
-                    ]
-                }
+                theme: 'snow', placeholder: 'Detayları yaz...',
+                modules: { toolbar: [ [{ 'header': [1, 2, false] }], ['bold', 'italic', 'underline'], [{ 'list': 'ordered'}, { 'list': 'bullet' }], [{ 'color': [] }, { 'background': [] }], ['link', 'image'] ] }
             });
 
             editor.on('text-change', () => {
                 if (currentNoteId) {
                     const note = notes.find(n => n.id === currentNoteId);
                     if (note) {
-                        note.content = editor.root.innerHTML;
-                        note.updatedAt = new Date().toISOString();
-                        triggerAutoSaveUI();
-                        // Ortak çalışma (collaboration) anlık güncellemesi
-                        if (typeof pushUpdateToFirebase === 'function') pushUpdateToFirebase(note);
+                        note.content = editor.root.innerHTML; note.updatedAt = new Date().toISOString();
+                        triggerAutoSaveUI(); pushUpdateToFirebase(note);
                     }
                 }
             });
@@ -892,320 +810,12 @@
                                 if (id === 'noteColor') note.color = e.target.value;
                                 if (id === 'noteReminder') note.reminder = e.target.value || null;
                                 if (id === 'noteLocation') note.location = e.target.value || '';
-                                note.reminderShown = false;
-                                triggerAutoSaveUI();
-                                // Ortak çalışma (collaboration) anlık güncellemesi
-                                if (typeof pushUpdateToFirebase === 'function') pushUpdateToFirebase(note);
+                                note.reminderShown = false; triggerAutoSaveUI(); pushUpdateToFirebase(note);
                             }
                         }
                     });
                 }
             });
-        }
-
-        function openSettings() {
-            if(window.innerWidth < 768) toggleSidebar();
-            const modal = document.getElementById('settingsModal');
-            const content = document.getElementById('settingsModalContent');
-            modal.classList.remove('hidden');
-            void modal.offsetWidth;
-            modal.classList.remove('opacity-0');
-            modal.classList.add('opacity-100');
-            content.classList.remove('scale-95');
-            content.classList.add('scale-100');
-            
-            document.querySelectorAll('[id^="theme-btn-"]').forEach(btn => btn.classList.remove('border-indigo-500', 'bg-indigo-50', 'dark:bg-indigo-900/30'));
-            const activeBtn = document.getElementById('theme-btn-' + currentTheme);
-            if(activeBtn) activeBtn.classList.add('border-indigo-500', 'bg-indigo-50', 'dark:bg-indigo-900/30');
-            lucide.createIcons();
-        }
-
-        function closeSettings() {
-            const modal = document.getElementById('settingsModal');
-            const content = document.getElementById('settingsModalContent');
-            modal.classList.remove('opacity-100');
-            modal.classList.add('opacity-0');
-            content.classList.remove('scale-100');
-            content.classList.add('scale-95');
-            setTimeout(() => modal.classList.add('hidden'), 300);
-        }
-
-        function setTheme(theme) {
-            if (theme === 'dynamic') theme = 'light';
-            currentTheme = theme;
-            localStorage.setItem('notla_theme', theme);
-            if (theme === 'dark') document.documentElement.classList.add('dark');
-            else document.documentElement.classList.remove('dark');
-            document.body.classList.remove('theme-dark', 'bg-gray-50');
-            if (theme === 'dark') document.body.classList.add('theme-dark');
-            else document.body.classList.add('bg-gray-50');
-
-            document.querySelectorAll('[id^="theme-btn-"]').forEach(btn => btn.classList.remove('border-indigo-500', 'bg-indigo-50', 'dark:bg-indigo-900/30'));
-            const activeBtn = document.getElementById('theme-btn-' + theme);
-            if(activeBtn) activeBtn.classList.add('border-indigo-500', 'bg-indigo-50', 'dark:bg-indigo-900/30');
-        }
-
-        function exportBackup() {
-            const data = { notes, trash, exportDate: new Date().toISOString() };
-            const blob = new Blob([JSON.stringify(data, null, 2)], {type: "application/json"});
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `NotLa_Yedek_${new Date().toLocaleDateString('tr-TR').replace(/\./g, '-')}.json`;
-            a.click();
-            URL.revokeObjectURL(url);
-        }
-
-        function importBackup(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(evt) {
-                try {
-                    const data = JSON.parse(evt.target.result);
-                    if (data.notes && Array.isArray(data.notes)) {
-                        if(confirm("DİKKAT: Mevcut notlarınızın üzerine yazılacak. Onaylıyor musunuz?")) {
-                            notes = data.notes;
-                            trash = data.trash || [];
-                            saveToStorage();
-                            renderNotes();
-                            alert("Yedek başarıyla yüklendi!");
-                            closeSettings();
-                        }
-                    } else { alert("HATA: Geçersiz yedek dosyası."); }
-                } catch(err) { alert("Dosya okunurken hata oluştu."); }
-            };
-            reader.readAsText(file);
-            e.target.value = '';
-        }
-
-        async function clearAllData() {
-            if(confirm("DİKKAT! Tüm veriler silinecek. Emin misin?")) {
-                if(confirm("Bu işlem GERİ ALINAMAZ. Onaylıyor musun?")) {
-                    notes = []; trash = [];
-                    await localforage.clear();
-                    saveToStorage(); renderNotes(); closeSettings();
-                    alert("Tüm veriler silindi.");
-                }
-            }
-        }
-
-        // --- 2. NOT AKTARMA VE ARKA PLAN SENKRONİZASYONU ---
-        
-        async function importSharedNote(sId, type) {
-            try {
-                const doc = await firebase.firestore().collection('shared_notes').doc(sId).get();
-                if(doc.exists) {
-                    const data = doc.data();
-                    
-                    // Bağlantılı notlarda ID'yi aynı tutuyoruz ki mükerrer eklemeyi engelleyelim
-                    const noteId = type === 'linked' ? sId : Date.now().toString(); 
-                    
-                    const newNote = {
-                        id: noteId,
-                        type: 'note',
-                        title: type === 'linked' ? data.title : data.title + " (Kopya)",
-                        content: data.content,
-                        tags: type === 'linked' ? ['Ortak Not'] : ['Kopya'],
-                        color: type === 'linked' ? '#dbeafe' : 'white', // Ortak notlar mavi renkte belli olur
-                        isFavorite: false,
-                        reminder: null,
-                        location: '',
-                        attachments: [],
-                        createdAt: new Date().toISOString(),
-                        updatedAt: new Date().toISOString()
-                    };
-
-                    if (type === 'linked') {
-                        newNote.isSharedWithMe = true;
-                        newNote.shareId = sId;
-                        newNote.shareMode = data.mode;
-                    }
-                    
-                    // Aynı not varsa eskini sil (güncelleme mantığı)
-                    notes = notes.filter(n => n.id !== newNote.id);
-                    notes.unshift(newNote);
-                    saveToStorage();
-                    
-                    alert(type === 'linked' ? "✅ Ortak not eklendi! Orijinal değişiklikler buraya yansıyacaktır." : "✅ Notun bağımsız bir kopyası defterinize eklendi.");
-                    window.location.href = window.location.origin + window.location.pathname;
-                }
-            } catch(err) {
-                console.error(err);
-                alert("Not eklenirken hata oluştu.");
-            }
-        }
-
-        async function syncSharedNotes() {
-            let hasChanges = false;
-            for (let i = 0; i < notes.length; i++) {
-                let note = notes[i];
-                if (note.shareId) {
-                    try {
-                        const doc = await firebase.firestore().collection('shared_notes').doc(note.shareId).get();
-                        if (doc.exists) {
-                            const data = doc.data();
-                            // Karşı taraftan gelen (isSharedWithMe) not ise verileri ezerek güncelle
-                            if (note.isSharedWithMe) {
-                                if (note.content !== data.content || note.title !== data.title || note.shareMode !== data.mode) {
-                                    note.content = data.content;
-                                    note.title = data.title;
-                                    note.shareMode = data.mode;
-                                    hasChanges = true;
-                                }
-                            }
-                        } else {
-                            // SAHİBİ NOTU SİLMİŞ VEYA BAĞLANTIYI DEĞİŞTİRMİŞ
-                            if (note.isSharedWithMe) {
-                                notes.splice(i, 1); // Notu alıcıdan kalıcı olarak sil
-                                i--;
-                                hasChanges = true;
-                                console.log("Orijinal sahibi paylaşımı iptal ettiği için not kaldırıldı.");
-                            } else {
-                                // Biz sahibiysek, ama link ölmüşse, not kalır sadece paylaşım işareti kalkar
-                                delete note.shareId;
-                                delete note.shareMode;
-                                hasChanges = true;
-                            }
-                        }
-                    } catch(e) {}
-                }
-            }
-            if (hasChanges) { saveToStorage(); renderNotes(); }
-        }
-
-        // Değişiklikleri anlık olarak Firebase'e gönderen köprü
-        function pushUpdateToFirebase(note) {
-            if (note.shareId) {
-                // Eğer notun asıl sahibi bizsek VEYA bize düzenleme yetkisi verilmişse
-                if (!note.isSharedWithMe || note.shareMode === 'edit') {
-                    firebase.firestore().collection('shared_notes').doc(note.shareId).update({
-                        title: note.title,
-                        content: note.content,
-                        updatedAt: new Date().toISOString()
-                    }).catch(e => {});
-                }
-            }
-        }
-
-        function triggerAutoSaveUI() {
-            const status = document.getElementById('saveStatus');
-            if(status) {
-                status.innerText = 'Kaydediliyor...';
-                status.classList.remove('text-slate-400');
-                status.classList.add('text-indigo-500');
-            }
-            debouncedSaveToStorage(); 
-        }
-
-        function destroySortable() {
-            if (sortableInstance) {
-                try { if (sortableInstance.el) sortableInstance.destroy(); } catch(e) {}
-                sortableInstance = null;
-            }
-        }
-
-        function initSortable() {
-            destroySortable();
-            const el = document.getElementById('notesContainer');
-            if (!el) return;
-            if(currentFilter === 'notes' && viewMode === 'grid') {
-                sortableInstance = Sortable.create(el, {
-                    draggable: '.note-card', animation: 150, delay: 200, delayOnTouchOnly: true,
-                    onEnd: function (evt) {
-                        const movedItem = notes.splice(evt.oldIndex, 1)[0];
-                        notes.splice(evt.newIndex, 0, movedItem);
-                        saveToStorage();
-                    }
-                });
-            }
-        }
-
-        // --- Veri Ekleme & Yönetimi ---
-        function createNewItem() {
-            const isTask = currentFilter === 'tasks' || currentFilter === 'calendar';
-            const newItem = {
-                id: Date.now().toString(),
-                type: isTask ? 'task' : 'note',
-                title: '', content: '', tags: [], color: 'white',
-                isFavorite: false, reminder: null, location: '', reminderShown: false, attachments: [], completed: false,
-                createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
-            };
-            notes.unshift(newItem);
-            saveToStorage();
-            openEditor(newItem.id);
-        }
-
-        function createNewNoteWithDate(dateStr) {
-            const newItem = {
-                id: Date.now().toString(),
-                type: 'task', 
-                title: '', content: '', tags: [], color: 'white',
-                isFavorite: false, reminder: dateStr + 'T12:00', location: '', reminderShown: false, attachments: [], completed: false,
-                createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
-            };
-            notes.unshift(newItem);
-            saveToStorage();
-            openEditor(newItem.id);
-        }
-
-        function quickAddTask(event) {
-            if (event.key === 'Enter') {
-                const val = event.target.value.trim();
-                if (val) {
-                    const newTask = {
-                        id: Date.now().toString(), type: 'task',
-                        title: val, content: '', tags: [], color: 'white',
-                        isFavorite: false, reminder: null, location: '', reminderShown: false, attachments: [], completed: false,
-                        createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
-                    };
-                    notes.unshift(newTask);
-                    saveToStorage();
-                    renderNotes();
-                    const input = document.getElementById('quickAddInput');
-                    if (input) {
-                        input.value = '';
-                        input.focus();
-                    }
-                }
-            }
-        }
-
-        function toggleTaskCompletion(id, event) {
-            if(event) event.stopPropagation();
-            const item = notes.find(n => n.id === id);
-            if(item) {
-                item.completed = !item.completed;
-                saveToStorage();
-                if(currentFilter === 'calendar') renderCalendar();
-                else renderNotes();
-            }
-        }
-
-        function toggleCurrentTaskCheck() {
-            if(currentNoteId) {
-                const note = notes.find(n => n.id === currentNoteId);
-                if(note && note.type === 'task') {
-                    note.completed = !note.completed;
-                    updateModalTaskCheck(note.completed);
-                    triggerAutoSaveUI();
-                }
-            }
-        }
-
-        function updateModalTaskCheck(isCompleted) {
-            const btn = document.getElementById('modalTaskCheck');
-            const title = document.getElementById('noteTitle');
-            if(isCompleted) {
-                btn.className = "w-6 h-6 sm:w-7 sm:h-7 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors bg-indigo-500 border-indigo-500 text-white";
-                btn.innerHTML = '<i data-lucide="check" class="w-4 h-4 sm:w-5 sm:h-5"></i>';
-                title.classList.add('line-through', 'text-slate-400');
-            } else {
-                btn.className = "w-6 h-6 sm:w-7 sm:h-7 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors border-slate-300 dark:border-slate-600 hover:border-indigo-400";
-                btn.innerHTML = '';
-                title.classList.remove('line-through', 'text-slate-400');
-            }
-            lucide.createIcons();
         }
 
         function openEditor(id) {
@@ -1219,23 +829,16 @@
                 document.getElementById('noteColor').value = note.color || 'white';
                 document.getElementById('noteLocation').value = note.location || '';
                 
-                // --- İZİN KONTROLÜ VE KİLİT MEKANİZMASI (READ-ONLY) ---
-                // Eğer not başkası tarafından "Sadece Görüntüleme" izniyle bize paylaşıldıysa:
                 const isReadOnly = note.isSharedWithMe && note.shareMode === 'view';
                 
-                // 1. Editörün içine yazı yazılmasını engelle
                 if(editor) editor.enable(!isReadOnly);
-                
-                // 2. Başlığın değiştirilmesini engelle
                 titleInput.readOnly = isReadOnly;
                 
-                // 3. Editörün üstündeki kalın/eğik yapma (toolbar) çubuğunu gizle
                 const quillToolbar = document.querySelector('.ql-toolbar');
                 if (quillToolbar) quillToolbar.style.display = isReadOnly ? 'none' : 'block';
                 
-                // 4. Renk ve Etiket ayarlarını soluklaştırıp değiştirilmesini engelle
                 if(isReadOnly) {
-                    titleInput.classList.add('text-slate-400'); // Başlığı soluk yap
+                    titleInput.classList.add('text-slate-400');
                     document.getElementById('noteTags').disabled = true;
                     document.getElementById('noteColor').disabled = true;
                 } else {
@@ -1243,7 +846,6 @@
                     document.getElementById('noteTags').disabled = false;
                     document.getElementById('noteColor').disabled = false;
                 }
-                // ------------------------------------------------------------
 
                 const reminderContainer = document.getElementById('reminderContainer');
                 const locationContainer = document.getElementById('locationContainer');
@@ -1262,7 +864,6 @@
                 const checkBtn = document.getElementById('modalTaskCheck');
                 if (note.type === 'task') {
                     checkBtn.classList.remove('hidden');
-                    // Görüntüleme modunda checkbox'ı da kilitle
                     if(isReadOnly) checkBtn.disabled = true; else checkBtn.disabled = false;
                     updateModalTaskCheck(note.completed);
                 } else {
@@ -1274,14 +875,10 @@
                 
                 const modal = document.getElementById('editorModal');
                 const content = document.getElementById('editorModalContent');
-                modal.classList.remove('hidden');
-                void modal.offsetWidth;
-                modal.classList.remove('opacity-0');
-                modal.classList.add('opacity-100');
-                content.classList.remove('scale-95', 'translate-y-4');
-                content.classList.add('scale-100', 'translate-y-0');
+                modal.classList.remove('hidden'); void modal.offsetWidth;
+                modal.classList.remove('opacity-0'); modal.classList.add('opacity-100');
+                content.classList.remove('scale-95', 'translate-y-4'); content.classList.add('scale-100', 'translate-y-0');
                 
-                // Sadece düzenlenebilir modda otomatik imleci odakla (telefonda klavye açılmasın diye read-only engellenir)
                 if(window.innerWidth > 768 && !isReadOnly) { setTimeout(() => { if(editor) editor.focus(); }, 300); }
             }
         }
@@ -1289,36 +886,117 @@
         function saveAndClose() {
             const modal = document.getElementById('editorModal');
             const content = document.getElementById('editorModalContent');
-            modal.classList.remove('opacity-100');
-            modal.classList.add('opacity-0');
-            content.classList.remove('scale-100');
-            content.classList.add('scale-95');
+            modal.classList.remove('opacity-100'); modal.classList.add('opacity-0');
+            content.classList.remove('scale-100'); content.classList.add('scale-95');
             setTimeout(() => {
-                modal.classList.add('hidden');
-                currentNoteId = null;
-                if(currentFilter === 'calendar') renderCalendar();
-                else renderNotes();
+                modal.classList.add('hidden'); currentNoteId = null;
+                if(currentFilter === 'calendar') renderCalendar(); else renderNotes();
             }, 300);
         }
 
-        // --- Dosya Ekleri ---
+        function triggerAutoSaveUI() {
+            const status = document.getElementById('saveStatus');
+            if(status) {
+                status.innerText = 'Kaydediliyor...';
+                status.classList.remove('text-slate-400'); status.classList.add('text-indigo-500');
+            }
+            debouncedSaveToStorage(); 
+        }
+
+        // --- AYARLAR VE DİĞER MODALLAR ---
+        function openSettings() {
+            if(window.innerWidth < 768) toggleSidebar();
+            const modal = document.getElementById('settingsModal');
+            const content = document.getElementById('settingsModalContent');
+            modal.classList.remove('hidden'); void modal.offsetWidth;
+            modal.classList.remove('opacity-0'); modal.classList.add('opacity-100');
+            content.classList.remove('scale-95'); content.classList.add('scale-100');
+            document.querySelectorAll('[id^="theme-btn-"]').forEach(btn => btn.classList.remove('border-indigo-500', 'bg-indigo-50', 'dark:bg-indigo-900/30'));
+            const activeBtn = document.getElementById('theme-btn-' + currentTheme);
+            if(activeBtn) activeBtn.classList.add('border-indigo-500', 'bg-indigo-50', 'dark:bg-indigo-900/30');
+            lucide.createIcons();
+        }
+
+        function closeSettings() {
+            const modal = document.getElementById('settingsModal');
+            const content = document.getElementById('settingsModalContent');
+            modal.classList.remove('opacity-100'); modal.classList.add('opacity-0');
+            content.classList.remove('scale-100'); content.classList.add('scale-95');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+
+        function setTheme(theme) {
+            if (theme === 'dynamic') theme = 'light';
+            currentTheme = theme; localStorage.setItem('notla_theme', theme);
+            if (theme === 'dark') document.documentElement.classList.add('dark'); else document.documentElement.classList.remove('dark');
+            document.body.classList.remove('theme-dark', 'bg-gray-50');
+            if (theme === 'dark') document.body.classList.add('theme-dark'); else document.body.classList.add('bg-gray-50');
+            document.querySelectorAll('[id^="theme-btn-"]').forEach(btn => btn.classList.remove('border-indigo-500', 'bg-indigo-50', 'dark:bg-indigo-900/30'));
+            const activeBtn = document.getElementById('theme-btn-' + theme);
+            if(activeBtn) activeBtn.classList.add('border-indigo-500', 'bg-indigo-50', 'dark:bg-indigo-900/30');
+        }
+
+        // --- VERİ YÖNETİMİ (YEDEK/SİL) ---
+        function exportBackup() {
+            const data = { notes, trash, exportDate: new Date().toISOString() };
+            const blob = new Blob([JSON.stringify(data, null, 2)], {type: "application/json"});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a'); a.href = url;
+            a.download = `NotLa_Yedek_${new Date().toLocaleDateString('tr-TR').replace(/\./g, '-')}.json`;
+            a.click(); URL.revokeObjectURL(url);
+        }
+
+        function importBackup(e) {
+            const file = e.target.files[0]; if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                try {
+                    const data = JSON.parse(evt.target.result);
+                    if (data.notes && Array.isArray(data.notes)) {
+                        if(confirm("DİKKAT: Mevcut notlarınızın üzerine yazılacak. Onaylıyor musunuz?")) {
+                            notes = data.notes; trash = data.trash || [];
+                            saveToStorage(); renderNotes(); closeSettings();
+                            alert("Yedek başarıyla yüklendi!");
+                        }
+                    } else { alert("HATA: Geçersiz yedek dosyası."); }
+                } catch(err) { alert("Dosya okunurken hata oluştu."); }
+            };
+            reader.readAsText(file); e.target.value = '';
+        }
+
+        async function clearAllData() {
+            if(confirm("DİKKAT! Tüm veriler silinecek. Emin misin?")) {
+                if(confirm("Bu işlem GERİ ALINAMAZ. Onaylıyor musun?")) {
+                    notes = []; trash = []; await localforage.clear();
+                    saveToStorage(); renderNotes(); closeSettings(); alert("Tüm veriler silindi.");
+                }
+            }
+        }
+
+        function saveToStorage() {
+            const user = firebase.auth().currentUser;
+            if (user) {
+                firebase.firestore().collection('user_notes').doc(user.uid).set({
+                    notes: notes, trash: trash, updatedAt: new Date().toISOString()
+                }).catch(err => { console.error("Buluta kayıt hatası:", err); });
+            }
+            localforage.setItem('notla_notes', notes).catch(err => console.error(err));
+            localforage.setItem('notla_trash', trash).catch(err => console.error(err));
+        }
+
+        // --- DOSYA EKLERİ ---
         function handleFileUpload(event) {
             const files = event.target.files;
             if(!files.length || !currentNoteId) return;
             const note = notes.find(n => n.id === currentNoteId);
             if(!note) return;
-
             Array.from(files).forEach(file => {
                 if(file.size > 5 * 1024 * 1024) { alert(`${file.name} çok büyük (Maks. 5MB).`); return; }
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     if(!note.attachments) note.attachments = [];
-                    note.attachments.push({
-                        name: file.name, type: file.type, data: e.target.result,
-                        id: Date.now().toString() + Math.random().toString(36).substr(2, 5)
-                    });
-                    triggerAutoSaveUI();
-                    renderAttachments();
+                    note.attachments.push({ name: file.name, type: file.type, data: e.target.result, id: Date.now().toString() + Math.random().toString(36).substr(2, 5) });
+                    triggerAutoSaveUI(); renderAttachments();
                 };
                 reader.readAsDataURL(file);
             });
@@ -1326,11 +1004,9 @@
         }
 
         function renderAttachments() {
-            const list = document.getElementById('attachmentList');
-            list.innerHTML = '';
+            const list = document.getElementById('attachmentList'); list.innerHTML = '';
             const note = notes.find(n => n.id === currentNoteId);
             if(!note || !note.attachments || note.attachments.length === 0) return;
-
             note.attachments.forEach(att => {
                 const isImage = att.type.startsWith('image/');
                 const el = document.createElement('div');
@@ -1350,21 +1026,19 @@
             const note = notes.find(n => n.id === currentNoteId);
             if(note && note.attachments) {
                 note.attachments = note.attachments.filter(a => a.id !== id);
-                triggerAutoSaveUI();
-                renderAttachments();
+                triggerAutoSaveUI(); renderAttachments();
             }
         }
 
+        // --- DİĞER FONKSİYONLAR ---
         function checkReminders() {
-            const now = new Date().getTime();
-            let changed = false;
+            const now = new Date().getTime(); let changed = false;
             notes.forEach(note => {
                 if (note.type === 'task' && note.reminder && !note.reminderShown) {
                     const reminderTime = new Date(note.reminder).getTime();
                     if (now >= reminderTime) {
                         showNotification(note.title || 'İsimsiz Görev', "Hatırlatıcı zamanı geldi!");
-                        note.reminderShown = true;
-                        changed = true;
+                        note.reminderShown = true; changed = true;
                     }
                 }
             });
@@ -1378,21 +1052,14 @@
         }
 
         function toggleExportMenu() { document.getElementById('exportMenu').classList.toggle('hidden'); }
-
         function exportNote(type) {
-            const note = notes.find(n => n.id === currentNoteId);
-            if(!note) return;
-            toggleExportMenu();
-            const title = note.title || 'NotLa_Belgesi';
+            const note = notes.find(n => n.id === currentNoteId); if(!note) return;
+            toggleExportMenu(); const title = note.title || 'NotLa_Belgesi';
             if (type === 'txt') {
-                const tempDiv = document.createElement('div');
-                tempDiv.innerHTML = note.content;
+                const tempDiv = document.createElement('div'); tempDiv.innerHTML = note.content;
                 const content = `${title.toUpperCase()}\n\n${tempDiv.innerText || tempDiv.textContent}\n\n---\nOluşturulma: ${new Date(note.createdAt).toLocaleString()}`;
                 const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(blob);
-                link.download = `${title}.txt`;
-                link.click();
+                const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `${title}.txt`; link.click();
             } 
             else if (type === 'pdf') {
                 const container = document.getElementById('exportContainer');
@@ -1404,37 +1071,98 @@
             }
         }
 
-        function toggleFavorite(id, e) { e.stopPropagation(); const note = notes.find(n => n.id === id); if (note) { note.isFavorite = !note.isFavorite; saveToStorage(); renderNotes(); } }
-        
-        function moveToTrash(id, e) {
-            if(e) e.stopPropagation();
-            const note = notes.find(n => n.id === id);
-            const title = note ? (note.title || 'İsimsiz') : 'Öğe';
-            if (confirm(`"${title}" çöp kutusuna taşınsın mı?`)) {
-                const noteIndex = notes.findIndex(n => n.id === id);
-                if (noteIndex > -1) { 
-                    trash.unshift(notes.splice(noteIndex, 1)[0]); 
-                    saveToStorage(); 
-                    renderNotes(); 
+        function destroySortable() {
+            if (sortableInstance) { try { if (sortableInstance.el) sortableInstance.destroy(); } catch(e) {} sortableInstance = null; }
+        }
+
+        function initSortable() {
+            destroySortable(); const el = document.getElementById('notesContainer'); if (!el) return;
+            if(currentFilter === 'notes' && viewMode === 'grid') {
+                sortableInstance = Sortable.create(el, {
+                    draggable: '.note-card', animation: 150, delay: 200, delayOnTouchOnly: true,
+                    onEnd: function (evt) { const movedItem = notes.splice(evt.oldIndex, 1)[0]; notes.splice(evt.newIndex, 0, movedItem); saveToStorage(); }
+                });
+            }
+        }
+
+        function createNewItem() {
+            const isTask = currentFilter === 'tasks' || currentFilter === 'calendar';
+            const newItem = {
+                id: Date.now().toString(), type: isTask ? 'task' : 'note', title: '', content: '', tags: [], color: 'white',
+                isFavorite: false, reminder: null, location: '', reminderShown: false, attachments: [], completed: false,
+                createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
+            };
+            notes.unshift(newItem); saveToStorage(); openEditor(newItem.id);
+        }
+
+        function createNewNoteWithDate(dateStr) {
+            const newItem = {
+                id: Date.now().toString(), type: 'task', title: '', content: '', tags: [], color: 'white',
+                isFavorite: false, reminder: dateStr + 'T12:00', location: '', reminderShown: false, attachments: [], completed: false,
+                createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
+            };
+            notes.unshift(newItem); saveToStorage(); openEditor(newItem.id);
+        }
+
+        function quickAddTask(event) {
+            if (event.key === 'Enter') {
+                const val = event.target.value.trim();
+                if (val) {
+                    const newTask = {
+                        id: Date.now().toString(), type: 'task', title: val, content: '', tags: [], color: 'white',
+                        isFavorite: false, reminder: null, location: '', reminderShown: false, attachments: [], completed: false,
+                        createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
+                    };
+                    notes.unshift(newTask); saveToStorage(); renderNotes();
+                    const input = document.getElementById('quickAddInput'); if (input) { input.value = ''; input.focus(); }
                 }
             }
         }
 
-        // --- UZUN BASMA / SAĞ TIK MENÜ SİSTEMİ (BAR İÇİNDE BAR) ---
-        
-        function handleCardContext(event, id) {
-            event.preventDefault(); 
+        function toggleTaskCompletion(id, event) {
+            if(event) event.stopPropagation();
             const item = notes.find(n => n.id === id);
-            if (!item) return;
+            if(item) { item.completed = !item.completed; saveToStorage(); if(currentFilter === 'calendar') renderCalendar(); else renderNotes(); }
+        }
 
-            document.getElementById('activeCardId').value = id;
-            switchToolbar('main'); // Her açılışta ana menüyü getir
+        function toggleCurrentTaskCheck() {
+            if(currentNoteId) {
+                const note = notes.find(n => n.id === currentNoteId);
+                if(note && note.type === 'task') { note.completed = !note.completed; updateModalTaskCheck(note.completed); triggerAutoSaveUI(); }
+            }
+        }
 
+        function updateModalTaskCheck(isCompleted) {
+            const btn = document.getElementById('modalTaskCheck'); const title = document.getElementById('noteTitle');
+            if(isCompleted) {
+                btn.className = "w-6 h-6 sm:w-7 sm:h-7 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors bg-indigo-500 border-indigo-500 text-white";
+                btn.innerHTML = '<i data-lucide="check" class="w-4 h-4 sm:w-5 sm:h-5"></i>'; title.classList.add('line-through', 'text-slate-400');
+            } else {
+                btn.className = "w-6 h-6 sm:w-7 sm:h-7 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors border-slate-300 dark:border-slate-600 hover:border-indigo-400";
+                btn.innerHTML = ''; title.classList.remove('line-through', 'text-slate-400');
+            }
+            lucide.createIcons();
+        }
+
+        function toggleFavorite(id, e) { e.stopPropagation(); const note = notes.find(n => n.id === id); if (note) { note.isFavorite = !note.isFavorite; saveToStorage(); renderNotes(); } }
+        function restoreFromTrash(id, e) { e.stopPropagation(); const noteIndex = trash.findIndex(n => n.id === id); if (noteIndex > -1) { notes.unshift(trash.splice(noteIndex, 1)[0]); saveToStorage(); renderNotes(); } }
+        function permanentDelete(id, e) { e.stopPropagation(); if(confirm("Kalıcı olarak silinecek. Emin misin?")) { trash = trash.filter(n => n.id !== id); saveToStorage(); renderNotes(); } }
+        function moveToTrash(id, e) {
+            if(e) e.stopPropagation();
+            const note = notes.find(n => n.id === id); const title = note ? (note.title || 'İsimsiz') : 'Öğe';
+            if (confirm(`"${title}" çöp kutusuna taşınsın mı?`)) {
+                const noteIndex = notes.findIndex(n => n.id === id);
+                if (noteIndex > -1) { trash.unshift(notes.splice(noteIndex, 1)[0]); saveToStorage(); renderNotes(); }
+            }
+        }
+
+        // --- UZUN BASMA / SAĞ TIK MENÜ SİSTEMİ (BAR İÇİNDE BAR) ---
+        function handleCardContext(event, id) {
+            event.preventDefault(); const item = notes.find(n => n.id === id); if (!item) return;
+            document.getElementById('activeCardId').value = id; switchToolbar('main');
             const toolbar = document.getElementById('cardToolbar');
-            toolbar.classList.remove('hidden');
-            void toolbar.offsetWidth;
-            toolbar.classList.remove('translate-y-10', 'opacity-0');
-            toolbar.classList.add('translate-y-0', 'opacity-100');
+            toolbar.classList.remove('hidden'); void toolbar.offsetWidth;
+            toolbar.classList.remove('translate-y-10', 'opacity-0'); toolbar.classList.add('translate-y-0', 'opacity-100');
         }
 
         function closeCardToolbar() {
@@ -1443,179 +1171,98 @@
             setTimeout(() => toolbar.classList.add('hidden'), 300);
         }
 
-        // Ana Geçiş Yönlendiricisi (Bar içinde Bar mantığı)
         function switchToolbar(menuId) {
-            const menus = ['main', 'edit', 'color', 'tag', 'share'];
+            const menus = ['main', 'edit', 'color', 'tag'];
             menus.forEach(id => {
                 const el = document.getElementById(id + 'ToolbarActions');
-                if (el) {
-                    if (id === menuId) {
-                        el.classList.remove('hidden');
-                        el.classList.add('flex');
-                    } else {
-                        el.classList.add('hidden');
-                        el.classList.remove('flex');
-                    }
-                }
+                if (el) { if (id === menuId) { el.classList.remove('hidden'); el.classList.add('flex'); } else { el.classList.add('hidden'); el.classList.remove('flex'); } }
             });
             lucide.createIcons();
             if (menuId === 'tag') populateToolbarTags();
         }
 
-        // Ana Menüdeki Direkt Aksiyonlar (Silme)
         function toolbarAction(action) {
-            const id = document.getElementById('activeCardId').value;
-            const note = notes.find(n => n.id === id);
-            if (!note) return;
-
-            if (action === 'trash') {
-                closeCardToolbar();
-                const title = note.title || 'İsimsiz';
-                if (confirm(`"${title}" çöp kutusuna taşınsın mı?`)) {
-                    moveToTrash(id);
-                }
-            }
+            const id = document.getElementById('activeCardId').value; const note = notes.find(n => n.id === id); if (!note) return;
+            if (action === 'trash') { closeCardToolbar(); const title = note.title || 'İsimsiz'; if (confirm(`"${title}" çöp kutusuna taşınsın mı?`)) { moveToTrash(id); } }
         }
 
-        // --- ALT MENÜ 1: DÜZENLEME İŞLEMLERİ ---
         function handleEditAction(type) {
-            const id = document.getElementById('activeCardId').value;
-            const note = notes.find(n => n.id === id);
-            if (!note) return;
-
+            const id = document.getElementById('activeCardId').value; const note = notes.find(n => n.id === id); if (!note) return;
             if (type === 'title') {
                 const newTitle = prompt("Notun başlığını düzenleyin:", note.title || "");
-                if (newTitle !== null) {
-                    note.title = newTitle;
-                    saveToStorage(); renderNotes();
-                }
-            } else if (type === 'content') {
-                closeCardToolbar();
-                openEditor(id);
-            }
+                if (newTitle !== null) { note.title = newTitle; saveToStorage(); renderNotes(); }
+            } else if (type === 'content') { closeCardToolbar(); openEditor(id); }
         }
 
-        // --- ALT MENÜ 2: RENK İŞLEMLERİ ---
         function handleColorAction(colorCode) {
-            const id = document.getElementById('activeCardId').value;
-            const note = notes.find(n => n.id === id);
-            if (!note) return;
-            
-            note.color = colorCode;
-            saveToStorage(); renderNotes();
+            const id = document.getElementById('activeCardId').value; const note = notes.find(n => n.id === id); if (!note) return;
+            note.color = colorCode; saveToStorage(); renderNotes();
         }
 
-        // --- ALT MENÜ 3: ETİKET İŞLEMLERİ ---
         function populateToolbarTags() {
-            const id = document.getElementById('activeCardId').value;
-            const note = notes.find(n => n.id === id);
-            if (!note) return;
-
+            const id = document.getElementById('activeCardId').value; const note = notes.find(n => n.id === id); if (!note) return;
             const allTags = [...new Set(notes.flatMap(n => n.tags || []))];
-            const container = document.getElementById('toolbarTagList');
-            container.innerHTML = '';
-            
-            if (allTags.length === 0) {
-                container.innerHTML = '<span class="text-[10px] text-slate-400 italic">Etiket yok</span>';
-                return;
-            }
-
+            const container = document.getElementById('toolbarTagList'); container.innerHTML = '';
+            if (allTags.length === 0) { container.innerHTML = '<span class="text-[10px] text-slate-400 italic">Etiket yok</span>'; return; }
             allTags.forEach(tag => {
-                const hasTag = (note.tags || []).includes(tag);
-                const btn = document.createElement('button');
+                const hasTag = (note.tags || []).includes(tag); const btn = document.createElement('button');
                 btn.className = `px-3 py-1.5 rounded-lg text-xs font-bold uppercase transition whitespace-nowrap ${hasTag ? 'bg-green-500 text-white shadow-md' : 'bg-white/10 text-slate-300 hover:bg-white/20'}`;
-                btn.innerText = tag;
-                btn.onclick = () => handleTagAction('toggle', tag);
-                container.appendChild(btn);
+                btn.innerText = tag; btn.onclick = () => handleTagAction('toggle', tag); container.appendChild(btn);
             });
         }
 
         function handleTagAction(type, tagValue = '') {
-            const id = document.getElementById('activeCardId').value;
-            const note = notes.find(n => n.id === id);
-            if (!note) return;
+            const id = document.getElementById('activeCardId').value; const note = notes.find(n => n.id === id); if (!note) return;
             if (!note.tags) note.tags = [];
-
             if (type === 'new') {
                 const newTag = prompt("Yeni oluşturulacak etiket adını girin:");
-                if (newTag && newTag.trim() !== "") {
-                    const trimmed = newTag.trim();
-                    if (!note.tags.includes(trimmed)) note.tags.push(trimmed);
-                    saveToStorage(); renderNotes(); renderTags(); populateToolbarTags();
-                }
+                if (newTag && newTag.trim() !== "") { const trimmed = newTag.trim(); if (!note.tags.includes(trimmed)) note.tags.push(trimmed); saveToStorage(); renderNotes(); renderTags(); populateToolbarTags(); }
             } else if (type === 'toggle') {
-                if (note.tags.includes(tagValue)) {
-                    note.tags = note.tags.filter(t => t !== tagValue);
-                } else {
-                    note.tags.push(tagValue);
-                }
+                if (note.tags.includes(tagValue)) { note.tags = note.tags.filter(t => t !== tagValue); } else { note.tags.push(tagValue); }
                 saveToStorage(); renderNotes(); renderTags(); populateToolbarTags();
             }
         }
 
         // --- GOOGLE DOCS TARZI ERİŞİM YÖNETİMİ ---
-        
         let tempShareConfig = { emails: [], accessType: 'restricted', mode: 'view' };
 
         function openShareModal() {
             closeCardToolbar();
-            const id = document.getElementById('activeCardId').value;
-            const note = notes.find(n => n.id === id);
-            if (!note) return;
-
-            // Geçici ayarları nota göre yükle
+            const id = document.getElementById('activeCardId').value; const note = notes.find(n => n.id === id); if (!note) return;
             tempShareConfig.emails = note.sharedEmails ? [...note.sharedEmails] : [];
             tempShareConfig.accessType = note.shareAccessType || 'restricted';
             tempShareConfig.mode = note.shareMode || 'view';
-
             renderShareModalContent();
-
-            const modal = document.getElementById('shareModal');
-            const content = document.getElementById('shareModalContent');
-            modal.classList.remove('hidden');
-            void modal.offsetWidth;
-            modal.classList.remove('opacity-0');
-            modal.classList.add('opacity-100');
-            content.classList.remove('scale-95');
-            content.classList.add('scale-100');
+            const modal = document.getElementById('shareModal'); const content = document.getElementById('shareModalContent');
+            modal.classList.remove('hidden'); void modal.offsetWidth;
+            modal.classList.remove('opacity-0'); modal.classList.add('opacity-100');
+            content.classList.remove('scale-95'); content.classList.add('scale-100');
             lucide.createIcons();
         }
 
         function closeShareModal() {
-            const modal = document.getElementById('shareModal');
-            const content = document.getElementById('shareModalContent');
-            modal.classList.remove('opacity-100');
-            modal.classList.add('opacity-0');
-            content.classList.remove('scale-100');
-            content.classList.add('scale-95');
-            setTimeout(() => modal.classList.add('hidden'), 300);
+            const modal = document.getElementById('shareModal'); const content = document.getElementById('shareModalContent');
+            modal.classList.remove('opacity-100'); modal.classList.add('opacity-0');
+            content.classList.remove('scale-100'); content.classList.add('scale-95');
+            setTimeout(() => modal.classList.add('hidden'), 300); renderNotes();
         }
 
         function renderShareModalContent() {
-            const id = document.getElementById('activeCardId').value;
-            const note = notes.find(n => n.id === id);
-            
-            // Kişi listesi
-            const emailsList = document.getElementById('sharedEmailsList');
-            emailsList.innerHTML = '';
+            const id = document.getElementById('activeCardId').value; const note = notes.find(n => n.id === id);
+            const emailsList = document.getElementById('sharedEmailsList'); emailsList.innerHTML = '';
             if (tempShareConfig.emails.length > 0) {
                 tempShareConfig.emails.forEach(email => {
                     emailsList.innerHTML += `
                         <div class="flex items-center justify-between bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-lg border border-slate-100 dark:border-slate-700">
                             <div class="flex items-center gap-2"><i data-lucide="user" class="w-4 h-4 text-slate-400"></i><span class="text-sm font-medium dark:text-slate-200">${email}</span></div>
                             <button onclick="removeEmailFromShare('${email}')" class="text-slate-400 hover:text-red-500"><i data-lucide="x" class="w-4 h-4"></i></button>
-                        </div>
-                    `;
+                        </div>`;
                 });
-            } else {
-                emailsList.innerHTML = '<span class="text-xs text-slate-400 italic">Henüz özel kişi eklenmedi.</span>';
-            }
+            } else { emailsList.innerHTML = '<span class="text-xs text-slate-400 italic">Henüz özel kişi eklenmedi.</span>'; }
 
-            // Kopyala Butonu Görünürlüğü
             const copyBtn = document.getElementById('copyLinkBtn');
             if (note && note.shareId) copyBtn.classList.remove('hidden'); else copyBtn.classList.add('hidden');
 
-            // Genel Erişim Paneli
             const linkSection = document.getElementById('shareLinkSection');
             linkSection.innerHTML = `
                 <div class="flex flex-col gap-3 p-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl">
@@ -1647,27 +1294,15 @@
             lucide.createIcons();
         }
 
-        function updateTempSetting(key, value) {
-            tempShareConfig[key] = value;
-            renderShareModalContent();
-        }
+        function updateTempSetting(key, value) { tempShareConfig[key] = value; renderShareModalContent(); }
 
-        // --- Mail ve Kaydetme İşlemleri ---
         function addEmailToShare() {
-            const input = document.getElementById('shareEmailInput');
-            const email = input.value.trim().toLowerCase();
-            
+            const input = document.getElementById('shareEmailInput'); const email = input.value.trim().toLowerCase();
             if (email && email.includes('@')) {
                 if (!tempShareConfig.emails.includes(email)) {
-                    tempShareConfig.emails.push(email);
-                    input.value = '';
-                    renderShareModalContent();
-                    
-                    // Bildirim Maili Gönderme Onayı
+                    tempShareConfig.emails.push(email); input.value = ''; renderShareModalContent();
                     if(confirm(`${email} adresine davet e-postası göndermek ister misiniz?\n(Varsayılan mail uygulamanız açılacaktır)`)) {
-                        const id = document.getElementById('activeCardId').value;
-                        const note = notes.find(n => n.id === id);
-                        // Eğer shareId yoksa, geçici bir id göster (Güncelle'ye basınca asıl oluşacak)
+                        const id = document.getElementById('activeCardId').value; const note = notes.find(n => n.id === id);
                         const link = window.location.origin + window.location.pathname + `?shared=${note.shareId || 'LINK_GUNCELLENINCE_OLUSACAK'}`;
                         const subject = encodeURIComponent(`"${note.title || 'Not'}" sizinle paylaşıldı`);
                         const body = encodeURIComponent(`Merhaba,\n\nBir not sizinle paylaşıldı. Erişmek için tıklayın:\n\n${link}\n\nNotLa Uygulaması`);
@@ -1677,81 +1312,47 @@
             } else { alert("Lütfen geçerli bir e-posta adresi girin."); }
         }
 
-        function removeEmailFromShare(email) {
-            tempShareConfig.emails = tempShareConfig.emails.filter(e => e !== email);
-            renderShareModalContent();
-        }
+        function removeEmailFromShare(email) { tempShareConfig.emails = tempShareConfig.emails.filter(e => e !== email); renderShareModalContent(); }
 
         function saveShareSettings() {
-            const id = document.getElementById('activeCardId').value;
-            const note = notes.find(n => n.id === id);
-            if (!note) return;
-
+            const id = document.getElementById('activeCardId').value; const note = notes.find(n => n.id === id); if (!note) return;
             document.getElementById('shareStatusText').innerText = "Kaydediliyor...";
-
-            // Ayarları nota aktar
-            note.sharedEmails = [...tempShareConfig.emails];
-            note.shareAccessType = tempShareConfig.accessType;
-            note.shareMode = tempShareConfig.mode;
-
+            note.sharedEmails = [...tempShareConfig.emails]; note.shareAccessType = tempShareConfig.accessType; note.shareMode = tempShareConfig.mode;
             if (!note.shareId) note.shareId = 'share_' + Math.random().toString(36).substr(2, 10);
-           
- const currentUser = firebase.auth().currentUser;
-            const shareData = {
-                title: note.title || 'Başlıksız Not',
-                content: note.content || '',
-                mode: note.shareMode,
-                accessType: note.shareAccessType,
-                sharedEmails: note.sharedEmails,
-                originalId: note.id,
-                ownerEmail: currentUser ? currentUser.email : '', // MAİL BİLGİSİ EKLENDİ
-                updatedAt: note.updatedAt,
-                createdAt: note.createdAt
-            };
             
+            const currentUser = firebase.auth().currentUser;
+            const shareData = {
+                title: note.title || 'Başlıksız Not', content: note.content || '', mode: note.shareMode, accessType: note.shareAccessType,
+                sharedEmails: note.sharedEmails, originalId: note.id, ownerEmail: currentUser ? currentUser.email : '',
+                updatedAt: note.updatedAt, createdAt: note.createdAt
+            };
             firebase.firestore().collection('shared_notes').doc(note.shareId).set(shareData).then(() => {
-                saveToStorage();
-                renderShareModalContent(); // Kopya butonunun çıkması için
+                saveToStorage(); renderShareModalContent();
                 document.getElementById('shareStatusText').innerHTML = "<span class='text-green-500'>✅ Güncellendi!</span>";
                 setTimeout(() => { document.getElementById('shareStatusText').innerText = ""; }, 3000);
             });
         }
 
         function copyModalShareLink() {
-            const id = document.getElementById('activeCardId').value;
-            const note = notes.find(n => n.id === id);
-            if (!note || !note.shareId) return;
-
+            const id = document.getElementById('activeCardId').value; const note = notes.find(n => n.id === id); if (!note || !note.shareId) return;
             const publicLink = window.location.origin + window.location.pathname + `?shared=${note.shareId}`;
             navigator.clipboard.writeText(publicLink).then(() => {
                 const btn = document.getElementById('copyLinkBtn');
                 btn.innerHTML = `<i data-lucide="check" class="w-4 h-4"></i> Kopyalandı!`;
-                btn.classList.replace('bg-slate-200', 'bg-green-600');
-                btn.classList.replace('text-slate-700', 'text-white');
-                lucide.createIcons();
+                btn.classList.replace('bg-slate-200', 'bg-green-600'); btn.classList.replace('text-slate-700', 'text-white'); lucide.createIcons();
                 setTimeout(() => {
                     btn.innerHTML = `<i data-lucide="copy" class="w-4 h-4"></i> Kopyala`;
-                    btn.classList.replace('bg-green-600', 'bg-slate-200');
-                    btn.classList.replace('text-white', 'text-slate-700');
-                    lucide.createIcons();
+                    btn.classList.replace('bg-green-600', 'bg-slate-200'); btn.classList.replace('text-white', 'text-slate-700'); lucide.createIcons();
                 }, 2000);
             });
         }
 
         function disableSharing() {
             if(!confirm("Erişimi kapatmak istediğinize emin misiniz?")) return;
-            const id = document.getElementById('activeCardId').value;
-            const note = notes.find(n => n.id === id);
-            if (!note || !note.shareId) return;
-
+            const id = document.getElementById('activeCardId').value; const note = notes.find(n => n.id === id); if (!note || !note.shareId) return;
             firebase.firestore().collection('shared_notes').doc(note.shareId).delete().then(() => {
-                delete note.shareId;
-                delete note.shareMode;
-                delete note.shareAccessType;
-                delete note.sharedEmails;
-                saveToStorage();
-                closeShareModal();
-                alert("Bağlantı iptal edildi ve erişim kapatıldı.");
+                delete note.shareId; delete note.shareMode; delete note.shareAccessType; delete note.sharedEmails;
+                saveToStorage(); closeShareModal(); alert("Bağlantı iptal edildi ve erişim kapatıldı.");
             });
         }
 
@@ -1759,21 +1360,14 @@
         function changeCalendarMonth(offset) { currentCalendarDate.setMonth(currentCalendarDate.getMonth() + offset); renderCalendar(); }
         function resetCalendarToToday() { currentCalendarDate = new Date(); renderCalendar(); }
         function renderCalendar() {
-            destroySortable(); 
-            const container = document.getElementById('notesContainer');
-            
-            const viewBtn = document.getElementById('viewToggleBtn');
-            if(viewBtn) viewBtn.classList.add('hidden');
+            destroySortable(); const container = document.getElementById('notesContainer');
+            const viewBtn = document.getElementById('viewToggleBtn'); if(viewBtn) viewBtn.classList.add('hidden');
             document.getElementById('searchContainer').classList.add('opacity-0', 'pointer-events-none');
-            
             container.className = 'flex-1 overflow-y-auto p-4 sm:p-8 custom-scrollbar bg-slate-50 dark:bg-transparent pb-24 md:pb-8';
             
-            const year = currentCalendarDate.getFullYear();
-            const month = currentCalendarDate.getMonth();
-            const firstDay = new Date(year, month, 1).getDay();
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const year = currentCalendarDate.getFullYear(); const month = currentCalendarDate.getMonth();
+            const firstDay = new Date(year, month, 1).getDay(); const daysInMonth = new Date(year, month + 1, 0).getDate();
             const startDay = firstDay === 0 ? 6 : firstDay - 1;
-            
             const monthNames = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
             const dayNames = ["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"];
 
@@ -1786,127 +1380,84 @@
                 '#f3e8ff': 'bg-purple-100 border-purple-200 text-purple-700 dark:bg-purple-900/40 dark:border-purple-800 dark:text-purple-300'
             };
 
-           let html = `
+            let html = `
                <div class="max-w-6xl mx-auto min-h-full flex flex-col min-w-[300px]" style="animation: fadeIn 0.3s ease-out;">
                     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-3 shrink-0 gap-4">
                         <h2 class="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-white flex items-center gap-3">
-                            <div class="p-2 sm:p-2.5 bg-indigo-100 dark:bg-indigo-500/20 rounded-xl text-indigo-600 dark:text-indigo-400 shadow-sm">
-                                <i data-lucide="calendar-days" class="w-6 h-6 sm:w-7 sm:h-7"></i>
-                            </div>
+                            <div class="p-2 sm:p-2.5 bg-indigo-100 dark:bg-indigo-500/20 rounded-xl text-indigo-600 dark:text-indigo-400 shadow-sm"><i data-lucide="calendar-days" class="w-6 h-6 sm:w-7 sm:h-7"></i></div>
                             ${monthNames[month]} ${year}
                         </h2>
                         <div class="flex items-center gap-2 sm:gap-3 w-full sm:w-auto justify-between sm:justify-end">
-                            <button onclick="resetCalendarToToday()" class="px-3 sm:px-4 py-2 text-sm font-semibold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition shadow-sm text-slate-700 dark:text-slate-300 flex items-center gap-2">
-                                <i data-lucide="calendar" class="w-4 h-4"></i> Bugün
-                            </button>
+                            <button onclick="resetCalendarToToday()" class="px-3 sm:px-4 py-2 text-sm font-semibold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition shadow-sm text-slate-700 dark:text-slate-300 flex items-center gap-2"><i data-lucide="calendar" class="w-4 h-4"></i> Bugün</button>
                             <div class="flex gap-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm p-1">
                                 <button onclick="changeCalendarMonth(-1)" class="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition text-slate-600 dark:text-slate-400"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
                                 <button onclick="changeCalendarMonth(1)" class="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition text-slate-600 dark:text-slate-400"><i data-lucide="chevron-right" class="w-5 h-5"></i></button>
                             </div>
                         </div>
                     </div>
-                    
                     <div class="flex-1 flex flex-col min-h-[400px] border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-sm">
-                        <div class="grid grid-cols-7 gap-px shrink-0 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
-            `;
-
+                        <div class="grid grid-cols-7 gap-px shrink-0 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">`;
             dayNames.forEach(day => { html += `<div class="p-2 sm:p-3 text-center text-[10px] sm:text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">${day}</div>`; });
             html += `</div><div class="grid grid-cols-7 gap-px flex-1 bg-slate-200 dark:bg-slate-700">`;
 
             for (let i = 0; i < startDay; i++) { html += `<div class="bg-slate-50/50 dark:bg-slate-900/30 p-1 sm:p-2"></div>`; }
-
             const today = new Date();
             for (let i = 1; i <= daysInMonth; i++) {
                 const currentDateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
-                
                 const dayNotes = notes.filter(n => {
                     if (n.type !== 'task' || !n.reminder) return false; 
-                    const targetDate = new Date(n.reminder);
-                    return targetDate.getFullYear() === year && targetDate.getMonth() === month && targetDate.getDate() === i;
+                    const targetDate = new Date(n.reminder); return targetDate.getFullYear() === year && targetDate.getMonth() === month && targetDate.getDate() === i;
                 });
 
                 let notesHtml = dayNotes.map(n => {
-                    const colorClass = colorMap[n.color || 'white'];
-                    const isCompleted = n.completed;
+                    const colorClass = colorMap[n.color || 'white']; const isCompleted = n.completed;
                     const checkIcon = isCompleted ? '<i data-lucide="check-circle" class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-indigo-500 shrink-0"></i>' : '<i data-lucide="circle" class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-slate-400 group-hover/event:text-indigo-400 shrink-0 transition-colors"></i>';
-                    
                     return `
-                    <div onclick="openEditor('${n.id}'); event.stopPropagation();" 
-                         class="calendar-event mt-1 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-md border ${colorClass} ${isCompleted ? 'opacity-50 bg-slate-50 dark:bg-slate-800/50' : ''} shadow-sm flex items-center gap-1.5 transition-all hover:scale-[1.02] hover:shadow-md cursor-pointer group/event">
-                        <div onclick="toggleTaskCompletion('${n.id}', event)" class="shrink-0 flex items-center justify-center hover:scale-110 transition-transform">
-                            ${checkIcon}
-                        </div>
+                    <div onclick="openEditor('${n.id}'); event.stopPropagation();" class="calendar-event mt-1 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-md border ${colorClass} ${isCompleted ? 'opacity-50 bg-slate-50 dark:bg-slate-800/50' : ''} shadow-sm flex items-center gap-1.5 transition-all hover:scale-[1.02] hover:shadow-md cursor-pointer group/event">
+                        <div onclick="toggleTaskCompletion('${n.id}', event)" class="shrink-0 flex items-center justify-center hover:scale-110 transition-transform">${checkIcon}</div>
                         <span class="truncate font-semibold text-[9px] sm:text-[11px] group-hover/event:opacity-100 opacity-90 ${isCompleted ? 'line-through' : ''}">${n.title || 'İsimsiz Görev'}</span>
                     </div>`;
                 }).join('');
 
                 const isToday = (i === today.getDate() && month === today.getMonth() && year === today.getFullYear());
                 const cellBgClass = isToday ? 'bg-indigo-50/40 dark:bg-indigo-900/20' : 'bg-white dark:bg-slate-800';
-                const dayNumClass = isToday 
-                    ? 'bg-indigo-600 text-white w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center shadow-md' 
-                    : 'text-slate-700 dark:text-slate-300 w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors';
+                const dayNumClass = isToday ? 'bg-indigo-600 text-white w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center shadow-md' : 'text-slate-700 dark:text-slate-300 w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors';
 
                 html += `
                     <div onclick="createNewNoteWithDate('${currentDateStr}')" class="calendar-day ${cellBgClass} min-h-[55px] sm:min-h-[110px] p-1 sm:p-2 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors cursor-pointer flex flex-col group relative">
                         <div class="font-bold text-[11px] sm:text-sm mb-1 ${dayNumClass}">${i}</div>
-                        <div class="flex-1 flex flex-col gap-0.5 sm:gap-1 overflow-y-auto custom-scrollbar pr-0.5 relative z-10">
-                            ${notesHtml}
-                        </div>
-                        <div class="hidden sm:flex absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                            <div class="bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 rounded-md p-1 shadow-sm"><i data-lucide="plus" class="w-3 h-3"></i></div>
-                        </div>
-                    </div>
-                `;
+                        <div class="flex-1 flex flex-col gap-0.5 sm:gap-1 overflow-y-auto custom-scrollbar pr-0.5 relative z-10">${notesHtml}</div>
+                        <div class="hidden sm:flex absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"><div class="bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 rounded-md p-1 shadow-sm"><i data-lucide="plus" class="w-3 h-3"></i></div></div>
+                    </div>`;
             }
-
-            const totalCells = startDay + daysInMonth;
-            const remainingCells = Math.ceil(totalCells / 7) * 7 - totalCells;
+            const totalCells = startDay + daysInMonth; const remainingCells = Math.ceil(totalCells / 7) * 7 - totalCells;
             for (let i = 0; i < remainingCells; i++) { html += `<div class="bg-slate-50/50 dark:bg-slate-900/30 p-1 sm:p-2"></div>`; }
-
-            html += `</div></div></div>`;
-            container.innerHTML = html;
-            lucide.createIcons({ root: document.getElementById('notesContainer') });
+            html += `</div></div></div>`; container.innerHTML = html; lucide.createIcons({ root: document.getElementById('notesContainer') });
         }
 
         // --- TASKS (GÖREVLER) RENDER ---
         function renderTasksView(filteredTasks) {
-            destroySortable(); 
-            const container = document.getElementById('notesContainer');
-            
-            const viewBtn = document.getElementById('viewToggleBtn');
-            if(viewBtn) viewBtn.classList.add('hidden');
+            destroySortable(); const container = document.getElementById('notesContainer');
+            const viewBtn = document.getElementById('viewToggleBtn'); if(viewBtn) viewBtn.classList.add('hidden');
             document.getElementById('searchContainer').classList.remove('opacity-0', 'pointer-events-none');
-            
             container.className = 'flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar pb-24 md:pb-8 max-w-4xl mx-auto w-full';
             
-            // To-Do Organizasyon Mantığı
-            const now = new Date();
-            const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-            const tomorrowStart = todayStart + 86400000;
-
+            const now = new Date(); const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime(); const tomorrowStart = todayStart + 86400000;
             let overdue = [], todayTasks = [], upcoming = [], noDate = [], completed = [];
 
             filteredTasks.forEach(task => {
-                if (task.completed) {
-                    completed.push(task);
-                } else if (!task.reminder) {
-                    noDate.push(task);
-                } else {
+                if (task.completed) { completed.push(task); } else if (!task.reminder) { noDate.push(task); } 
+                else {
                     const taskDate = new Date(task.reminder).getTime();
-                    if (taskDate < todayStart) overdue.push(task);
-                    else if (taskDate >= todayStart && taskDate < tomorrowStart) todayTasks.push(task);
-                    else upcoming.push(task);
+                    if (taskDate < todayStart) overdue.push(task); else if (taskDate >= todayStart && taskDate < tomorrowStart) todayTasks.push(task); else upcoming.push(task);
                 }
             });
 
             let html = `
                 <div class="mb-8 relative group">
-                    <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-                        <i data-lucide="plus" class="w-5 h-5 text-indigo-500"></i>
-                    </div>
+                    <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none"><i data-lucide="plus" class="w-5 h-5 text-indigo-500"></i></div>
                     <input type="text" id="quickAddInput" onkeypress="quickAddTask(event)" placeholder="Görev ekle ve Enter'a bas..." class="w-full pl-12 pr-4 py-4 bg-white dark:bg-slate-800 rounded-2xl shadow-sm focus:shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition text-slate-700 dark:text-white border border-slate-200 dark:border-slate-700">
-                </div>
-            `;
+                </div>`;
 
             const colorClassMap = {
                 'white': '', '#fee2e2': 'bg-red-50 dark:bg-red-900/10 border-red-200 dark:border-red-900/30', '#fef3c7': 'bg-yellow-50 dark:bg-yellow-900/10 border-yellow-200 dark:border-yellow-900/30',
@@ -1917,85 +1468,48 @@
                 const bgBorderClass = colorClassMap[task.color] || 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700';
                 return `
                     <div onclick="openEditor('${task.id}')" oncontextmenu="handleCardContext(event, '${task.id}')" class="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-2xl border hover:shadow-md transition cursor-pointer group ${bgBorderClass} ${task.completed ? 'opacity-60 bg-slate-50 dark:bg-slate-800/50' : ''}">
-                        <button onclick="toggleTaskCompletion('${task.id}', event)" class="w-6 h-6 sm:w-7 sm:h-7 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${task.completed ? 'bg-indigo-500 border-indigo-500 text-white' : 'border-slate-300 dark:border-slate-600 group-hover:border-indigo-400'}">
-                            ${task.completed ? '<i data-lucide="check" class="w-4 h-4"></i>' : ''}
-                        </button>
+                        <button onclick="toggleTaskCompletion('${task.id}', event)" class="w-6 h-6 sm:w-7 sm:h-7 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${task.completed ? 'bg-indigo-500 border-indigo-500 text-white' : 'border-slate-300 dark:border-slate-600 group-hover:border-indigo-400'}">${task.completed ? '<i data-lucide="check" class="w-4 h-4"></i>' : ''}</button>
                         <div class="flex-1 min-w-0">
                             <h4 class="text-sm sm:text-base font-medium truncate transition-colors ${task.completed ? 'line-through text-slate-500' : 'text-slate-800 dark:text-slate-200'}">${task.title || 'İsimsiz Görev'}</h4>
                             <div class="flex items-center gap-3 mt-1 flex-wrap">
                                 ${task.reminder ? `<div class="text-[10px] sm:text-xs ${new Date(task.reminder).getTime() < todayStart && !task.completed ? 'text-red-500' : 'text-indigo-500'} flex items-center gap-1"><i data-lucide="calendar" class="w-3 h-3"></i> ${new Date(task.reminder).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</div>` : ''}
                                 ${task.location ? `<div class="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1"><i data-lucide="map-pin" class="w-3 h-3"></i> ${task.location}</div>` : ''}
-                                ${task.attachments && task.attachments.length > 0 ? `<div class="text-[10px] sm:text-xs text-slate-400 flex items-center gap-1"><i data-lucide="paperclip" class="w-3 h-3"></i></div>` : ''}
-                                ${task.content && task.content.length > 15 ? `<div class="text-[10px] sm:text-xs text-slate-400 flex items-center gap-1"><i data-lucide="align-left" class="w-3 h-3"></i></div>` : ''}
                             </div>
                         </div>
                         <div class="flex items-center gap-1 shrink-0">
-                            ${currentFilter === 'trash' ? `
-                                <button onclick="restoreFromTrash('${task.id}', event)" title="Geri Yükle" class="p-2 hover:bg-green-100 rounded-lg text-green-600 transition"><i data-lucide="rotate-ccw" class="w-5 h-5"></i></button>
-                            ` : `
-                                <button onclick="toggleFavorite('${task.id}', event)" class="p-2 rounded-xl transition ${task.isFavorite ? 'text-orange-500' : 'text-slate-400 opacity-0 group-hover:opacity-100 hover:bg-slate-100 dark:hover:bg-slate-700'}">
-                                    <i data-lucide="star" class="w-5 h-5" ${task.isFavorite ? 'fill="currentColor"' : ''}></i>
-                                </button>
-                                <button onclick="moveToTrash('${task.id}', event)" class="p-2 rounded-xl transition text-slate-400 opacity-0 group-hover:opacity-100 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30">
-                                    <i data-lucide="trash-2" class="w-5 h-5"></i>
-                                </button>
+                            ${currentFilter === 'trash' ? `<button onclick="restoreFromTrash('${task.id}', event)" title="Geri Yükle" class="p-2 hover:bg-green-100 rounded-lg text-green-600 transition"><i data-lucide="rotate-ccw" class="w-5 h-5"></i></button>` : `
+                                <button onclick="toggleFavorite('${task.id}', event)" class="p-2 rounded-xl transition ${task.isFavorite ? 'text-orange-500' : 'text-slate-400 opacity-0 group-hover:opacity-100 hover:bg-slate-100 dark:hover:bg-slate-700'}"><i data-lucide="star" class="w-5 h-5" ${task.isFavorite ? 'fill="currentColor"' : ''}></i></button>
+                                <button onclick="moveToTrash('${task.id}', event)" class="p-2 rounded-xl transition text-slate-400 opacity-0 group-hover:opacity-100 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
                             `}
                         </div>
-                    </div>
-                `;
+                    </div>`;
             };
 
             const renderSection = (title, icon, colorClass, taskArray) => {
                 if(taskArray.length === 0) return '';
-                let sectionHtml = `
-                    <div class="mb-3 mt-6 flex items-center gap-2 font-bold text-xs sm:text-sm uppercase tracking-wider ${colorClass}">
-                        <i data-lucide="${icon}" class="w-4 h-4"></i> ${title} <span class="opacity-60 ml-1">(${taskArray.length})</span>
-                    </div>
-                    <div class="space-y-3">
-                `;
-                taskArray.forEach(task => { sectionHtml += createTaskHtml(task); });
-                sectionHtml += `</div>`;
-                return sectionHtml;
+                let sectionHtml = `<div class="mb-3 mt-6 flex items-center gap-2 font-bold text-xs sm:text-sm uppercase tracking-wider ${colorClass}"><i data-lucide="${icon}" class="w-4 h-4"></i> ${title} <span class="opacity-60 ml-1">(${taskArray.length})</span></div><div class="space-y-3">`;
+                taskArray.forEach(task => { sectionHtml += createTaskHtml(task); }); sectionHtml += `</div>`; return sectionHtml;
             };
 
-            if(filteredTasks.length === 0) {
-                html += `<div class="text-center text-slate-400 py-10"><i data-lucide="check-square" class="w-16 h-16 mx-auto mb-4 opacity-20"></i><p>Şu an için hiç görev yok. Harika!</p></div>`;
-            } else {
-                html += renderSection('Gecikmiş', 'alert-circle', 'text-red-500', overdue);
-                html += renderSection('Bugün', 'sun', 'text-indigo-500 dark:text-indigo-400', todayTasks);
-                html += renderSection('Yaklaşan', 'calendar', 'text-slate-600 dark:text-slate-300', upcoming);
-                html += renderSection('Tarihsiz', 'inbox', 'text-slate-500 dark:text-slate-400', noDate);
-                html += renderSection('Tamamlananlar', 'check-circle-2', 'text-emerald-600 dark:text-emerald-500', completed);
-            }
-
-            container.innerHTML = html;
-            lucide.createIcons({ root: document.getElementById('notesContainer') });
+            if(filteredTasks.length === 0) { html += `<div class="text-center text-slate-400 py-10"><i data-lucide="check-square" class="w-16 h-16 mx-auto mb-4 opacity-20"></i><p>Şu an için hiç görev yok. Harika!</p></div>`; } 
+            else { html += renderSection('Gecikmiş', 'alert-circle', 'text-red-500', overdue) + renderSection('Bugün', 'sun', 'text-indigo-500 dark:text-indigo-400', todayTasks) + renderSection('Yaklaşan', 'calendar', 'text-slate-600 dark:text-slate-300', upcoming) + renderSection('Tarihsiz', 'inbox', 'text-slate-500 dark:text-slate-400', noDate) + renderSection('Tamamlananlar', 'check-circle-2', 'text-emerald-600 dark:text-emerald-500', completed); }
+            container.innerHTML = html; lucide.createIcons({ root: document.getElementById('notesContainer') });
         }
 
         // --- CARDS (NOTLAR) RENDER ---
         function renderCardsView(filteredNotes) {
             const container = document.getElementById('notesContainer');
-            
             const viewBtn = document.getElementById('viewToggleBtn');
-            if(viewBtn) viewBtn.classList.remove('hidden');
-            if(window.innerWidth < 768 && viewBtn) viewBtn.classList.add('hidden');
-            
+            if(viewBtn) viewBtn.classList.remove('hidden'); if(window.innerWidth < 768 && viewBtn) viewBtn.classList.add('hidden');
             document.getElementById('searchContainer').classList.remove('opacity-0', 'pointer-events-none');
-            
             container.className = `flex-1 overflow-y-auto p-4 md:p-8 ${viewMode === 'grid' ? 'grid-view' : 'list-view'} custom-scrollbar relative z-10 pb-24 md:pb-8`;
             container.innerHTML = '';
 
             if (filteredNotes.length === 0) {
-                container.innerHTML = `<div class="col-span-full flex flex-col items-center justify-center text-slate-400 py-20 h-full">
-                    <i data-lucide="ghost" class="w-16 h-16 sm:w-20 sm:h-20 mb-4 sm:mb-6 opacity-20"></i>
-                    <p class="text-sm sm:text-lg font-medium opacity-60">Burada henüz bir şey yok.</p>
-                </div>`;
+                container.innerHTML = `<div class="col-span-full flex flex-col items-center justify-center text-slate-400 py-20 h-full"><i data-lucide="ghost" class="w-16 h-16 sm:w-20 sm:h-20 mb-4 sm:mb-6 opacity-20"></i><p class="text-sm sm:text-lg font-medium opacity-60">Burada henüz bir şey yok.</p></div>`;
             }
 
-            const noteColorClassMap = {
-                '#fee2e2': 'note-color-red', '#fef3c7': 'note-color-yellow', '#dcfce7': 'note-color-green',
-                '#dbeafe': 'note-color-blue', '#f3e8ff': 'note-color-purple'
-            };
+            const noteColorClassMap = { '#fee2e2': 'note-color-red', '#fef3c7': 'note-color-yellow', '#dcfce7': 'note-color-green', '#dbeafe': 'note-color-blue', '#f3e8ff': 'note-color-purple' };
 
             filteredNotes.forEach(note => {
                 const div = document.createElement('div');
@@ -2004,105 +1518,62 @@
                 div.onclick = () => currentFilter !== 'trash' && openEditor(note.id);
                 div.oncontextmenu = (e) => currentFilter !== 'trash' && handleCardContext(e, note.id);
                 
-                const tempDiv = document.createElement('div');
-                tempDiv.innerHTML = note.content || '';
+                const tempDiv = document.createElement('div'); tempDiv.innerHTML = note.content || '';
                 const plainText = tempDiv.textContent || tempDiv.innerText || "";
                 const preview = plainText.substring(0, 100) + (plainText.length > 100 ? '...' : '');
                 
                 const hasAttachment = note.attachments && note.attachments.length > 0 ? `<i data-lucide="paperclip" class="w-3 h-3 text-indigo-500"></i>` : '';
                 const isSharedBadge = note.shareId && !note.isSharedWithMe ? `<div class="absolute -top-2 -right-2 bg-blue-500 text-white rounded-full p-1.5 shadow-md flex items-center justify-center z-10" title="Paylaşıma Açık"><i data-lucide="users" class="w-3 h-3"></i></div>` : '';
-               
+                
                 div.innerHTML = `
                     ${isSharedBadge}
                     <div class="flex-1 min-w-0 flex flex-col h-full">
                         <div class="flex justify-between items-start mb-2 sm:mb-3">
-                            <div class="flex items-center min-w-0 flex-1">
-                                <h3 class="font-bold truncate pr-2 sm:pr-4 text-slate-800 dark:text-white text-base sm:text-lg">${note.title || 'Başlıksız Not'}</h3>
-                            </div>
+                            <div class="flex items-center min-w-0 flex-1"><h3 class="font-bold truncate pr-2 sm:pr-4 text-slate-800 dark:text-white text-base sm:text-lg">${note.title || 'Başlıksız Not'}</h3></div>
                             <div class="flex gap-1 shrink-0 ml-2">
-                                ${currentFilter === 'trash' ? `
-                                    <button onclick="restoreFromTrash('${note.id}', event)" title="Geri Yükle" class="p-1.5 hover:bg-green-100 rounded-lg text-green-600 transition"><i data-lucide="rotate-ccw" class="w-4 h-4"></i></button>
-                                    <button onclick="permanentDelete('${note.id}', event)" title="Tamamen Sil" class="p-1.5 hover:bg-red-100 rounded-lg text-red-600 transition"><i data-lucide="x-circle" class="w-4 h-4"></i></button>
-                                ` : `
-                                    <button onclick="toggleFavorite('${note.id}', event)" class="p-1.5 hover:bg-orange-50 dark:hover:bg-slate-700 rounded-lg ${note.isFavorite ? 'text-orange-500' : 'text-slate-400'} transition">
-                                        <i data-lucide="star" class="w-4 h-4" ${note.isFavorite ? 'fill="currentColor"' : ''}></i>
-                                    </button>
-                                    <button onclick="moveToTrash('${note.id}', event)" class="p-1.5 hover:bg-red-50 dark:hover:bg-slate-700 rounded-lg text-slate-400 hover:text-red-500 transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                                `}
+                                ${currentFilter === 'trash' ? `<button onclick="restoreFromTrash('${note.id}', event)" title="Geri Yükle" class="p-1.5 hover:bg-green-100 rounded-lg text-green-600 transition"><i data-lucide="rotate-ccw" class="w-4 h-4"></i></button><button onclick="permanentDelete('${note.id}', event)" title="Tamamen Sil" class="p-1.5 hover:bg-red-100 rounded-lg text-red-600 transition"><i data-lucide="x-circle" class="w-4 h-4"></i></button>` : `<button onclick="toggleFavorite('${note.id}', event)" class="p-1.5 hover:bg-orange-50 dark:hover:bg-slate-700 rounded-lg ${note.isFavorite ? 'text-orange-500' : 'text-slate-400'} transition"><i data-lucide="star" class="w-4 h-4" ${note.isFavorite ? 'fill="currentColor"' : ''}></i></button><button onclick="moveToTrash('${note.id}', event)" class="p-1.5 hover:bg-red-50 dark:hover:bg-slate-700 rounded-lg text-slate-400 hover:text-red-500 transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button>`}
                             </div>
                         </div>
                         <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 line-clamp-3 sm:line-clamp-4 mb-3 sm:mb-4 flex-1">${preview || '<i class="opacity-40 font-normal">İçerik boş...</i>'}</p>
-                        
                         <div class="flex items-center justify-between mt-auto pt-3 sm:pt-4 border-t border-slate-200/50 dark:border-slate-700/50">
-                            <div class="flex flex-wrap gap-1.5 overflow-hidden h-5 sm:h-6">
-                                ${note.tags && note.tags.length > 0 ? note.tags.map(t => `<span class="text-[9px] sm:text-[10px] px-1.5 sm:px-2 py-0.5 bg-black/5 dark:bg-white/10 text-slate-700 dark:text-slate-300 rounded-md font-semibold uppercase truncate max-w-[60px] sm:max-w-[80px]">${t}</span>`).join('') : '<span class="text-[10px] opacity-0">-</span>'}
-                            </div>
-                            <div class="flex items-center gap-1 sm:gap-2 bg-black/5 dark:bg-white/5 px-1.5 sm:px-2 py-1 rounded-md">
-                                ${hasAttachment}
-                                <span class="text-[9px] sm:text-[10px] font-medium text-slate-500 ml-1">${new Date(note.updatedAt).toLocaleDateString('tr-TR')}</span>
-                            </div>
+                            <div class="flex flex-wrap gap-1.5 overflow-hidden h-5 sm:h-6">${note.tags && note.tags.length > 0 ? note.tags.map(t => `<span class="text-[9px] sm:text-[10px] px-1.5 sm:px-2 py-0.5 bg-black/5 dark:bg-white/10 text-slate-700 dark:text-slate-300 rounded-md font-semibold uppercase truncate max-w-[60px] sm:max-w-[80px]">${t}</span>`).join('') : '<span class="text-[10px] opacity-0">-</span>'}</div>
+                            <div class="flex items-center gap-1 sm:gap-2 bg-black/5 dark:bg-white/5 px-1.5 sm:px-2 py-1 rounded-md">${hasAttachment}<span class="text-[9px] sm:text-[10px] font-medium text-slate-500 ml-1">${new Date(note.updatedAt).toLocaleDateString('tr-TR')}</span></div>
                         </div>
-                    </div>
-                `;
+                    </div>`;
                 container.appendChild(div);
             });
             lucide.createIcons({ root: document.getElementById('notesContainer') });
-            renderTags();
-            initSortable();
+            renderTags(); initSortable();
         }
 
         // --- Ana Render Yönlendiricisi ---
         function renderNotes() {
-            if (currentFilter === 'calendar') {
-                renderCalendar();
-                return;
-            }
-
+            if (currentFilter === 'calendar') { renderCalendar(); return; }
             const searchVal = document.getElementById('searchBox').value.toLowerCase();
             let dataList = currentFilter === 'trash' ? trash : notes;
             let filtered = [];
             
-            if (currentFilter === 'notes') {
-                filtered = dataList.filter(n => n.type === 'note');
-            } else if (currentFilter === 'tasks') {
-                filtered = dataList.filter(n => n.type === 'task');
-            } else if (currentFilter === 'favorites') {
-                filtered = dataList.filter(n => n.isFavorite); 
-            } else if (currentFilter.startsWith('tag:')) {
-                const tag = currentFilter.replace('tag:', '');
-                filtered = dataList.filter(n => (n.tags || []).includes(tag));
-            } else {
-                filtered = dataList; 
-            }
+            if (currentFilter === 'notes') { filtered = dataList.filter(n => n.type === 'note'); } 
+            else if (currentFilter === 'tasks') { filtered = dataList.filter(n => n.type === 'task'); } 
+            else if (currentFilter === 'favorites') { filtered = dataList.filter(n => n.isFavorite); } 
+            else if (currentFilter.startsWith('tag:')) { const tag = currentFilter.replace('tag:', ''); filtered = dataList.filter(n => (n.tags || []).includes(tag)); } 
+            else { filtered = dataList; }
 
             if (searchVal) {
-                filtered = filtered.filter(n => 
-                    (n.title && n.title.toLowerCase().includes(searchVal)) || 
-                    (n.content && n.content.toLowerCase().includes(searchVal)) ||
-                    (n.tags && n.tags.some(t => t.toLowerCase().includes(searchVal)))
-                );
+                filtered = filtered.filter(n => (n.title && n.title.toLowerCase().includes(searchVal)) || (n.content && n.content.toLowerCase().includes(searchVal)) || (n.tags && n.tags.some(t => t.toLowerCase().includes(searchVal))));
             }
 
-            if (currentFilter === 'tasks') {
-                renderTasksView(filtered);
-            } else {
-                renderCardsView(filtered);
-            }
+            if (currentFilter === 'tasks') { renderTasksView(filtered); } else { renderCardsView(filtered); }
         }
 
         function renderTags() {
             const allTags = [...new Set(notes.flatMap(n => n.tags || []))];
-            const tagContainer = document.getElementById('tagList');
-            tagContainer.innerHTML = '';
+            const tagContainer = document.getElementById('tagList'); tagContainer.innerHTML = '';
             allTags.forEach(tag => {
-                const btn = document.createElement('button');
-                const isActive = currentFilter === 'tag:'+tag;
+                const btn = document.createElement('button'); const isActive = currentFilter === 'tag:'+tag;
                 btn.className = `w-full flex items-center gap-3 px-3 py-3 md:py-2 rounded-xl hover:bg-indigo-50 dark:hover:bg-slate-800 text-left transition text-sm font-medium nav-btn ${isActive ? 'bg-indigo-50 text-indigo-600 dark:bg-slate-800 dark:text-indigo-400' : 'text-slate-700 dark:text-slate-300'}`;
                 btn.dataset.filter = 'tag:'+tag;
-                btn.onclick = () => {
-                    setFilter('tag:' + tag);
-                    if(window.innerWidth < 768) toggleSidebar();
-                };
+                btn.onclick = () => { setFilter('tag:' + tag); if(window.innerWidth < 768) toggleSidebar(); };
                 btn.innerHTML = `<i data-lucide="hash" class="w-4 h-4"></i> <span class="truncate">${tag}</span>`;
                 tagContainer.appendChild(btn);
             });
@@ -2112,27 +1583,16 @@
         const handleSearch = debounce(() => { renderNotes(); }, 300);
 
         function toggleCalendarMode() {
-            if (currentFilter === 'calendar') {
-                setFilter(localStorage.getItem('notla_filter') || 'notes');
-            } else {
-                setFilter('calendar');
-            }
+            if (currentFilter === 'calendar') { setFilter(localStorage.getItem('notla_filter') || 'notes'); } else { setFilter('calendar'); }
         }
 
         function setFilter(filter) {
-            if(filter !== 'trash' && !filter.startsWith('tag:')) {
-                localStorage.setItem('notla_filter', filter);
-            }
+            if(filter !== 'trash' && !filter.startsWith('tag:')) { localStorage.setItem('notla_filter', filter); }
             currentFilter = filter;
             
             document.querySelectorAll('.nav-btn').forEach(b => {
                 b.classList.remove('bg-indigo-50', 'text-indigo-600', 'dark:bg-slate-800', 'dark:text-indigo-400');
-                if (b.dataset.filter === 'trash') {
-                    b.classList.add('text-red-500', 'dark:text-red-400');
-                } else {
-                    b.classList.add('text-slate-700', 'dark:text-slate-300');
-                }
-                
+                if (b.dataset.filter === 'trash') { b.classList.add('text-red-500', 'dark:text-red-400'); } else { b.classList.add('text-slate-700', 'dark:text-slate-300'); }
                 if (b.dataset.filter === filter) {
                     b.classList.remove('text-slate-700', 'dark:text-slate-300', 'text-red-500', 'dark:text-red-400');
                     b.classList.add('bg-indigo-50', 'text-indigo-600', 'dark:bg-slate-800', 'dark:text-indigo-400');
@@ -2140,12 +1600,9 @@
             });
 
             const addBtnText = document.getElementById('mainAddBtnText');
-            if (addBtnText) {
-                addBtnText.innerText = (filter === 'tasks' || filter === 'calendar') ? 'Yeni Görev' : 'Yeni Not';
-            }
+            if (addBtnText) { addBtnText.innerText = (filter === 'tasks' || filter === 'calendar') ? 'Yeni Görev' : 'Yeni Not'; }
 
-            const calBtn = document.getElementById('calendarToggleBtn');
-            const calIcon = document.getElementById('calendarIcon');
+            const calBtn = document.getElementById('calendarToggleBtn'); const calIcon = document.getElementById('calendarIcon');
             if (calBtn && calIcon) {
                 if (filter === 'calendar') {
                     calBtn.className = 'relative p-2 bg-gradient-to-r from-indigo-600 to-purple-600 border border-transparent rounded-xl transition-all duration-300 flex items-center justify-center shadow-[0_0_20px_rgba(99,102,241,0.6)] scale-105 group overflow-hidden';
@@ -2155,55 +1612,23 @@
                     calIcon.className = 'w-5 h-5 text-indigo-600 dark:text-indigo-400 transform group-hover:scale-110 transition-transform';
                 }
             }
-            
-            if(window.innerWidth < 768 && filter !== 'calendar' && filter !== currentFilter) {
-                toggleSidebar();
-            }
-
+            if(window.innerWidth < 768 && filter !== 'calendar' && filter !== currentFilter) { toggleSidebar(); }
             renderNotes();
         }
 
         function toggleView() {
-            viewMode = viewMode === 'grid' ? 'list' : 'grid';
-            localStorage.setItem('notla_view', viewMode);
-            document.getElementById('viewIcon').setAttribute('data-lucide', viewMode === 'grid' ? 'list' : 'grid');
-            renderNotes();
-        }
-
-        // --- Bulut ve Yerel Depolama Yönlendiricisi ---
-        function saveToStorage() {
-            const user = firebase.auth().currentUser;
-            
-            if (user) {
-                // Kullanıcı giriş yapmışsa buluta (Firestore) kaydet
-                firebase.firestore().collection('user_notes').doc(user.uid).set({
-                    notes: notes,
-                    trash: trash,
-                    updatedAt: new Date().toISOString()
-                }).catch(err => {
-                    console.error("Buluta kayıt hatası:", err);
-                });
-            }
-            
-            // Cihazda da yerel olarak sakla (yedek olarak)
-            localforage.setItem('notla_notes', notes).catch(err => { console.error(err); });
-            localforage.setItem('notla_trash', trash).catch(err => { console.error(err); });
+            viewMode = viewMode === 'grid' ? 'list' : 'grid'; localStorage.setItem('notla_view', viewMode);
+            document.getElementById('viewIcon').setAttribute('data-lucide', viewMode === 'grid' ? 'list' : 'grid'); renderNotes();
         }
 
         window.onclick = function(event) {
             if (!event.target.closest('button[onclick="toggleExportMenu()"]') && !event.target.closest('#exportMenu')) {
-                const exMenu = document.getElementById('exportMenu');
-                if (exMenu) exMenu.classList.add('hidden');
+                const exMenu = document.getElementById('exportMenu'); if (exMenu) exMenu.classList.add('hidden');
             }
-            if (event.target.id === 'settingsModal') {
-                closeSettings();
-            }
-            // Araç çubuğu açıkken dışarı bir yere tıklanırsa kapat
+            if (event.target.id === 'settingsModal') { closeSettings(); }
             const toolbar = document.getElementById('cardToolbar');
-            if (toolbar && !toolbar.classList.contains('hidden') && !event.target.closest('.note-card') && !event.target.closest('#cardToolbar')) {
-                closeCardToolbar();
-            }
+            if (toolbar && !toolbar.classList.contains('hidden') && !event.target.closest('.note-card') && !event.target.closest('#cardToolbar')) { closeCardToolbar(); }
         }
     </script>
 </body>
-</html>
+</html> 
