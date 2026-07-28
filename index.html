@@ -539,6 +539,47 @@
 
         // --- Başlatma ---
         window.onload = async () => {
+            window.onload = async () => {
+            localforage.config({ name: 'NotLaApp', storeName: 'notla_data' });
+
+            // --- YENİ: URL'de paylaşılan bir not ID'si var mı kontrol et ---
+            const urlParams = new URLSearchParams(window.location.search);
+            const sharedId = urlParams.get('shared');
+            if (sharedId) {
+                try {
+                    const doc = await firebase.firestore().collection('shared_notes').doc(sharedId).get();
+                    if (doc.exists) {
+                        const sharedNote = doc.data();
+                        // Sayfayı tamamen paylaşılan notu gösterecek şekilde düzenle
+                        document.getElementById('loginScreen').style.display = 'none';
+                        document.getElementById('app').innerHTML = `
+                            <div class="flex-1 flex flex-col h-screen bg-slate-50 dark:bg-slate-900 overflow-y-auto p-4 sm:p-12 custom-scrollbar">
+                                <div class="max-w-3xl mx-auto w-full bg-white dark:bg-slate-800 p-6 sm:p-10 rounded-3xl shadow-xl border dark:border-slate-700">
+                                    <div class="flex items-center justify-between pb-4 border-b dark:border-slate-700 mb-6">
+                                        <span class="text-xs font-semibold px-3 py-1 bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 rounded-full">Paylaşılan Not</span>
+                                        <span class="text-xs text-slate-400">Son Güncelleme: ${new Date(sharedNote.updatedAt).toLocaleDateString('tr-TR')}</span>
+                                    </div>
+                                    <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-6">${sharedNote.title}</h1>
+                                    <div class="prose dark:prose-invert max-w-none text-slate-700 dark:text-slate-300 text-base leading-relaxed">
+                                        ${sharedNote.content}
+                                    </div>
+                                    <div class="mt-10 pt-6 border-t dark:border-slate-700 text-center">
+                                        <a href="${window.location.origin + window.location.pathname}" class="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold transition shadow-lg shadow-indigo-500/30 text-sm">
+                                            Kendi NotLa Uygulamanı Oluştur
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        return; // Normal uygulamanın yüklenmesini durdur
+                    } else {
+                        alert("Bu paylaşılan not bulunamadı veya silinmiş.");
+                    }
+                } catch (e) {
+                    console.error("Paylaşılan not yüklenirken hata:", e);
+                }
+            }
+            // -------------------------------------------------------------
             localforage.config({ name: 'NotLaApp', storeName: 'notla_data' });
 
             try {
