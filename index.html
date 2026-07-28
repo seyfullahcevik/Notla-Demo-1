@@ -847,19 +847,24 @@
             }
         }
 
-        // Paylaşılan notu kişinin kendi local/bulut defterine aktaran fonksiyon
-        async function importSharedNoteToMyNotes(sId) {
+        // --- 2. NOT AKTARMA VE ARKA PLAN SENKRONİZASYONU ---
+        
+        async function importSharedNote(sId, type) {
             try {
                 const doc = await firebase.firestore().collection('shared_notes').doc(sId).get();
                 if(doc.exists) {
                     const data = doc.data();
+                    
+                    // Bağlantılı notlarda ID'yi aynı tutuyoruz ki mükerrer eklemeyi engelleyelim
+                    const noteId = type === 'linked' ? sId : Date.now().toString(); 
+                    
                     const newNote = {
-                        id: Date.now().toString(),
+                        id: noteId,
                         type: 'note',
-                        title: data.title + " (Paylaşılan)",
+                        title: type === 'linked' ? data.title : data.title + " (Kopya)",
                         content: data.content,
-                        tags: ['Paylaşılan'],
-                        color: 'white',
+                        tags: type === 'linked' ? ['Ortak Not'] : ['Kopya'],
+                        color: type === 'linked' ? '#dbeafe' : 'white', // Ortak notlar mavi renkte belli olur
                         isFavorite: false,
                         reminder: null,
                         location: '',
@@ -867,17 +872,76 @@
                         createdAt: new Date().toISOString(),
                         updatedAt: new Date().toISOString()
                     };
+
+                    if (type === 'linked') {
+                        newNote.isSharedWithMe = true;
+                        newNote.shareId = sId;
+                        newNote.shareMode = data.mode;
+                    }
                     
-                    let localNotes = (await localforage.getItem('notla_notes')) || [];
-                    localNotes.unshift(newNote);
-                    await localforage.setItem('notla_notes', localNotes);
+                    // Aynı not varsa eskini sil (güncelleme mantığı)
+                    notes = notes.filter(n => n.id !== newNote.id);
+                    notes.unshift(newNote);
+                    saveToStorage();
                     
-                    alert("✅ Not başarıyla kendi not defterinize eklendi!");
+                    alert(type === 'linked' ? "✅ Ortak not eklendi! Orijinal değişiklikler buraya yansıyacaktır." : "✅ Notun bağımsız bir kopyası defterinize eklendi.");
                     window.location.href = window.location.origin + window.location.pathname;
                 }
             } catch(err) {
                 console.error(err);
                 alert("Not eklenirken hata oluştu.");
+            }
+        }
+
+        async function syncSharedNotes() {
+            let hasChanges = false;
+            for (let i = 0; i < notes.length; i++) {
+                let note = notes[i];
+                if (note.shareId) {
+                    try {
+                        const doc = await firebase.firestore().collection('shared_notes').doc(note.shareId).get();
+                        if (doc.exists) {
+                            const data = doc.data();
+                            // Karşı taraftan gelen (isSharedWithMe) not ise verileri ezerek güncelle
+                            if (note.isSharedWithMe) {
+                                if (note.content !== data.content || note.title !== data.title || note.shareMode !== data.mode) {
+                                    note.content = data.content;
+                                    note.title = data.title;
+                                    note.shareMode = data.mode;
+                                    hasChanges = true;
+                                }
+                            }
+                        } else {
+                            // SAHİBİ NOTU SİLMİŞ VEYA BAĞLANTIYI DEĞİŞTİRMİŞ
+                            if (note.isSharedWithMe) {
+                                notes.splice(i, 1); // Notu alıcıdan kalıcı olarak sil
+                                i--;
+                                hasChanges = true;
+                                console.log("Orijinal sahibi paylaşımı iptal ettiği için not kaldırıldı.");
+                            } else {
+                                // Biz sahibiysek, ama link ölmüşse, not kalır sadece paylaşım işareti kalkar
+                                delete note.shareId;
+                                delete note.shareMode;
+                                hasChanges = true;
+                            }
+                        }
+                    } catch(e) {}
+                }
+            }
+            if (hasChanges) { saveToStorage(); renderNotes(); }
+        }
+
+        // Değişiklikleri anlık olarak Firebase'e gönderen köprü
+        function pushUpdateToFirebase(note) {
+            if (note.shareId) {
+                // Eğer notun asıl sahibi bizsek VEYA bize düzenleme yetkisi verilmişse
+                if (!note.isSharedWithMe || note.shareMode === 'edit') {
+                    firebase.firestore().collection('shared_notes').doc(note.shareId).update({
+                        title: note.title,
+                        content: note.content,
+                        updatedAt: new Date().toISOString()
+                    }).catch(e => {});
+                }
             }
         }
         function triggerAutoSaveUI() {
