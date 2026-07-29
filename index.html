@@ -1456,7 +1456,8 @@ function filterPalette() {
                 
                 let dotsHtml = '';
                 if (dayNotes.length > 0) {
-                    dotsHtml = `<div class="flex gap-1 justify-center mt-1">` + dayNotes.slice(0,3).map(n => `<div class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${calColors[n.color] || calColors['white']}"></div>`).join('') + (dayNotes.length > 3 ? `<div class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-slate-300"></div>` : '') + `</div>`;
+                    // DÜZELTME: "pointer-events-none" eklendi. Böylece renkli noktalar tıklamayı engellemeyecek.
+                    dotsHtml = `<div class="flex gap-1 justify-center mt-1 pointer-events-none">` + dayNotes.slice(0,3).map(n => `<div class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${calColors[n.color] || calColors['white']}"></div>`).join('') + (dayNotes.length > 3 ? `<div class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-slate-300"></div>` : '') + `</div>`;
                 }
 
                 const isToday = (i === today.getDate() && month === today.getMonth() && year === today.getFullYear());
