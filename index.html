@@ -363,7 +363,125 @@
             </div>
         </div>
     </div>
+<!-- Google Docs Tarzı Paylaşım ve Erişim Yönetimi Modalı -->
+    <div id="shareModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+        <div class="bg-white dark:bg-slate-900 w-full max-w-lg rounded-3xl shadow-2xl flex flex-col overflow-hidden transform transition-transform duration-300 scale-95" id="shareModalContent">
+            <!-- Modal Başlık -->
+            <div class="p-5 sm:p-6 border-b flex items-center justify-between dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50">
+                <h2 class="text-lg sm:text-xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                    <i data-lucide="users" class="w-5 h-5 text-blue-500"></i> Erişimi Yönet
+                </h2>
+                <button onclick="closeShareModal()" class="p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full transition dark:text-slate-300">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            
+            <div class="p-5 sm:p-6 flex flex-col gap-6">
+                <!-- Kişi / Mail Ekleme Alanı -->
+                <div>
+                    <label class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 block">Kişi veya E-posta Ekle</label>
+                    <div class="flex gap-2">
+                        <input type="email" id="shareEmailInput" placeholder="ornek@mail.com" class="flex-1 px-4 py-2.5 bg-slate-100 dark:bg-slate-800 border border-transparent dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-sm dark:text-white">
+                        <button onclick="addEmailToShare()" class="px-4 py-2.5 bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-white rounded-xl text-sm font-semibold transition">Ekle</button>
+                    </div>
+                    <div id="sharedEmailsList" class="mt-3 flex flex-col gap-2 max-h-32 overflow-y-auto custom-scrollbar"></div>
+                </div>
 
+                <div class="w-full h-px bg-slate-100 dark:bg-slate-800"></div>
+
+                <!-- Genel Erişim (Bağlantı) Alanı -->
+                <div>
+                    <label class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 block">Genel Erişim</label>
+                    <div id="shareLinkSection" class="flex flex-col gap-3"></div>
+                </div>
+            </div>
+            
+            <!-- Modal Alt Bilgi ve Butonlar -->
+            <div class="p-4 sm:p-5 border-t dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 flex justify-between items-center gap-2">
+                <button id="copyLinkBtn" onclick="copyModalShareLink()" class="px-4 py-2.5 bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-white rounded-xl text-sm font-semibold transition flex items-center gap-2 hidden">
+                    <i data-lucide="copy" class="w-4 h-4"></i> Bağlantıyı Kopyala
+                </button>
+                <div class="flex-1"></div>
+                <span id="shareStatusText" class="text-xs text-slate-500 font-medium mr-3"></span>
+                <button onclick="saveShareSettings()" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-semibold transition shadow-md shadow-blue-500/30 flex items-center gap-2">
+                    <i data-lucide="save" class="w-4 h-4"></i> Güncelle
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ayarlar Modalı -->
+    <div id="settingsModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+        <div class="bg-white dark:bg-slate-900 w-full max-w-md max-h-[90vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden transform transition-transform duration-300 scale-95" id="settingsModalContent">
+            <div class="p-4 sm:p-6 border-b flex items-center justify-between dark:border-slate-800 shrink-0">
+                <h2 class="text-lg sm:text-xl font-bold text-slate-800 dark:text-white flex items-center gap-2"><i data-lucide="settings" class="w-5 h-5 text-indigo-500"></i> Ayarlar</h2>
+                <button onclick="closeSettings()" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition dark:text-slate-300"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            
+            <div class="p-4 sm:p-6 overflow-y-auto custom-scrollbar flex-1">
+                <h3 class="text-xs sm:text-sm font-semibold text-slate-500 mb-3 uppercase tracking-wider">Görünüm</h3>
+                <div class="grid grid-cols-2 gap-2 sm:gap-3 mb-6">
+                    <button onclick="setTheme('light')" class="flex flex-col items-center gap-2 p-2 sm:p-3 rounded-xl border-2 border-transparent hover:bg-slate-50 dark:hover:bg-slate-800 transition" id="theme-btn-light">
+                        <div class="w-full h-10 sm:h-12 bg-white rounded-lg border shadow-sm flex items-center justify-center text-slate-400"><i data-lucide="sun" class="w-4 h-4 sm:w-5 sm:h-5"></i></div>
+                        <span class="text-[10px] sm:text-xs font-medium dark:text-slate-300">Açık</span>
+                    </button>
+                    <button onclick="setTheme('dark')" class="flex flex-col items-center gap-2 p-2 sm:p-3 rounded-xl border-2 border-transparent hover:bg-slate-50 dark:hover:bg-slate-800 transition" id="theme-btn-dark">
+                        <div class="w-full h-10 sm:h-12 bg-slate-900 rounded-lg border border-slate-700 shadow-sm flex items-center justify-center text-slate-400"><i data-lucide="moon" class="w-4 h-4 sm:w-5 sm:h-5"></i></div>
+                        <span class="text-[10px] sm:text-xs font-medium dark:text-slate-300">Koyu</span>
+                    </button>
+                </div>
+
+                <h3 class="text-xs sm:text-sm font-semibold text-slate-500 mb-3 uppercase tracking-wider">Editör</h3>
+                <div class="space-y-2 mb-6">
+                    <label class="flex items-center justify-between p-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer">
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="type" class="w-5 h-5 text-slate-500"></i>
+                            <div class="text-left">
+                                <div class="text-sm font-bold dark:text-slate-200">Yazım Denetimi</div>
+                                <div class="text-xs text-slate-500 dark:text-slate-400">Hatalı kelimelerin altını çiz.</div>
+                            </div>
+                        </div>
+                        <input type="checkbox" id="spellcheckToggle" class="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500" onchange="toggleSpellcheck()">
+                    </label>
+                </div>
+
+                <h3 class="text-xs sm:text-sm font-semibold text-slate-500 mb-3 uppercase tracking-wider">Veri Yönetimi</h3>
+                <div class="space-y-2">
+                    <button onclick="exportBackup()" class="w-full flex items-center gap-3 p-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition group">
+                        <i data-lucide="download-cloud" class="w-5 h-5 text-indigo-500 group-hover:scale-110 transition-transform"></i>
+                        <div class="text-left">
+                            <div class="text-sm font-bold dark:text-slate-200">Yedeği İndir</div>
+                            <div class="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400">Tüm notlarını cihaza kaydet.</div>
+                        </div>
+                    </button>
+                    <label class="w-full flex items-center gap-3 p-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer group">
+                        <i data-lucide="upload-cloud" class="w-5 h-5 text-indigo-500 group-hover:scale-110 transition-transform"></i>
+                        <div class="text-left flex-1">
+                            <div class="text-sm font-bold dark:text-slate-200">Yedeği Yükle</div>
+                            <div class="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400">Daha önceki yedeği geri yükle.</div>
+                        </div>
+                        <input type="file" id="backupInput" accept=".json" class="hidden" onchange="importBackup(event)">
+                    </label>
+                    <button onclick="clearAllData()" class="w-full flex items-center gap-3 p-3 rounded-xl border border-red-200 dark:border-red-900/50 hover:bg-red-50 dark:hover:bg-red-900/20 transition text-red-600 dark:text-red-400 mt-4 group">
+                        <i data-lucide="alert-triangle" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
+                        <div class="text-left">
+                            <div class="text-sm font-bold">Tüm Verileri Sil</div>
+                            <div class="text-[10px] sm:text-xs opacity-80">Uygulamayı sıfırla.</div>
+                        </div>
+                    </button>
+
+                    <!-- Çıkış Yap Butonu -->
+                    <button onclick="logoutUser()" class="w-full flex items-center gap-3 p-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition text-slate-600 dark:text-slate-300 mt-4 group">
+                        <i data-lucide="log-out" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
+                        <div class="text-left">
+                            <div class="text-sm font-bold">Çıkış Yap</div>
+                            <div class="text-[10px] sm:text-xs opacity-80">Hesabınızdan güvenle çıkış yapın.</div>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- Export İçin Görünmez Konteyner -->
     <div id="exportContainer" class="hidden bg-white p-8 text-black w-[800px]"></div>
 
