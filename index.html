@@ -123,12 +123,12 @@
     <!-- 1. SLASH KOMUT MENÜSÜ -->
     <div id="slashMenu" class="fixed z-[120] hidden bg-white dark:bg-slate-800 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-700 w-56 overflow-hidden transform scale-95 opacity-0 transition-all duration-150">
         <div class="px-3 py-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest border-b dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50">Biçimlendirme</div>
-        <button onclick="applySlashCommand('h1')" class="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-700 transition text-sm dark:text-white text-left"><div class="p-1 bg-white dark:bg-slate-900 border dark:border-slate-600 rounded text-slate-500 shadow-sm"><i data-lucide="heading-1" class="w-4 h-4"></i></div> Büyük Başlık</button>
-        <button onclick="applySlashCommand('h2')" class="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-700 transition text-sm dark:text-white text-left"><div class="p-1 bg-white dark:bg-slate-900 border dark:border-slate-600 rounded text-slate-500 shadow-sm"><i data-lucide="heading-2" class="w-4 h-4"></i></div> Orta Başlık</button>
-        <button onclick="applySlashCommand('list')" class="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-700 transition text-sm dark:text-white text-left"><div class="p-1 bg-white dark:bg-slate-900 border dark:border-slate-600 rounded text-slate-500 shadow-sm"><i data-lucide="list" class="w-4 h-4"></i></div> Madde İmi</button>
+        <button onmousedown="event.preventDefault(); applySlashCommand('h1')" class="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-700 transition text-sm dark:text-white text-left"><div class="p-1 bg-white dark:bg-slate-900 border dark:border-slate-600 rounded text-slate-500 shadow-sm"><i data-lucide="heading-1" class="w-4 h-4"></i></div> Büyük Başlık</button>
+        <button onmousedown="event.preventDefault(); applySlashCommand('h2')" class="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-700 transition text-sm dark:text-white text-left"><div class="p-1 bg-white dark:bg-slate-900 border dark:border-slate-600 rounded text-slate-500 shadow-sm"><i data-lucide="heading-2" class="w-4 h-4"></i></div> Orta Başlık</button>
+        <button onmousedown="event.preventDefault(); applySlashCommand('list')" class="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-700 transition text-sm dark:text-white text-left"><div class="p-1 bg-white dark:bg-slate-900 border dark:border-slate-600 rounded text-slate-500 shadow-sm"><i data-lucide="list" class="w-4 h-4"></i></div> Madde İmi</button>
         
         <div class="px-3 py-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest border-y dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50 mt-1">Eklentiler</div>
-        <button onclick="applySlashCommand('reminder')" class="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition text-sm text-indigo-600 dark:text-indigo-400 text-left font-bold"><div class="p-1 bg-indigo-100 dark:bg-indigo-900/50 rounded text-indigo-600 dark:text-indigo-400"><i data-lucide="bell-ring" class="w-4 h-4"></i></div> Hatırlatıcı Ekle</button>
+        <button onmousedown="event.preventDefault(); applySlashCommand('reminder')" class="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition text-sm text-indigo-600 dark:text-indigo-400 text-left font-bold"><div class="p-1 bg-indigo-100 dark:bg-indigo-900/50 rounded text-indigo-600 dark:text-indigo-400"><i data-lucide="bell-ring" class="w-4 h-4"></i></div> Hatırlatıcı Ekle</button>
     </div>
 
     <!-- 2. KOMUT PALETİ (Ctrl+K) -->
@@ -305,11 +305,11 @@
                 <span class="text-[10px] sm:text-xs text-slate-400 font-medium italic hidden sm:block mr-2" id="saveStatus">Kaydedildi</span>
                 <button id="modalTaskCheck" onclick="toggleCurrentTaskCheck()" class="hidden w-7 h-7 rounded-full border-2 items-center justify-center shrink-0 transition-colors"></button>
                <!-- Komut Paleti Tetikleyici Buton -->
-<button onclick="openPalette()" class="hidden sm:flex items-center gap-1.5 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 px-3 py-2 rounded-lg text-sm font-medium transition mr-1 sm:mr-2 border border-slate-200 dark:border-slate-700" title="Komut Paleti">
+<button onclick="openPalette()" class="flex items-center gap-1.5 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 px-3 py-2 rounded-lg text-sm font-medium transition mr-1 sm:mr-2 border border-slate-200 dark:border-slate-700" title="Komut Paleti">
     <i data-lucide="command" class="w-4 h-4"></i>
     <span class="hidden sm:inline">Menü</span>
-    <span class="text-[10px] bg-white dark:bg-slate-900 px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-700 ml-1 opacity-70">Ctrl+K</span>
-</button> 
+    <span class="text-[10px] bg-white dark:bg-slate-900 px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-700 ml-1 opacity-70 hidden sm:block">Ctrl+K</span>
+</button>
                <!-- Kolay Paylaş Butonu -->
                 <button onclick="openShareModalFromEditor()" class="flex items-center gap-2 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 px-3 py-2 rounded-lg text-sm font-medium transition mr-1 sm:mr-2">
                     <i data-lucide="share-2" class="w-5 h-5"></i>
@@ -2111,15 +2111,24 @@ async function clearAllData() {
 }
         // --- GLOBAL TIKLAMA (PENCERELERİ KAPATMA) ---
         window.onclick = function(event) {
+            // Dışa aktar menüsü
             if (!event.target.closest('button[onclick="toggleExportMenu()"]') && !event.target.closest('#exportMenu')) {
                 const exMenu = document.getElementById('exportMenu'); if (exMenu) exMenu.classList.add('hidden');
             }
+            // Modallar
             if (event.target.id === 'settingsModal') { closeSettings(); }
             if (event.target.id === 'shareModal') { closeShareModal(); }
             if (event.target.id === 'eventModal') { closeEventModal(); }
             
+            // Kart araç çubuğu
             const toolbar = document.getElementById('cardToolbar');
             if (toolbar && !toolbar.classList.contains('hidden') && !event.target.closest('.note-card') && !event.target.closest('#cardToolbar')) { closeCardToolbar(); }
+
+            // YENİ: Slash Menüsü - Dışarıya tıklandığında veya editör dışına çıkıldığında kapat
+            const slashMenu = document.getElementById('slashMenu');
+            if (slashMenu && !slashMenu.classList.contains('hidden') && !event.target.closest('#slashMenu')) {
+                hideSlashMenu();
+            }
         }
     </script>
     <!-- Tailwind CDN'in dinamik renkleri okuyabilmesi için Gizli Konteyner (</body> etiketinden hemen önceye koyun) -->
