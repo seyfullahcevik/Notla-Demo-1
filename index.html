@@ -913,17 +913,29 @@
                 } else { checkBtn.classList.add('hidden'); titleInput.classList.remove('line-through', 'text-slate-400'); }
 
                 renderAttachments();
-                const modal = document.getElementById('editorModal'); const content = document.getElementById('editorModalContent');
-                modal.classList.remove('hidden'); void modal.offsetWidth; modal.classList.remove('opacity-0'); modal.classList.add('opacity-100');
-                content.classList.remove('scale-95', 'translate-y-4'); content.classList.add('scale-100', 'translate-y-0');
-                if(window.innerWidth > 768 && !isReadOnly) { setTimeout(() => { if(editor) editor.focus(); }, 300); }
+                
+                const modal = document.getElementById('editorModal');
+                modal.classList.remove('hidden'); 
+                void modal.offsetWidth; // Tarayıcıyı yenilemeye zorlar
+                modal.classList.remove('opacity-0', 'translate-y-12'); 
+                modal.classList.add('opacity-100', 'translate-y-0');
+                
+                if(window.innerWidth > 768 && !isReadOnly) { setTimeout(() => { if(editor) editor.focus(); }, 400); }
             }
         }
 
         function saveAndClose() {
-            const modal = document.getElementById('editorModal'); const content = document.getElementById('editorModalContent');
-            modal.classList.remove('opacity-100'); modal.classList.add('opacity-0'); content.classList.remove('scale-100'); content.classList.add('scale-95');
-            setTimeout(() => { modal.classList.add('hidden'); currentNoteId = null; if(currentFilter === 'calendar') renderCalendar(); else renderNotes(); }, 300);
+            const modal = document.getElementById('editorModal');
+            // Yeni sayfa hissi için yumuşak kapanış ve aşağı kayma
+            modal.classList.remove('opacity-100', 'translate-y-0'); 
+            modal.classList.add('opacity-0', 'translate-y-12');
+            
+            // Animasyon (500ms) bittiğinde ekranı tamamen temizle
+            setTimeout(() => {
+                modal.classList.add('hidden'); 
+                currentNoteId = null;
+                if(currentFilter === 'calendar') renderCalendar(); else renderNotes();
+            }, 500); 
         }
 
         function triggerAutoSaveUI() {
