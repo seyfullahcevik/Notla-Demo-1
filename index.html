@@ -144,35 +144,24 @@
                 </button>
             </div>
 
-            <!-- Telefon ile Giriş Arayüzü (Başlangıçta Gizli) -->
+            <!-- Telefon ile Giriş Arayüzü -->
             <div id="phoneLoginUI" class="hidden flex-col gap-4">
-                <!-- 1. Adım: Telefon Numarası Gir -->
                 <div id="phoneStep1" class="flex flex-col gap-3">
                     <p class="text-sm text-slate-600 dark:text-slate-300 font-medium">Telefon numaranızı girin</p>
-                    
                     <div class="flex gap-2">
-                        <!-- Kaydırmalı Alan Kodu Seçici -->
                         <select id="countryCodeSelect" class="w-1/3 sm:w-1/4 px-1 sm:px-2 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-center text-sm sm:text-base font-semibold dark:text-white cursor-pointer custom-scrollbar">
                             <option value="+90">🇹🇷 +90</option>
                             <option value="+1">🇺🇸 +1</option>
                             <option value="+44">🇬🇧 +44</option>
                             <option value="+49">🇩🇪 +49</option>
-                            <option value="+33">🇫🇷 +33</option>
-                            <option value="+7">🇷🇺 +7</option>
-                            <option value="+994">🇦🇿 +994</option>
                         </select>
-                        
-                        <!-- Bitişik Yazılacak Telefon Numarası -->
                         <input type="tel" id="phoneNumberInput" placeholder="5551234567" class="flex-1 px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-lg font-bold dark:text-white tracking-widest placeholder-slate-400">
                     </div>
-
                     <div class="flex gap-2 mt-1">
                         <button onclick="cancelPhoneLogin()" class="flex-1 py-3 bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-white rounded-xl font-semibold transition shadow-sm">İptal</button>
                         <button onclick="sendSMSCode()" class="flex-1 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold transition shadow-sm">SMS Gönder</button>
                     </div>
                 </div>
-
-                <!-- 2. Adım: SMS Kodu Doğrulama -->
                 <div id="phoneStep2" class="hidden flex-col gap-3">
                     <p class="text-sm text-slate-600 dark:text-slate-300 font-medium">Telefonunuza gelen 6 haneli kodu girin</p>
                     <input type="number" id="smsCodeInput" placeholder="123456" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-center text-xl font-bold dark:text-white tracking-[0.5em]">
@@ -181,14 +170,13 @@
                         <button onclick="verifySMSCode()" class="flex-1 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold transition">Doğrula</button>
                     </div>
                 </div>
-                
-                <!-- Firebase reCAPTCHA kapsayıcısı -->
                 <div id="recaptcha-container"></div>
             </div>
             <p id="loginStatusMsg" class="mt-4 text-xs text-slate-400 hidden"></p>
         </div>
     </div>
 
+    <!-- ANA UYGULAMA (Sidebar ve İçerik) -->
     <div id="app" class="flex h-screen w-full relative">
         <!-- Mobil Sidebar Arka Plan Karartması -->
         <div id="sidebarBackdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-30 hidden md:hidden transition-opacity opacity-0"></div>
@@ -202,7 +190,6 @@
                     </div>
                     <h1 class="text-2xl font-bold tracking-tight text-slate-800 dark:text-white">NotLa</h1>
                 </div>
-                <!-- Mobil Sidebar Kapatma Butonu -->
                 <button onclick="toggleSidebar()" class="md:hidden p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">
                     <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
@@ -239,7 +226,6 @@
         <main class="flex-1 flex flex-col relative min-w-0 w-full h-full">
             <!-- Header -->
             <header class="h-16 md:h-20 flex items-center justify-between px-4 md:px-8 bg-white/80 backdrop-blur-md sticky top-0 z-10 border-b dark:bg-slate-900/80 dark:border-slate-800">
-                <!-- Mobil Hamburger Menü İkonu -->
                 <button onclick="toggleSidebar()" class="md:hidden p-2 mr-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">
                     <i data-lucide="menu" class="w-6 h-6"></i>
                 </button>
@@ -277,7 +263,93 @@
         </main>
     </div>
 
-<!-- Google Docs Tarzı Paylaşım ve Erişim Yönetimi Modalı -->
+    <!-- Editör (Notion Tarzı Tam Sayfa) -->
+    <div id="editorModal" class="fixed inset-0 z-50 hidden bg-white dark:bg-slate-900 transition-all duration-400 ease-[cubic-bezier(0.22,1,0.36,1)] opacity-0 translate-y-12 overflow-y-auto custom-scrollbar">
+        
+        <!-- Üst Bar: Sadece Sol Üstte Geri Tuşu, Sağda İndir ve Menü -->
+        <div class="sticky top-0 z-20 bg-white/90 dark:bg-slate-900/90 backdrop-blur px-4 sm:px-8 py-3 flex items-center justify-between border-b border-transparent dark:border-transparent transition-colors" id="editorHeader">
+            <button onclick="saveAndClose()" class="flex items-center gap-2 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 transition group px-2 py-1 rounded-lg">
+                <i data-lucide="chevron-left" class="w-6 h-6 group-hover:-translate-x-1 transition-transform"></i>
+                <span class="font-medium text-sm sm:text-base">Geri</span>
+            </button>
+            
+            <div class="flex items-center gap-2 sm:gap-4 shrink-0">
+                <span class="text-[10px] sm:text-xs text-slate-400 font-medium italic hidden sm:block mr-2" id="saveStatus">Kaydedildi</span>
+                <button id="modalTaskCheck" onclick="toggleCurrentTaskCheck()" class="hidden w-7 h-7 rounded-full border-2 items-center justify-center shrink-0 transition-colors"></button>
+                
+               <!-- Kolay Paylaş Butonu -->
+                <button onclick="openShareModalFromEditor()" class="flex items-center gap-2 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 px-3 py-2 rounded-lg text-sm font-medium transition mr-1 sm:mr-2">
+                    <i data-lucide="share-2" class="w-5 h-5"></i>
+                    <span class="hidden sm:inline">Paylaş</span>
+                </button>
+
+                <!-- Dışa Aktar Dropdown -->
+                <div class="relative hidden sm:block">
+                    <button onclick="toggleExportMenu()" class="flex items-center gap-2 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 px-3 py-2 rounded-lg text-sm font-medium transition">
+                        <i data-lucide="more-horizontal" class="w-5 h-5"></i>
+                    </button>
+                    <div id="exportMenu" class="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-slate-800 shadow-xl rounded-xl border dark:border-slate-700 overflow-hidden py-1 z-50">
+                        <div class="px-4 py-2 text-xs font-bold text-slate-400 uppercase tracking-widest border-b dark:border-slate-700 mb-1">Dışa Aktar</div>
+                        <button onclick="exportNote('pdf')" class="w-full text-left px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-700 text-sm flex items-center gap-3 dark:text-white"><i data-lucide="file-text" class="w-4 h-4 text-red-500"></i> PDF Olarak</button>
+                        <button onclick="exportNote('txt')" class="w-full text-left px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-700 text-sm flex items-center gap-3 dark:text-white"><i data-lucide="file" class="w-4 h-4 text-blue-500"></i> TXT Olarak</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sayfa (Sayfanın genişliği ve içeriği) -->
+        <div class="w-full max-w-4xl mx-auto px-4 sm:px-12 pb-32 flex flex-col mt-4" id="editorModalContent">
+            
+            <!-- Dev Başlık Alanı -->
+            <input type="text" id="noteTitle" placeholder="Başlıksız" class="w-full text-4xl sm:text-5xl font-bold bg-transparent outline-none mb-6 dark:text-white placeholder-slate-200 dark:placeholder-slate-800 transition-colors">
+            
+            <!-- Alt Meta Veriler (Renk, Etiket, Hatırlatıcı) -->
+            <div class="flex flex-wrap items-center gap-2 sm:gap-4 mb-6 border-b border-slate-100 dark:border-slate-800 pb-6">
+                <!-- Renk -->
+                <div class="flex items-center gap-2 px-2 py-1 rounded hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+                    <i data-lucide="palette" class="w-4 h-4 text-slate-400"></i>
+                    <select id="noteColor" class="text-sm bg-transparent outline-none dark:text-slate-300 cursor-pointer font-medium">
+                        <option value="white">Sade</option>
+                        <option value="#fee2e2">Kırmızı</option>
+                        <option value="#fef3c7">Sarı</option>
+                        <option value="#dcfce7">Yeşil</option>
+                        <option value="#dbeafe">Mavi</option>
+                        <option value="#f3e8ff">Mor</option>
+                    </select>
+                </div>
+                <!-- Etiket -->
+                <div class="flex items-center gap-2 px-2 py-1 rounded hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+                    <i data-lucide="tag" class="w-4 h-4 text-slate-400"></i>
+                    <input type="text" id="noteTags" placeholder="Etiket ekle..." class="text-sm font-medium bg-transparent outline-none dark:text-slate-300 w-28 sm:w-36 placeholder-slate-400">
+                </div>
+                <!-- Görevse: Hatırlatıcı -->
+                <div id="reminderContainer" class="flex items-center gap-2 px-2 py-1 rounded hover:bg-slate-50 dark:hover:bg-slate-800 transition hidden">
+                    <i data-lucide="clock" class="w-4 h-4 text-slate-400"></i>
+                    <input type="datetime-local" id="noteReminder" class="text-sm font-medium bg-transparent outline-none dark:text-slate-300 cursor-pointer w-full">
+                </div>
+                <!-- Görevse: Konum -->
+                <div id="locationContainer" class="flex items-center gap-2 px-2 py-1 rounded hover:bg-slate-50 dark:hover:bg-slate-800 transition hidden">
+                    <i data-lucide="map-pin" class="w-4 h-4 text-slate-400"></i>
+                    <input type="text" id="noteLocation" placeholder="Konum..." class="text-sm font-medium bg-transparent outline-none dark:text-slate-300 w-24">
+                </div>
+            </div>
+
+            <!-- Editör -->
+            <div id="quillEditor" class="flex-1"></div>
+
+            <!-- Ekler -->
+            <div class="mt-12 pt-6 border-t border-slate-100 dark:border-slate-800">
+                <div class="flex items-center gap-4 mb-4">
+                    <h4 class="text-sm font-semibold text-slate-600 dark:text-slate-400 flex items-center gap-2"><i data-lucide="paperclip" class="w-4 h-4"></i> Dosyalar</h4>
+                    <button onclick="document.getElementById('fileInput').click()" class="text-xs bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 px-3 py-1.5 rounded-lg font-medium transition dark:text-white flex items-center gap-1"><i data-lucide="plus" class="w-3 h-3"></i> Ekle</button>
+                    <input type="file" id="fileInput" class="hidden" multiple onchange="handleFileUpload(event)">
+                </div>
+                <div id="attachmentList" class="flex flex-wrap gap-2"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Google Docs Tarzı Paylaşım ve Erişim Yönetimi Modalı -->
     <div id="shareModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
         <div class="bg-white dark:bg-slate-900 w-full max-w-lg rounded-3xl shadow-2xl flex flex-col overflow-hidden transform transition-transform duration-300 scale-95" id="shareModalContent">
             <!-- Modal Başlık -->
@@ -396,49 +468,8 @@
             </div>
         </div>
     </div>
-    <!-- Export İçin Görünmez Konteyner -->
-    <div id="exportContainer" class="hidden bg-white p-8 text-black w-[800px]"></div>
 
-    <!-- Kartlar İçin Uzun Basma / Sağ Tık Araç Çubuğu -->
-    <div id="cardToolbar" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900/90 dark:bg-slate-800/90 backdrop-blur-md text-white px-4 py-3 rounded-2xl shadow-2xl z-50 hidden border border-slate-700 transition-all transform translate-y-10 opacity-0 max-w-[90vw] overflow-hidden">
-        <input type="hidden" id="activeCardId">
-        <!-- ANA MENÜ -->
-        <div id="mainToolbarActions" class="flex items-center gap-3">
-            <button onclick="switchToolbar('edit')" class="flex flex-col items-center gap-1 p-2 hover:bg-white/10 rounded-xl transition text-xs font-medium"><i data-lucide="edit-3" class="w-5 h-5 text-indigo-400"></i> Düzenle</button>
-            <button onclick="switchToolbar('color')" class="flex flex-col items-center gap-1 p-2 hover:bg-white/10 rounded-xl transition text-xs font-medium"><i data-lucide="palette" class="w-5 h-5 text-yellow-400"></i> Renk</button>
-            <button onclick="switchToolbar('tag')" class="flex flex-col items-center gap-1 p-2 hover:bg-white/10 rounded-xl transition text-xs font-medium"><i data-lucide="tag" class="w-5 h-5 text-green-400"></i> Etiket</button>
-            <button onclick="openShareModal()" class="flex flex-col items-center gap-1 p-2 hover:bg-white/10 rounded-xl transition text-xs font-medium"><i data-lucide="users" class="w-5 h-5 text-blue-400"></i> Erişimi Yönet</button>
-            <div class="w-px h-8 bg-slate-700"></div>
-            <button onclick="toolbarAction('trash')" class="flex flex-col items-center gap-1 p-2 hover:bg-red-500/20 rounded-xl transition text-xs font-medium text-red-400"><i data-lucide="trash-2" class="w-5 h-5"></i> Sil</button>
-            <button onclick="closeCardToolbar()" class="p-1.5 hover:bg-white/10 rounded-full transition text-slate-400 ml-1"><i data-lucide="x" class="w-4 h-4"></i></button>
-        </div>
-        <!-- 1. ALT MENÜ: DÜZENLEME -->
-        <div id="editToolbarActions" class="hidden items-center gap-2 sm:gap-4">
-            <button onclick="switchToolbar('main')" class="p-2 hover:bg-white/10 rounded-xl transition text-slate-400"><i data-lucide="arrow-left" class="w-5 h-5"></i></button>
-            <div class="w-px h-6 bg-slate-700"></div>
-            <button onclick="handleEditAction('title')" class="flex flex-col items-center gap-1 p-2 hover:bg-white/10 rounded-xl transition text-[10px] sm:text-xs font-medium text-indigo-300"><i data-lucide="type" class="w-5 h-5"></i> Başlığı Düzenle</button>
-            <button onclick="handleEditAction('content')" class="flex flex-col items-center gap-1 p-2 hover:bg-white/10 rounded-xl transition text-[10px] sm:text-xs font-medium text-indigo-400"><i data-lucide="file-edit" class="w-5 h-5"></i> İçeriğe Gir</button>
-        </div>
-        <!-- 2. ALT MENÜ: RENKLER -->
-        <div id="colorToolbarActions" class="hidden items-center gap-3">
-            <button onclick="switchToolbar('main')" class="p-2 hover:bg-white/10 rounded-xl transition text-slate-400"><i data-lucide="arrow-left" class="w-5 h-5"></i></button>
-            <div class="w-px h-6 bg-slate-700 mr-1"></div>
-            <button onclick="handleColorAction('white')" class="w-7 h-7 rounded-full bg-white border-2 border-slate-300 hover:scale-110 transition"></button>
-            <button onclick="handleColorAction('#fee2e2')" class="w-7 h-7 rounded-full bg-red-100 border-2 border-red-300 hover:scale-110 transition"></button>
-            <button onclick="handleColorAction('#fef3c7')" class="w-7 h-7 rounded-full bg-yellow-100 border-2 border-yellow-300 hover:scale-110 transition"></button>
-            <button onclick="handleColorAction('#dcfce7')" class="w-7 h-7 rounded-full bg-green-100 border-2 border-green-300 hover:scale-110 transition"></button>
-            <button onclick="handleColorAction('#dbeafe')" class="w-7 h-7 rounded-full bg-blue-100 border-2 border-blue-300 hover:scale-110 transition"></button>
-            <button onclick="handleColorAction('#f3e8ff')" class="w-7 h-7 rounded-full bg-purple-100 border-2 border-purple-300 hover:scale-110 transition"></button>
-        </div>
-        <!-- 3. ALT MENÜ: ETİKETLER -->
-        <div id="tagToolbarActions" class="hidden items-center gap-2">
-            <button onclick="switchToolbar('main')" class="p-2 hover:bg-white/10 rounded-xl transition text-slate-400 shrink-0"><i data-lucide="arrow-left" class="w-5 h-5"></i></button>
-            <div class="w-px h-6 bg-slate-700 shrink-0"></div>
-            <div id="toolbarTagList" class="flex items-center gap-2 overflow-x-auto custom-scrollbar max-w-[150px] sm:max-w-[250px] px-1 py-1"></div>
-            <button onclick="handleTagAction('new')" class="p-2 bg-green-500/20 hover:bg-green-500/40 rounded-full transition text-green-400 shrink-0" title="Yeni Etiket Oluştur"><i data-lucide="plus" class="w-5 h-5"></i></button>
-        </div>
-    </div>
-<!-- TAKVİM ETKİNLİK EKLEME MODALI -->
+    <!-- TAKVİM ETKİNLİK EKLEME MODALI -->
     <div id="eventModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[80] hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
         <div class="bg-white dark:bg-slate-900 w-full max-w-lg rounded-3xl shadow-2xl flex flex-col overflow-hidden transform transition-transform duration-300 scale-95" id="eventModalContent">
             <div class="p-4 sm:p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50">
@@ -486,6 +517,50 @@
             </div>
         </div>
     </div>
+
+    <!-- Export İçin Görünmez Konteyner -->
+    <div id="exportContainer" class="hidden bg-white p-8 text-black w-[800px]"></div>
+
+    <!-- Kartlar İçin Uzun Basma / Sağ Tık Araç Çubuğu -->
+    <div id="cardToolbar" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900/90 dark:bg-slate-800/90 backdrop-blur-md text-white px-4 py-3 rounded-2xl shadow-2xl z-50 hidden border border-slate-700 transition-all transform translate-y-10 opacity-0 max-w-[90vw] overflow-hidden">
+        <input type="hidden" id="activeCardId">
+        <!-- ANA MENÜ -->
+        <div id="mainToolbarActions" class="flex items-center gap-3">
+            <button onclick="switchToolbar('edit')" class="flex flex-col items-center gap-1 p-2 hover:bg-white/10 rounded-xl transition text-xs font-medium"><i data-lucide="edit-3" class="w-5 h-5 text-indigo-400"></i> Düzenle</button>
+            <button onclick="switchToolbar('color')" class="flex flex-col items-center gap-1 p-2 hover:bg-white/10 rounded-xl transition text-xs font-medium"><i data-lucide="palette" class="w-5 h-5 text-yellow-400"></i> Renk</button>
+            <button onclick="switchToolbar('tag')" class="flex flex-col items-center gap-1 p-2 hover:bg-white/10 rounded-xl transition text-xs font-medium"><i data-lucide="tag" class="w-5 h-5 text-green-400"></i> Etiket</button>
+            <button onclick="openShareModal()" class="flex flex-col items-center gap-1 p-2 hover:bg-white/10 rounded-xl transition text-xs font-medium"><i data-lucide="users" class="w-5 h-5 text-blue-400"></i> Erişimi Yönet</button>
+            <div class="w-px h-8 bg-slate-700"></div>
+            <button onclick="toolbarAction('trash')" class="flex flex-col items-center gap-1 p-2 hover:bg-red-500/20 rounded-xl transition text-xs font-medium text-red-400"><i data-lucide="trash-2" class="w-5 h-5"></i> Sil</button>
+            <button onclick="closeCardToolbar()" class="p-1.5 hover:bg-white/10 rounded-full transition text-slate-400 ml-1"><i data-lucide="x" class="w-4 h-4"></i></button>
+        </div>
+        <!-- 1. ALT MENÜ: DÜZENLEME -->
+        <div id="editToolbarActions" class="hidden items-center gap-2 sm:gap-4">
+            <button onclick="switchToolbar('main')" class="p-2 hover:bg-white/10 rounded-xl transition text-slate-400"><i data-lucide="arrow-left" class="w-5 h-5"></i></button>
+            <div class="w-px h-6 bg-slate-700"></div>
+            <button onclick="handleEditAction('title')" class="flex flex-col items-center gap-1 p-2 hover:bg-white/10 rounded-xl transition text-[10px] sm:text-xs font-medium text-indigo-300"><i data-lucide="type" class="w-5 h-5"></i> Başlığı Düzenle</button>
+            <button onclick="handleEditAction('content')" class="flex flex-col items-center gap-1 p-2 hover:bg-white/10 rounded-xl transition text-[10px] sm:text-xs font-medium text-indigo-400"><i data-lucide="file-edit" class="w-5 h-5"></i> İçeriğe Gir</button>
+        </div>
+        <!-- 2. ALT MENÜ: RENKLER -->
+        <div id="colorToolbarActions" class="hidden items-center gap-3">
+            <button onclick="switchToolbar('main')" class="p-2 hover:bg-white/10 rounded-xl transition text-slate-400"><i data-lucide="arrow-left" class="w-5 h-5"></i></button>
+            <div class="w-px h-6 bg-slate-700 mr-1"></div>
+            <button onclick="handleColorAction('white')" class="w-7 h-7 rounded-full bg-white border-2 border-slate-300 hover:scale-110 transition"></button>
+            <button onclick="handleColorAction('#fee2e2')" class="w-7 h-7 rounded-full bg-red-100 border-2 border-red-300 hover:scale-110 transition"></button>
+            <button onclick="handleColorAction('#fef3c7')" class="w-7 h-7 rounded-full bg-yellow-100 border-2 border-yellow-300 hover:scale-110 transition"></button>
+            <button onclick="handleColorAction('#dcfce7')" class="w-7 h-7 rounded-full bg-green-100 border-2 border-green-300 hover:scale-110 transition"></button>
+            <button onclick="handleColorAction('#dbeafe')" class="w-7 h-7 rounded-full bg-blue-100 border-2 border-blue-300 hover:scale-110 transition"></button>
+            <button onclick="handleColorAction('#f3e8ff')" class="w-7 h-7 rounded-full bg-purple-100 border-2 border-purple-300 hover:scale-110 transition"></button>
+        </div>
+        <!-- 3. ALT MENÜ: ETİKETLER -->
+        <div id="tagToolbarActions" class="hidden items-center gap-2">
+            <button onclick="switchToolbar('main')" class="p-2 hover:bg-white/10 rounded-xl transition text-slate-400 shrink-0"><i data-lucide="arrow-left" class="w-5 h-5"></i></button>
+            <div class="w-px h-6 bg-slate-700 shrink-0"></div>
+            <div id="toolbarTagList" class="flex items-center gap-2 overflow-x-auto custom-scrollbar max-w-[150px] sm:max-w-[250px] px-1 py-1"></div>
+            <button onclick="handleTagAction('new')" class="p-2 bg-green-500/20 hover:bg-green-500/40 rounded-full transition text-green-400 shrink-0" title="Yeni Etiket Oluştur"><i data-lucide="plus" class="w-5 h-5"></i></button>
+        </div>
+    </div>
+
     <!-- Firebase Kütüphaneleri -->
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
@@ -511,97 +586,12 @@
         let currentTheme = localStorage.getItem('notla_theme') || 'light';
         let spellcheckEnabled = localStorage.getItem('notla_spellcheck') !== 'false';
         let currentCalendarDate = new Date();
-        let editingEventId = null;
-        let selectedCalendarDateStr = (function(){ const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; })();
-
-        function selectCalendarDay(dateStr) {
-            selectedCalendarDateStr = dateStr;
-            renderCalendar(); 
-        }
-
-        function openEventModal(dateStr = null, id = null) {
-            const modal = document.getElementById('eventModal');
-            const content = document.getElementById('eventModalContent');
-            
-            document.getElementById('eventTitle').value = '';
-            document.getElementById('eventDate').value = dateStr || selectedCalendarDateStr;
-            document.getElementById('eventTime').value = '';
-            document.getElementById('eventLoc').value = '';
-            document.getElementById('eventTags').value = '';
-            document.getElementById('eventDesc').value = '';
-            editingEventId = null;
-
-            if (id) {
-                const ev = notes.find(n => n.id === id);
-                if (ev) {
-                    editingEventId = id;
-                    document.getElementById('eventTitle').value = ev.title || '';
-                    if (ev.reminder) {
-                        const [d, t] = ev.reminder.split('T');
-                        document.getElementById('eventDate').value = d || '';
-                        document.getElementById('eventTime').value = t || '';
-                    }
-                    document.getElementById('eventLoc').value = ev.location || '';
-                    document.getElementById('eventTags').value = (ev.tags || []).join(', ');
-                    document.getElementById('eventDesc').value = ev.content || '';
-                }
-            }
-
-            modal.classList.remove('hidden'); void modal.offsetWidth;
-            modal.classList.remove('opacity-0'); modal.classList.add('opacity-100');
-            content.classList.remove('scale-95'); content.classList.add('scale-100');
-            lucide.createIcons();
-        }
-
-        function closeEventModal() {
-            const modal = document.getElementById('eventModal');
-            const content = document.getElementById('eventModalContent');
-            modal.classList.remove('opacity-100'); modal.classList.add('opacity-0');
-            content.classList.remove('scale-100'); content.classList.add('scale-95');
-            setTimeout(() => modal.classList.add('hidden'), 300);
-        }
-
-        function saveEvent() {
-            const title = document.getElementById('eventTitle').value.trim();
-            if(!title) { alert('Lütfen etkinlik başlığı girin.'); return; }
-            
-            const date = document.getElementById('eventDate').value;
-            const time = document.getElementById('eventTime').value;
-            const reminder = (date && time) ? `${date}T${time}` : (date ? `${date}T12:00` : null);
-
-            if (editingEventId) {
-                const ev = notes.find(n => n.id === editingEventId);
-                if (ev) {
-                    ev.title = title; ev.reminder = reminder;
-                    ev.location = document.getElementById('eventLoc').value;
-                    ev.tags = document.getElementById('eventTags').value.split(',').map(t=>t.trim()).filter(t=>t);
-                    ev.content = document.getElementById('eventDesc').value;
-                    ev.updatedAt = new Date().toISOString();
-                }
-            } else {
-                const newEvent = {
-                    id: Date.now().toString(), type: 'event', // Etkinlikleri notlardan ayıran kod
-                    title: title, content: document.getElementById('eventDesc').value,
-                    location: document.getElementById('eventLoc').value,
-                    tags: document.getElementById('eventTags').value.split(',').map(t=>t.trim()).filter(t=>t),
-                    reminder: reminder, completed: false, color: 'white',
-                    createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
-                };
-                notes.unshift(newEvent);
-            }
-            
-            saveToStorage(); closeEventModal(); renderCalendar();
-        }
-
-        function deleteEvent(id, e) {
-            e.stopPropagation();
-            if(confirm('Etkinliği silmek istediğinize emin misiniz?')) {
-                notes = notes.filter(n => n.id !== id);
-                saveToStorage(); renderCalendar();
-            }
-        }
         let editor;
         let sortableInstance = null;
+
+        // -- TAKVİM ÖZEL DEĞİŞKENLERİ --
+        let editingEventId = null;
+        let selectedCalendarDateStr = (function(){ const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; })();
 
         if ("Notification" in window && Notification.permission !== "granted" && Notification.permission !== "denied") {
             Notification.requestPermission();
@@ -615,16 +605,54 @@
             };
         };
 
-        const debouncedSaveToStorage = debounce(() => {
-            saveToStorage();
-            const status = document.getElementById('saveStatus');
-            if(!status) return;
-            status.innerText = 'Kaydedildi';
-            status.classList.remove('text-indigo-500');
-            status.classList.add('text-slate-400');
-            if(currentFilter === 'calendar') renderCalendar();
-        }, 800);
+        window.onload = async () => {
+            localforage.config({ name: 'NotLaApp', storeName: 'notla_data' });
+            try {
+                let legacyNotes = localStorage.getItem('notla_notes');
+                let legacyTrash = localStorage.getItem('notla_trash');
+                if (legacyNotes) {
+                    notes = JSON.parse(legacyNotes); await localforage.setItem('notla_notes', notes); localStorage.removeItem('notla_notes');
+                } else { notes = (await localforage.getItem('notla_notes')) || []; }
+                if (legacyTrash) {
+                    trash = JSON.parse(legacyTrash); await localforage.setItem('notla_trash', trash); localStorage.removeItem('notla_trash');
+                } else { trash = (await localforage.getItem('notla_trash')) || []; }
+            } catch (e) {}
 
+            lucide.createIcons(); 
+            initEditor(); 
+            applySpellcheck(); 
+            setTheme(currentTheme); 
+            setFilter(currentFilter); 
+            setInterval(checkReminders, 30000); checkReminders();
+        };
+
+        firebase.auth().onAuthStateChanged(async (user) => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const sharedId = urlParams.get('shared');
+
+            if (user) {
+                window.continueAsGuest();
+                try {
+                    const doc = await firebase.firestore().collection('user_notes').doc(user.uid).get();
+                    if (doc.exists) {
+                        const data = doc.data();
+                        notes = data.notes || []; trash = data.trash || [];
+                        await localforage.setItem('notla_notes', notes);
+                        await localforage.setItem('notla_trash', trash);
+                    }
+                } catch (e) {}
+
+                if (sharedId) {
+                    renderSharedScreen(sharedId, user.email);
+                } else {
+                    renderNotes(); syncSharedNotes();
+                }
+            } else {
+                if (sharedId) { renderSharedScreen(sharedId, null); }
+            }
+        });
+
+        // --- GİRİŞ VE KULLANICI FONKSİYONLARI ---
         window.continueAsGuest = function() {
             const loginScreen = document.getElementById('loginScreen');
             if(loginScreen) {
@@ -636,14 +664,12 @@
             }
         };
 
-       window.loginWithGoogle = function() {
+        window.loginWithGoogle = function() {
             const statusMsg = document.getElementById('loginStatusMsg');
             if(statusMsg) {
                 statusMsg.classList.remove('hidden', 'text-red-500', 'text-green-500');
                 statusMsg.innerText = "Google ile bağlantı kuruluyor...";
-                
                 const provider = new firebase.auth.GoogleAuthProvider();
-
                 firebase.auth().signInWithPopup(provider)
                 .then((result) => {
                     statusMsg.innerText = "Giriş başarılı! Yönlendiriliyorsunuz...";
@@ -652,7 +678,6 @@
                 }).catch((error) => {
                     statusMsg.innerText = "Firebase Hatası: " + error.message;
                     statusMsg.classList.add('text-red-500');
-                    console.error("Detaylı Hata:", error);
                 });
             }
         };
@@ -746,115 +771,39 @@
             });
         };
 
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const backdrop = document.getElementById('sidebarBackdrop');
-            if (sidebar.classList.contains('-translate-x-full')) {
-                sidebar.classList.remove('-translate-x-full'); backdrop.classList.remove('hidden');
-                setTimeout(() => backdrop.classList.remove('opacity-0'), 10);
-            } else {
-                sidebar.classList.add('-translate-x-full'); backdrop.classList.add('opacity-0');
-                setTimeout(() => backdrop.classList.add('hidden'), 300);
+        function logoutUser() {
+            if(confirm("Hesabınızdan çıkış yapmak istediğinize emin misiniz?")) {
+                firebase.auth().signOut().then(() => {
+                    notes = []; trash = [];
+                    localforage.clear().then(() => { window.location.reload(); });
+                }).catch((error) => { alert("Çıkış yapılırken bir hata oluştu."); });
             }
         }
 
-        // --- 1. OTURUM VE BAŞLANGIÇ YÖNETİMİ ---
-        firebase.auth().onAuthStateChanged(async (user) => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const sharedId = urlParams.get('shared');
+        // --- VERİTABANI VE SENKRONİZASYON ---
+        const debouncedSaveToStorage = debounce(() => {
+            saveToStorage();
+            const status = document.getElementById('saveStatus');
+            if(!status) return;
+            status.innerText = 'Kaydedildi';
+            status.classList.remove('text-indigo-500');
+            status.classList.add('text-slate-400');
+            if(currentFilter === 'calendar') renderCalendar();
+        }, 800);
 
+        function triggerAutoSaveUI() {
+            const status = document.getElementById('saveStatus');
+            if(status) { status.innerText = 'Kaydediliyor...'; status.classList.remove('text-slate-400'); status.classList.add('text-indigo-500'); }
+            debouncedSaveToStorage(); 
+        }
+
+        function saveToStorage() {
+            const user = firebase.auth().currentUser;
             if (user) {
-                window.continueAsGuest();
-                try {
-                    const doc = await firebase.firestore().collection('user_notes').doc(user.uid).get();
-                    if (doc.exists) {
-                        const data = doc.data();
-                        notes = data.notes || []; trash = data.trash || [];
-                        await localforage.setItem('notla_notes', notes);
-                        await localforage.setItem('notla_trash', trash);
-                    }
-                } catch (e) {}
-
-                if (sharedId) {
-                    renderSharedScreen(sharedId, user.email);
-                } else {
-                    renderNotes(); syncSharedNotes();
-                }
-            } else {
-                if (sharedId) { renderSharedScreen(sharedId, null); }
+                firebase.firestore().collection('user_notes').doc(user.uid).set({ notes: notes, trash: trash, updatedAt: new Date().toISOString() }).catch(err => {});
             }
-        });
-
-        window.onload = async () => {
-            localforage.config({ name: 'NotLaApp', storeName: 'notla_data' });
-            try {
-                let legacyNotes = localStorage.getItem('notla_notes');
-                let legacyTrash = localStorage.getItem('notla_trash');
-                if (legacyNotes) {
-                    notes = JSON.parse(legacyNotes); await localforage.setItem('notla_notes', notes); localStorage.removeItem('notla_notes');
-                } else { notes = (await localforage.getItem('notla_notes')) || []; }
-                if (legacyTrash) {
-                    trash = JSON.parse(legacyTrash); await localforage.setItem('notla_trash', trash); localStorage.removeItem('notla_trash');
-                } else { trash = (await localforage.getItem('notla_trash')) || []; }
-            } catch (e) {}
-
-            lucide.createIcons(); initEditor(); applySpellcheck(); setTheme(currentTheme); setFilter(currentFilter); 
-            setInterval(checkReminders, 30000); checkReminders();
-        };
-
-        // --- PAYLAŞILAN NOT EKRANI & KONTROLLERİ ---
-        async function renderSharedScreen(sharedId, userEmail) {
-            try {
-                const doc = await firebase.firestore().collection('shared_notes').doc(sharedId).get();
-                if (doc.exists) {
-                    const sharedNote = doc.data();
-                    if (sharedNote.accessType === 'restricted') {
-                        if (!userEmail) {
-                            document.getElementById('loginScreen').style.display = 'none';
-                            document.getElementById('app').innerHTML = `<div class="flex-1 flex items-center justify-center bg-slate-50 dark:bg-slate-900 h-screen p-4"><div class="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-xl max-w-md w-full text-center border border-slate-200 dark:border-slate-700"><div class="w-16 h-16 bg-slate-100 dark:bg-slate-700 text-slate-400 rounded-full flex items-center justify-center mx-auto mb-4"><i data-lucide="lock" class="w-8 h-8"></i></div><h2 class="text-xl font-bold text-slate-800 dark:text-white mb-2">Giriş Yapmanız Gerekiyor</h2><p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Bu not kısıtlı erişime sahip. Görüntüleyebilmek için lütfen hesabınıza giriş yapın.</p><button onclick="window.location.reload()" class="w-full flex items-center justify-center gap-3 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3.5 rounded-xl font-semibold transition shadow-md">Giriş Ekranına Dön</button></div></div>`;
-                            lucide.createIcons(); return;
-                        }
-                        if (!sharedNote.sharedEmails || !sharedNote.sharedEmails.includes(userEmail.toLowerCase())) {
-                            document.getElementById('loginScreen').style.display = 'none';
-                            document.getElementById('app').innerHTML = `<div class="flex-1 flex items-center justify-center bg-slate-50 dark:bg-slate-900 h-screen p-4"><div class="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-xl max-w-md w-full text-center border border-slate-200 dark:border-slate-700"><div class="w-16 h-16 bg-red-50 dark:bg-red-900/30 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4"><i data-lucide="shield-alert" class="w-8 h-8"></i></div><h2 class="text-xl font-bold text-slate-800 dark:text-white mb-2">Erişim İzni Gerekiyor</h2><p class="text-sm text-slate-500 dark:text-slate-400 mb-2">Şu anki hesabınızla (<b>${userEmail}</b>) bu nota erişim yetkiniz bulunmuyor.</p><p class="text-xs text-slate-400 dark:text-slate-500 mb-6">Aşağıdaki butona tıklayarak not sahibinden e-posta ile erişim izni isteyebilirsiniz.</p><div class="flex flex-col gap-3"><button onclick="requestAccess('${sharedNote.ownerEmail || ''}', '${sharedNote.title || 'İsimsiz Not'}', '${userEmail}')" class="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3.5 rounded-xl font-semibold transition shadow-md"><i data-lucide="mail" class="w-5 h-5"></i> Erişim İste</button><button onclick="window.location.href = window.location.origin + window.location.pathname" class="w-full flex items-center justify-center gap-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-white px-6 py-3.5 rounded-xl font-semibold transition">Kendi Notlarıma Dön</button></div></div></div>`;
-                            lucide.createIcons(); return;
-                        }
-                    }
-
-                    document.getElementById('loginScreen').style.display = 'none';
-                    document.getElementById('app').innerHTML = `<div class="flex-1 flex flex-col h-screen bg-slate-50 dark:bg-slate-900 overflow-y-auto p-4 sm:p-12 custom-scrollbar"><div class="max-w-3xl mx-auto w-full bg-white dark:bg-slate-800 p-6 sm:p-10 rounded-3xl shadow-xl border dark:border-slate-700"><div class="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-4 border-b dark:border-slate-700 mb-6 gap-4"><div class="flex items-center gap-2"><span class="text-xs font-semibold px-3 py-1 bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 rounded-full">${sharedNote.mode === 'edit' ? '✏️ Düzenlenebilir Paylaşım' : '👁️ Görüntüleme Paylaşımı'}</span></div><div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto"><button onclick="importSharedNote('${sharedId}', 'copy')" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-white rounded-xl text-xs font-semibold transition shadow-sm flex items-center justify-center gap-2"><i data-lucide="copy" class="w-4 h-4"></i> Bağımsız Kopya Al</button><button onclick="importSharedNote('${sharedId}', 'linked')" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold transition shadow-sm flex items-center justify-center gap-2" title="Orijinal not silinirse sizden de silinir"><i data-lucide="link" class="w-4 h-4"></i> Defterime Ekle (Senkronize)</button></div></div><h1 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-6">${sharedNote.title}</h1><div class="prose dark:prose-invert max-w-none text-slate-700 dark:text-slate-300 text-base leading-relaxed">${sharedNote.content}</div><div class="mt-10 pt-6 border-t dark:border-slate-700 text-center"><a href="${window.location.origin + window.location.pathname}" class="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold transition shadow-lg shadow-indigo-500/30 text-sm">Kendi NotLa Uygulamanıza Dönün</a></div></div></div>`;
-                    lucide.createIcons();
-                } else {
-                    alert("Bu paylaşılan not bulunamadı veya silinmiş."); window.location.href = window.location.origin + window.location.pathname;
-                }
-            } catch (e) { console.error("Hata:", e); }
-        }
-
-        function requestAccess(ownerEmail, noteTitle, requesterEmail) {
-            if (!ownerEmail) { alert("Not sahibinin e-posta bilgisi eksik olduğu için otomatik erişim isteği gönderilemiyor."); return; }
-            const subject = encodeURIComponent(`"${noteTitle}" adlı notunuz için erişim isteği`);
-            const body = encodeURIComponent(`Merhaba,\n\n"${noteTitle}" adlı notunuza erişim sağlamak istiyorum.\n\nE-posta adresim: ${requesterEmail}\n\nLütfen beni notun erişim listesine ekler misiniz?\n\nTeşekkürler.`);
-            window.location.href = `mailto:${ownerEmail}?subject=${subject}&body=${body}`;
-            alert("Erişim isteği e-postası göndermek için varsayılan mail uygulamanız açılıyor...");
-        }
-
-        // --- SENKRONİZASYON & VERİTABANI İŞLEMLERİ ---
-        async function importSharedNote(sId, type) {
-            try {
-                const doc = await firebase.firestore().collection('shared_notes').doc(sId).get();
-                if(doc.exists) {
-                    const data = doc.data(); const noteId = type === 'linked' ? sId : Date.now().toString(); 
-                    const newNote = {
-                        id: noteId, type: 'note', title: type === 'linked' ? data.title : data.title + " (Kopya)", content: data.content,
-                        tags: type === 'linked' ? ['Ortak Not'] : ['Kopya'], color: type === 'linked' ? '#dbeafe' : 'white',
-                        isFavorite: false, reminder: null, location: '', attachments: [], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
-                    };
-                    if (type === 'linked') { newNote.isSharedWithMe = true; newNote.shareId = sId; newNote.shareMode = data.mode; }
-                    notes = notes.filter(n => n.id !== newNote.id); notes.unshift(newNote); saveToStorage();
-                    alert(type === 'linked' ? "✅ Ortak not eklendi! Orijinal değişiklikler buraya yansıyacaktır." : "✅ Notun bağımsız bir kopyası defterinize eklendi.");
-                    window.location.href = window.location.origin + window.location.pathname;
-                }
-            } catch(err) { console.error(err); alert("Not eklenirken hata oluştu."); }
+            localforage.setItem('notla_notes', notes).catch(err => {});
+            localforage.setItem('notla_trash', trash).catch(err => {});
         }
 
         async function syncSharedNotes() {
@@ -887,7 +836,7 @@
             }
         }
 
-        // --- EDİTÖR İŞLEMLERİ ---
+        // --- EDİTÖR İŞLEMLERİ (NOTION TARZI) ---
         function applySpellcheck() {
             const editorEl = document.querySelector('.ql-editor'); if (editorEl) editorEl.setAttribute('spellcheck', spellcheckEnabled);
             const toggle = document.getElementById('spellcheckToggle'); if (toggle) toggle.checked = spellcheckEnabled;
@@ -896,7 +845,6 @@
         function toggleSpellcheck() { spellcheckEnabled = document.getElementById('spellcheckToggle').checked; localStorage.setItem('notla_spellcheck', spellcheckEnabled); applySpellcheck(); }
 
         function initEditor() {
-            // Fontları Tanıt
             var Font = Quill.import('formats/font');
             Font.whitelist = ['sans-serif', 'serif', 'monospace', 'comic'];
             Quill.register(Font, true);
@@ -914,7 +862,7 @@
                         [{ 'list': 'ordered'}, { 'list': 'bullet' }, { 'indent': '-1'}, { 'indent': '+1' }], 
                         ['blockquote', 'code-block'],
                         ['link', 'image', 'video'],
-                        ['clean'] // Biçimlendirmeyi temizle
+                        ['clean']
                     ] 
                 }
             });
@@ -981,7 +929,7 @@
                 
                 const modal = document.getElementById('editorModal');
                 modal.classList.remove('hidden'); 
-                void modal.offsetWidth; // Tarayıcıyı yenilemeye zorlar
+                void modal.offsetWidth;
                 modal.classList.remove('opacity-0', 'translate-y-12'); 
                 modal.classList.add('opacity-100', 'translate-y-0');
                 
@@ -991,94 +939,13 @@
 
         function saveAndClose() {
             const modal = document.getElementById('editorModal'); 
+            modal.classList.remove('opacity-100', 'translate-y-0');
             modal.classList.add('opacity-0', 'translate-y-12'); 
             setTimeout(() => { 
                 modal.classList.add('hidden'); 
                 currentNoteId = null; 
                 if(currentFilter === 'calendar') renderCalendar(); else renderNotes(); 
-            }, 400); // Animasyon süresi (400ms) beklenir
-        }
-
-        function triggerAutoSaveUI() {
-            const status = document.getElementById('saveStatus');
-            if(status) { status.innerText = 'Kaydediliyor...'; status.classList.remove('text-slate-400'); status.classList.add('text-indigo-500'); }
-            debouncedSaveToStorage(); 
-        }
-
-        // --- AYARLAR VE DİĞER MODALLAR ---
-        function openSettings() {
-            if(window.innerWidth < 768) toggleSidebar();
-            const modal = document.getElementById('settingsModal'); const content = document.getElementById('settingsModalContent');
-            modal.classList.remove('hidden'); void modal.offsetWidth; modal.classList.remove('opacity-0'); modal.classList.add('opacity-100');
-            content.classList.remove('scale-95'); content.classList.add('scale-100');
-            document.querySelectorAll('[id^="theme-btn-"]').forEach(btn => btn.classList.remove('border-indigo-500', 'bg-indigo-50', 'dark:bg-indigo-900/30'));
-            const activeBtn = document.getElementById('theme-btn-' + currentTheme);
-            if(activeBtn) activeBtn.classList.add('border-indigo-500', 'bg-indigo-50', 'dark:bg-indigo-900/30'); lucide.createIcons();
-        }
-
-        function closeSettings() {
-            const modal = document.getElementById('settingsModal'); const content = document.getElementById('settingsModalContent');
-            modal.classList.remove('opacity-100'); modal.classList.add('opacity-0'); content.classList.remove('scale-100'); content.classList.add('scale-95');
-            setTimeout(() => modal.classList.add('hidden'), 300);
-        }
-
-        function setTheme(theme) {
-            if (theme === 'dynamic') theme = 'light'; currentTheme = theme; localStorage.setItem('notla_theme', theme);
-            if (theme === 'dark') document.documentElement.classList.add('dark'); else document.documentElement.classList.remove('dark');
-            document.body.classList.remove('theme-dark', 'bg-gray-50');
-            if (theme === 'dark') document.body.classList.add('theme-dark'); else document.body.classList.add('bg-gray-50');
-            document.querySelectorAll('[id^="theme-btn-"]').forEach(btn => btn.classList.remove('border-indigo-500', 'bg-indigo-50', 'dark:bg-indigo-900/30'));
-            const activeBtn = document.getElementById('theme-btn-' + theme);
-            if(activeBtn) activeBtn.classList.add('border-indigo-500', 'bg-indigo-50', 'dark:bg-indigo-900/30');
-        }
-
-        // --- VERİ YÖNETİMİ (YEDEK/SİL) ---
-        function exportBackup() {
-            const data = { notes, trash, exportDate: new Date().toISOString() };
-            const blob = new Blob([JSON.stringify(data, null, 2)], {type: "application/json"}); const url = URL.createObjectURL(blob);
-            const a = document.createElement('a'); a.href = url; a.download = `NotLa_Yedek_${new Date().toLocaleDateString('tr-TR').replace(/\./g, '-')}.json`;
-            a.click(); URL.revokeObjectURL(url);
-        }
-
-        function importBackup(e) {
-            const file = e.target.files[0]; if (!file) return; const reader = new FileReader();
-            reader.onload = function(evt) {
-                try {
-                    const data = JSON.parse(evt.target.result);
-                    if (data.notes && Array.isArray(data.notes)) {
-                        if(confirm("DİKKAT: Mevcut notlarınızın üzerine yazılacak. Onaylıyor musunuz?")) {
-                            notes = data.notes; trash = data.trash || []; saveToStorage(); renderNotes(); closeSettings(); alert("Yedek başarıyla yüklendi!");
-                        }
-                    } else { alert("HATA: Geçersiz yedek dosyası."); }
-                } catch(err) { alert("Dosya okunurken hata oluştu."); }
-            }; reader.readAsText(file); e.target.value = '';
-        }
-
-        async function clearAllData() {
-            if(confirm("DİKKAT! Tüm veriler silinecek. Emin misin?")) {
-                if(confirm("Bu işlem GERİ ALINAMAZ. Onaylıyor musun?")) {
-                    notes = []; trash = []; await localforage.clear(); saveToStorage(); renderNotes(); closeSettings(); alert("Tüm veriler silindi.");
-                }
-            }
-        }
-
-        // --- ÇIKIŞ YAPMA İŞLEMİ ---
-        function logoutUser() {
-            if(confirm("Hesabınızdan çıkış yapmak istediğinize emin misiniz?")) {
-                firebase.auth().signOut().then(() => {
-                    notes = []; trash = [];
-                    localforage.clear().then(() => { window.location.reload(); });
-                }).catch((error) => { console.error("Çıkış hatası:", error); alert("Çıkış yapılırken bir hata oluştu."); });
-            }
-        }
-
-        function saveToStorage() {
-            const user = firebase.auth().currentUser;
-            if (user) {
-                firebase.firestore().collection('user_notes').doc(user.uid).set({ notes: notes, trash: trash, updatedAt: new Date().toISOString() }).catch(err => { console.error("Buluta kayıt hatası:", err); });
-            }
-            localforage.setItem('notla_notes', notes).catch(err => console.error(err));
-            localforage.setItem('notla_trash', trash).catch(err => console.error(err));
+            }, 400);
         }
 
         // --- DOSYA EKLERİ ---
@@ -1112,177 +979,14 @@
             if(note && note.attachments) { note.attachments = note.attachments.filter(a => a.id !== id); triggerAutoSaveUI(); renderAttachments(); }
         }
 
-        // --- DİĞER FONKSİYONLAR ---
-        function checkReminders() {
-            const now = new Date().getTime(); let changed = false;
-            notes.forEach(note => {
-                if (note.type === 'task' && note.reminder && !note.reminderShown) {
-                    const reminderTime = new Date(note.reminder).getTime();
-                    if (now >= reminderTime) { showNotification(note.title || 'İsimsiz Görev', "Hatırlatıcı zamanı geldi!"); note.reminderShown = true; changed = true; }
-                }
-            }); if(changed) saveToStorage();
-        }
-
-        function showNotification(title, body) {
-            if ("Notification" in window && Notification.permission === "granted") { new Notification("NotLa: " + title, { body: body, icon: "https://cdn-icons-png.flaticon.com/512/3208/3208703.png" }); } else { alert(`🔔 HATIRLATICI: ${title}\n${body}`); }
-        }
-
-        function toggleExportMenu() { document.getElementById('exportMenu').classList.toggle('hidden'); }
-        function exportNote(type) {
-            const note = notes.find(n => n.id === currentNoteId); if(!note) return; toggleExportMenu(); const title = note.title || 'Adsız Belge';
-            if (type === 'txt') {
-                const tempDiv = document.createElement('div'); tempDiv.innerHTML = note.content;
-                // Sadece Başlık ve İçerik (Ek yazılar kaldırıldı)
-                const content = `${title.toUpperCase()}\n\n${tempDiv.innerText || tempDiv.textContent}`;
-                const blob = new Blob([content], { type: 'text/plain;charset=utf-8' }); const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `${title}.txt`; link.click();
-            } 
-            else if (type === 'pdf') {
-                const container = document.getElementById('exportContainer');
-                // PDF Çıktısı tamamen saf beyaz, sadece başlık ve içeriğe sahip A4 formunda
-                container.innerHTML = `<div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; padding: 40px; color: #000;"><h1 style="border-bottom: 2px solid #eaeaea; padding-bottom: 10px; margin-bottom: 20px; font-size: 28px;">${title}</h1><div style="font-size: 15px; line-height: 1.6;">${note.content}</div></div>`;
-                container.classList.remove('hidden');
-                html2pdf().set({ margin: 0.5, filename: `${title}.pdf`, image: { type: 'jpeg', quality: 1 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } }).from(container).save().then(() => { container.classList.add('hidden'); container.innerHTML = ''; });
-            }
-        }
-
-        function destroySortable() { if (sortableInstance) { try { if (sortableInstance.el) sortableInstance.destroy(); } catch(e) {} sortableInstance = null; } }
-
-        function initSortable() {
-            destroySortable(); const el = document.getElementById('notesContainer'); if (!el) return;
-            if(currentFilter === 'notes' && viewMode === 'grid') {
-                sortableInstance = Sortable.create(el, {
-                    draggable: '.note-card', animation: 150, delay: 200, delayOnTouchOnly: true,
-                    onEnd: function (evt) { const movedItem = notes.splice(evt.oldIndex, 1)[0]; notes.splice(evt.newIndex, 0, movedItem); saveToStorage(); }
-                });
-            }
-        }
-
-        function createNewItem() {
-            const isTask = currentFilter === 'tasks' || currentFilter === 'calendar';
-            const newItem = {
-                id: Date.now().toString(), type: isTask ? 'task' : 'note', title: '', content: '', tags: [], color: 'white',
-                isFavorite: false, reminder: null, location: '', reminderShown: false, attachments: [], completed: false,
-                createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
-            };
-            notes.unshift(newItem); saveToStorage(); openEditor(newItem.id);
-        }
-
-        function createNewNoteWithDate(dateStr) {
-            const newItem = {
-                id: Date.now().toString(), type: 'task', title: '', content: '', tags: [], color: 'white',
-                isFavorite: false, reminder: dateStr + 'T12:00', location: '', reminderShown: false, attachments: [], completed: false,
-                createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
-            };
-            notes.unshift(newItem); saveToStorage(); openEditor(newItem.id);
-        }
-
-        function quickAddTask(event) {
-            if (event.key === 'Enter') {
-                const val = event.target.value.trim();
-                if (val) {
-                    const newTask = {
-                        id: Date.now().toString(), type: 'task', title: val, content: '', tags: [], color: 'white',
-                        isFavorite: false, reminder: null, location: '', reminderShown: false, attachments: [], completed: false,
-                        createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
-                    };
-                    notes.unshift(newTask); saveToStorage(); renderNotes();
-                    const input = document.getElementById('quickAddInput'); if (input) { input.value = ''; input.focus(); }
-                }
-            }
-        }
-
-        function toggleTaskCompletion(id, event) {
-            if(event) event.stopPropagation(); const item = notes.find(n => n.id === id);
-            if(item) { item.completed = !item.completed; saveToStorage(); if(currentFilter === 'calendar') renderCalendar(); else renderNotes(); }
-        }
-
-        function toggleCurrentTaskCheck() {
-            if(currentNoteId) {
-                const note = notes.find(n => n.id === currentNoteId);
-                if(note && note.type === 'task') { note.completed = !note.completed; updateModalTaskCheck(note.completed); triggerAutoSaveUI(); }
-            }
-        }
-
-        function updateModalTaskCheck(isCompleted) {
-            const btn = document.getElementById('modalTaskCheck'); const title = document.getElementById('noteTitle');
-            if(isCompleted) {
-                btn.className = "w-6 h-6 sm:w-7 sm:h-7 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors bg-indigo-500 border-indigo-500 text-white";
-                btn.innerHTML = '<i data-lucide="check" class="w-4 h-4 sm:w-5 sm:h-5"></i>'; title.classList.add('line-through', 'text-slate-400');
-            } else {
-                btn.className = "w-6 h-6 sm:w-7 sm:h-7 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors border-slate-300 dark:border-slate-600 hover:border-indigo-400";
-                btn.innerHTML = ''; title.classList.remove('line-through', 'text-slate-400');
-            }
-            lucide.createIcons();
-        }
-
-        function toggleFavorite(id, e) { e.stopPropagation(); const note = notes.find(n => n.id === id); if (note) { note.isFavorite = !note.isFavorite; saveToStorage(); renderNotes(); } }
-        function restoreFromTrash(id, e) { e.stopPropagation(); const noteIndex = trash.findIndex(n => n.id === id); if (noteIndex > -1) { notes.unshift(trash.splice(noteIndex, 1)[0]); saveToStorage(); renderNotes(); } }
-        function permanentDelete(id, e) { e.stopPropagation(); if(confirm("Kalıcı olarak silinecek. Emin misin?")) { trash = trash.filter(n => n.id !== id); saveToStorage(); renderNotes(); } }
-        function moveToTrash(id, e) {
-            if(e) e.stopPropagation(); const note = notes.find(n => n.id === id); const title = note ? (note.title || 'İsimsiz') : 'Öğe';
-            if (confirm(`"${title}" çöp kutusuna taşınsın mı?`)) { const noteIndex = notes.findIndex(n => n.id === id); if (noteIndex > -1) { trash.unshift(notes.splice(noteIndex, 1)[0]); saveToStorage(); renderNotes(); } }
-        }
-
-        // --- UZUN BASMA / SAĞ TIK MENÜ SİSTEMİ (BAR İÇİNDE BAR) ---
-        function handleCardContext(event, id) {
-            event.preventDefault(); const item = notes.find(n => n.id === id); if (!item) return;
-            document.getElementById('activeCardId').value = id; switchToolbar('main');
-            const toolbar = document.getElementById('cardToolbar');
-            toolbar.classList.remove('hidden'); void toolbar.offsetWidth; toolbar.classList.remove('translate-y-10', 'opacity-0'); toolbar.classList.add('translate-y-0', 'opacity-100');
-        }
-
-        function closeCardToolbar() {
-            const toolbar = document.getElementById('cardToolbar'); toolbar.classList.add('translate-y-10', 'opacity-0'); setTimeout(() => toolbar.classList.add('hidden'), 300);
-        }
-
-        function switchToolbar(menuId) {
-            const menus = ['main', 'edit', 'color', 'tag'];
-            menus.forEach(id => {
-                const el = document.getElementById(id + 'ToolbarActions');
-                if (el) { if (id === menuId) { el.classList.remove('hidden'); el.classList.add('flex'); } else { el.classList.add('hidden'); el.classList.remove('flex'); } }
-            }); lucide.createIcons(); if (menuId === 'tag') populateToolbarTags();
-        }
-
-        function toolbarAction(action) {
-            const id = document.getElementById('activeCardId').value; const note = notes.find(n => n.id === id); if (!note) return;
-            if (action === 'trash') { closeCardToolbar(); const title = note.title || 'İsimsiz'; if (confirm(`"${title}" çöp kutusuna taşınsın mı?`)) { moveToTrash(id); } }
-        }
-
-        function handleEditAction(type) {
-            const id = document.getElementById('activeCardId').value; const note = notes.find(n => n.id === id); if (!note) return;
-            if (type === 'title') { const newTitle = prompt("Notun başlığını düzenleyin:", note.title || ""); if (newTitle !== null) { note.title = newTitle; saveToStorage(); renderNotes(); } } else if (type === 'content') { closeCardToolbar(); openEditor(id); }
-        }
-
-        function handleColorAction(colorCode) {
-            const id = document.getElementById('activeCardId').value; const note = notes.find(n => n.id === id); if (!note) return;
-            note.color = colorCode; saveToStorage(); renderNotes();
-        }
-
-        function populateToolbarTags() {
-            const id = document.getElementById('activeCardId').value; const note = notes.find(n => n.id === id); if (!note) return;
-            const allTags = [...new Set(notes.flatMap(n => n.tags || []))]; const container = document.getElementById('toolbarTagList'); container.innerHTML = '';
-            if (allTags.length === 0) { container.innerHTML = '<span class="text-[10px] text-slate-400 italic">Etiket yok</span>'; return; }
-            allTags.forEach(tag => {
-                const hasTag = (note.tags || []).includes(tag); const btn = document.createElement('button');
-                btn.className = `px-3 py-1.5 rounded-lg text-xs font-bold uppercase transition whitespace-nowrap ${hasTag ? 'bg-green-500 text-white shadow-md' : 'bg-white/10 text-slate-300 hover:bg-white/20'}`;
-                btn.innerText = tag; btn.onclick = () => handleTagAction('toggle', tag); container.appendChild(btn);
-            });
-        }
-
-        function handleTagAction(type, tagValue = '') {
-            const id = document.getElementById('activeCardId').value; const note = notes.find(n => n.id === id); if (!note) return;
-            if (!note.tags) note.tags = [];
-            if (type === 'new') {
-                const newTag = prompt("Yeni oluşturulacak etiket adını girin:");
-                if (newTag && newTag.trim() !== "") { const trimmed = newTag.trim(); if (!note.tags.includes(trimmed)) note.tags.push(trimmed); saveToStorage(); renderNotes(); renderTags(); populateToolbarTags(); }
-            } else if (type === 'toggle') {
-                if (note.tags.includes(tagValue)) { note.tags = note.tags.filter(t => t !== tagValue); } else { note.tags.push(tagValue); }
-                saveToStorage(); renderNotes(); renderTags(); populateToolbarTags();
-            }
-        }
-
         // --- GOOGLE DOCS TARZI ERİŞİM YÖNETİMİ ---
         let tempShareConfig = { emails: [], accessType: 'restricted', mode: 'view' };
+
+        function openShareModalFromEditor() {
+            if (!currentNoteId) return;
+            document.getElementById('activeCardId').value = currentNoteId;
+            openShareModal();
+        }
 
         function openShareModal() {
             closeCardToolbar(); const id = document.getElementById('activeCardId').value; const note = notes.find(n => n.id === id); if (!note) return;
@@ -1396,10 +1100,51 @@
             });
         }
 
-        // --- TAKVİM (CALENDAR) RENDER ---
-        function changeCalendarMonth(offset) { currentCalendarDate.setMonth(currentCalendarDate.getMonth() + offset); renderCalendar(); }
-        function resetCalendarToToday() { currentCalendarDate = new Date(); renderCalendar(); }
-       function renderCalendar() {
+        async function renderSharedScreen(sharedId, userEmail) {
+            try {
+                const doc = await firebase.firestore().collection('shared_notes').doc(sharedId).get();
+                if (doc.exists) {
+                    const sharedNote = doc.data();
+                    if (sharedNote.accessType === 'restricted') {
+                        if (!userEmail) {
+                            document.getElementById('loginScreen').style.display = 'none';
+                            document.getElementById('app').innerHTML = `<div class="flex-1 flex items-center justify-center bg-slate-50 dark:bg-slate-900 h-screen p-4"><div class="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-xl max-w-md w-full text-center border border-slate-200 dark:border-slate-700"><div class="w-16 h-16 bg-slate-100 dark:bg-slate-700 text-slate-400 rounded-full flex items-center justify-center mx-auto mb-4"><i data-lucide="lock" class="w-8 h-8"></i></div><h2 class="text-xl font-bold text-slate-800 dark:text-white mb-2">Giriş Yapmanız Gerekiyor</h2><p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Bu not kısıtlı erişime sahip. Görüntüleyebilmek için lütfen hesabınıza giriş yapın.</p><button onclick="window.location.reload()" class="w-full flex items-center justify-center gap-3 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3.5 rounded-xl font-semibold transition shadow-md">Giriş Ekranına Dön</button></div></div>`;
+                            lucide.createIcons(); return;
+                        }
+                        if (!sharedNote.sharedEmails || !sharedNote.sharedEmails.includes(userEmail.toLowerCase())) {
+                            document.getElementById('loginScreen').style.display = 'none';
+                            document.getElementById('app').innerHTML = `<div class="flex-1 flex items-center justify-center bg-slate-50 dark:bg-slate-900 h-screen p-4"><div class="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-xl max-w-md w-full text-center border border-slate-200 dark:border-slate-700"><div class="w-16 h-16 bg-red-50 dark:bg-red-900/30 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4"><i data-lucide="shield-alert" class="w-8 h-8"></i></div><h2 class="text-xl font-bold text-slate-800 dark:text-white mb-2">Erişim İzni Gerekiyor</h2><p class="text-sm text-slate-500 dark:text-slate-400 mb-2">Şu anki hesabınızla (<b>${userEmail}</b>) bu nota erişim yetkiniz bulunmuyor.</p><p class="text-xs text-slate-400 dark:text-slate-500 mb-6">Aşağıdaki butona tıklayarak not sahibinden e-posta ile erişim izni isteyebilirsiniz.</p><div class="flex flex-col gap-3"><button onclick="requestAccess('${sharedNote.ownerEmail || ''}', '${sharedNote.title || 'İsimsiz Not'}', '${userEmail}')" class="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3.5 rounded-xl font-semibold transition shadow-md"><i data-lucide="mail" class="w-5 h-5"></i> Erişim İste</button><button onclick="window.location.href = window.location.origin + window.location.pathname" class="w-full flex items-center justify-center gap-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-white px-6 py-3.5 rounded-xl font-semibold transition">Kendi Notlarıma Dön</button></div></div></div>`;
+                            lucide.createIcons(); return;
+                        }
+                    }
+
+                    document.getElementById('loginScreen').style.display = 'none';
+                    document.getElementById('app').innerHTML = `<div class="flex-1 flex flex-col h-screen bg-slate-50 dark:bg-slate-900 overflow-y-auto p-4 sm:p-12 custom-scrollbar"><div class="max-w-3xl mx-auto w-full bg-white dark:bg-slate-800 p-6 sm:p-10 rounded-3xl shadow-xl border dark:border-slate-700"><div class="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-4 border-b dark:border-slate-700 mb-6 gap-4"><div class="flex items-center gap-2"><span class="text-xs font-semibold px-3 py-1 bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 rounded-full">${sharedNote.mode === 'edit' ? '✏️ Düzenlenebilir Paylaşım' : '👁️ Görüntüleme Paylaşımı'}</span></div><div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto"><button onclick="importSharedNote('${sharedId}', 'copy')" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-white rounded-xl text-xs font-semibold transition shadow-sm flex items-center justify-center gap-2"><i data-lucide="copy" class="w-4 h-4"></i> Bağımsız Kopya Al</button><button onclick="importSharedNote('${sharedId}', 'linked')" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold transition shadow-sm flex items-center justify-center gap-2" title="Orijinal not silinirse sizden de silinir"><i data-lucide="link" class="w-4 h-4"></i> Defterime Ekle (Senkronize)</button></div></div><h1 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-6">${sharedNote.title}</h1><div class="prose dark:prose-invert max-w-none text-slate-700 dark:text-slate-300 text-base leading-relaxed">${sharedNote.content}</div><div class="mt-10 pt-6 border-t dark:border-slate-700 text-center"><a href="${window.location.origin + window.location.pathname}" class="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold transition shadow-lg shadow-indigo-500/30 text-sm">Kendi NotLa Uygulamanıza Dönün</a></div></div></div>`;
+                    lucide.createIcons();
+                } else {
+                    alert("Bu paylaşılan not bulunamadı veya silinmiş."); window.location.href = window.location.origin + window.location.pathname;
+                }
+            } catch (e) {}
+        }
+
+
+        // --- TAKVİM (CALENDAR) RENDER VE ETKİNLİKLER ---
+        function selectCalendarDay(dateStr) {
+            selectedCalendarDateStr = dateStr;
+            renderCalendar(); 
+        }
+
+        function changeCalendarMonth(offset) { 
+            currentCalendarDate.setMonth(currentCalendarDate.getMonth() + offset); 
+            renderCalendar(); 
+        }
+        
+        function resetCalendarToToday() { 
+            currentCalendarDate = new Date(); 
+            renderCalendar(); 
+        }
+
+        function renderCalendar() {
             destroySortable(); const container = document.getElementById('notesContainer');
             const viewBtn = document.getElementById('viewToggleBtn'); if(viewBtn) viewBtn.classList.add('hidden');
             document.getElementById('searchContainer').classList.add('opacity-0', 'pointer-events-none');
@@ -1411,7 +1156,6 @@
             const monthNames = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
             const dayNames = ["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"];
 
-            // Sadece 'event' türündeki etiketleri topla
             const eventTags = [...new Set(notes.filter(n => n.type === 'event').flatMap(n => n.tags || []))];
             let tagsHtml = '';
             if(eventTags.length > 0) {
@@ -1506,9 +1250,89 @@
             container.innerHTML = html; lucide.createIcons({ root: document.getElementById('notesContainer') });
         }
 
-        // --- TASKS (GÖREVLER) RENDER ---
+        function openEventModal(dateStr = null, id = null) {
+            const modal = document.getElementById('eventModal');
+            const content = document.getElementById('eventModalContent');
+            
+            document.getElementById('eventTitle').value = '';
+            document.getElementById('eventDate').value = dateStr || selectedCalendarDateStr;
+            document.getElementById('eventTime').value = '';
+            document.getElementById('eventLoc').value = '';
+            document.getElementById('eventTags').value = '';
+            document.getElementById('eventDesc').value = '';
+            editingEventId = null;
 
-        // --- TASKS (GÖREVLER) RENDER ---
+            if (id) {
+                const ev = notes.find(n => n.id === id);
+                if (ev) {
+                    editingEventId = id;
+                    document.getElementById('eventTitle').value = ev.title || '';
+                    if (ev.reminder) {
+                        const [d, t] = ev.reminder.split('T');
+                        document.getElementById('eventDate').value = d || '';
+                        document.getElementById('eventTime').value = t || '';
+                    }
+                    document.getElementById('eventLoc').value = ev.location || '';
+                    document.getElementById('eventTags').value = (ev.tags || []).join(', ');
+                    document.getElementById('eventDesc').value = ev.content || '';
+                }
+            }
+
+            modal.classList.remove('hidden'); void modal.offsetWidth;
+            modal.classList.remove('opacity-0'); modal.classList.add('opacity-100');
+            content.classList.remove('scale-95'); content.classList.add('scale-100');
+            lucide.createIcons();
+        }
+
+        function closeEventModal() {
+            const modal = document.getElementById('eventModal');
+            const content = document.getElementById('eventModalContent');
+            modal.classList.remove('opacity-100'); modal.classList.add('opacity-0');
+            content.classList.remove('scale-100'); content.classList.add('scale-95');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+
+        function saveEvent() {
+            const title = document.getElementById('eventTitle').value.trim();
+            if(!title) { alert('Lütfen etkinlik başlığı girin.'); return; }
+            
+            const date = document.getElementById('eventDate').value;
+            const time = document.getElementById('eventTime').value;
+            const reminder = (date && time) ? `${date}T${time}` : (date ? `${date}T12:00` : null);
+
+            if (editingEventId) {
+                const ev = notes.find(n => n.id === editingEventId);
+                if (ev) {
+                    ev.title = title; ev.reminder = reminder;
+                    ev.location = document.getElementById('eventLoc').value;
+                    ev.tags = document.getElementById('eventTags').value.split(',').map(t=>t.trim()).filter(t=>t);
+                    ev.content = document.getElementById('eventDesc').value;
+                    ev.updatedAt = new Date().toISOString();
+                }
+            } else {
+                const newEvent = {
+                    id: Date.now().toString(), type: 'event',
+                    title: title, content: document.getElementById('eventDesc').value,
+                    location: document.getElementById('eventLoc').value,
+                    tags: document.getElementById('eventTags').value.split(',').map(t=>t.trim()).filter(t=>t),
+                    reminder: reminder, completed: false, color: 'white',
+                    createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
+                };
+                notes.unshift(newEvent);
+            }
+            
+            saveToStorage(); closeEventModal(); renderCalendar();
+        }
+
+        function deleteEvent(id, e) {
+            e.stopPropagation();
+            if(confirm('Etkinliği silmek istediğinize emin misiniz?')) {
+                notes = notes.filter(n => n.id !== id);
+                saveToStorage(); renderCalendar();
+            }
+        }
+
+        // --- TASKS VE KART (NOT) RENDER İŞLEMLERİ ---
         function renderTasksView(filteredTasks) {
             destroySortable(); const container = document.getElementById('notesContainer');
             const viewBtn = document.getElementById('viewToggleBtn'); if(viewBtn) viewBtn.classList.add('hidden');
@@ -1569,7 +1393,6 @@
             container.innerHTML = html; lucide.createIcons({ root: document.getElementById('notesContainer') });
         }
 
-        // --- CARDS (NOTLAR) RENDER ---
         function renderCardsView(filteredNotes) {
             const container = document.getElementById('notesContainer');
             const viewBtn = document.getElementById('viewToggleBtn');
@@ -1619,7 +1442,6 @@
             renderTags(); initSortable();
         }
 
-        // --- Ana Render Yönlendiricisi ---
         function renderNotes() {
             if (currentFilter === 'calendar') { renderCalendar(); return; }
             const searchVal = document.getElementById('searchBox').value.toLowerCase();
@@ -1695,23 +1517,183 @@
             document.getElementById('viewIcon').setAttribute('data-lucide', viewMode === 'grid' ? 'list' : 'grid'); renderNotes();
         }
 
+        // --- BUTON VE YÜZEN KART KONTROLLERİ ---
+        function checkReminders() {
+            const now = new Date().getTime(); let changed = false;
+            notes.forEach(note => {
+                if (note.type === 'task' && note.reminder && !note.reminderShown) {
+                    const reminderTime = new Date(note.reminder).getTime();
+                    if (now >= reminderTime) { showNotification(note.title || 'İsimsiz Görev', "Hatırlatıcı zamanı geldi!"); note.reminderShown = true; changed = true; }
+                }
+            }); if(changed) saveToStorage();
+        }
+
+        function showNotification(title, body) {
+            if ("Notification" in window && Notification.permission === "granted") { new Notification("NotLa: " + title, { body: body, icon: "https://cdn-icons-png.flaticon.com/512/3208/3208703.png" }); } else { alert(`🔔 HATIRLATICI: ${title}\n${body}`); }
+        }
+
+        function toggleExportMenu() { document.getElementById('exportMenu').classList.toggle('hidden'); }
+        function exportNote(type) {
+            const note = notes.find(n => n.id === currentNoteId); if(!note) return; toggleExportMenu(); const title = note.title || 'Adsız Belge';
+            if (type === 'txt') {
+                const tempDiv = document.createElement('div'); tempDiv.innerHTML = note.content;
+                const content = `${title.toUpperCase()}\n\n${tempDiv.innerText || tempDiv.textContent}`;
+                const blob = new Blob([content], { type: 'text/plain;charset=utf-8' }); const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `${title}.txt`; link.click();
+            } 
+            else if (type === 'pdf') {
+                const container = document.getElementById('exportContainer');
+                container.innerHTML = `<div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; padding: 40px; color: #000;"><h1 style="border-bottom: 2px solid #eaeaea; padding-bottom: 10px; margin-bottom: 20px; font-size: 28px;">${title}</h1><div style="font-size: 15px; line-height: 1.6;">${note.content}</div></div>`;
+                container.classList.remove('hidden');
+                html2pdf().set({ margin: 0.5, filename: `${title}.pdf`, image: { type: 'jpeg', quality: 1 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } }).from(container).save().then(() => { container.classList.add('hidden'); container.innerHTML = ''; });
+            }
+        }
+
+        function destroySortable() { if (sortableInstance) { try { if (sortableInstance.el) sortableInstance.destroy(); } catch(e) {} sortableInstance = null; } }
+
+        function initSortable() {
+            destroySortable(); const el = document.getElementById('notesContainer'); if (!el) return;
+            if(currentFilter === 'notes' && viewMode === 'grid') {
+                sortableInstance = Sortable.create(el, {
+                    draggable: '.note-card', animation: 150, delay: 200, delayOnTouchOnly: true,
+                    onEnd: function (evt) { const movedItem = notes.splice(evt.oldIndex, 1)[0]; notes.splice(evt.newIndex, 0, movedItem); saveToStorage(); }
+                });
+            }
+        }
+
+        function createNewItem() {
+            const isTask = currentFilter === 'tasks' || currentFilter === 'calendar';
+            const newItem = {
+                id: Date.now().toString(), type: isTask ? 'task' : 'note', title: '', content: '', tags: [], color: 'white',
+                isFavorite: false, reminder: null, location: '', reminderShown: false, attachments: [], completed: false,
+                createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
+            };
+            notes.unshift(newItem); saveToStorage(); openEditor(newItem.id);
+        }
+
+        function createNewNoteWithDate(dateStr) {
+            const newItem = {
+                id: Date.now().toString(), type: 'task', title: '', content: '', tags: [], color: 'white',
+                isFavorite: false, reminder: dateStr + 'T12:00', location: '', reminderShown: false, attachments: [], completed: false,
+                createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
+            };
+            notes.unshift(newItem); saveToStorage(); openEditor(newItem.id);
+        }
+
+        function quickAddTask(event) {
+            if (event.key === 'Enter') {
+                const val = event.target.value.trim();
+                if (val) {
+                    const newTask = {
+                        id: Date.now().toString(), type: 'task', title: val, content: '', tags: [], color: 'white',
+                        isFavorite: false, reminder: null, location: '', reminderShown: false, attachments: [], completed: false,
+                        createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
+                    };
+                    notes.unshift(newTask); saveToStorage(); renderNotes();
+                    const input = document.getElementById('quickAddInput'); if (input) { input.value = ''; input.focus(); }
+                }
+            }
+        }
+
+        function toggleTaskCompletion(id, event) {
+            if(event) event.stopPropagation(); const item = notes.find(n => n.id === id);
+            if(item) { item.completed = !item.completed; saveToStorage(); if(currentFilter === 'calendar') renderCalendar(); else renderNotes(); }
+        }
+
+        function toggleCurrentTaskCheck() {
+            if(currentNoteId) {
+                const note = notes.find(n => n.id === currentNoteId);
+                if(note && note.type === 'task') { note.completed = !note.completed; updateModalTaskCheck(note.completed); triggerAutoSaveUI(); }
+            }
+        }
+
+        function updateModalTaskCheck(isCompleted) {
+            const btn = document.getElementById('modalTaskCheck'); const title = document.getElementById('noteTitle');
+            if(isCompleted) {
+                btn.className = "w-6 h-6 sm:w-7 sm:h-7 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors bg-indigo-500 border-indigo-500 text-white";
+                btn.innerHTML = '<i data-lucide="check" class="w-4 h-4 sm:w-5 sm:h-5"></i>'; title.classList.add('line-through', 'text-slate-400');
+            } else {
+                btn.className = "w-6 h-6 sm:w-7 sm:h-7 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors border-slate-300 dark:border-slate-600 hover:border-indigo-400";
+                btn.innerHTML = ''; title.classList.remove('line-through', 'text-slate-400');
+            }
+            lucide.createIcons();
+        }
+
+        function toggleFavorite(id, e) { e.stopPropagation(); const note = notes.find(n => n.id === id); if (note) { note.isFavorite = !note.isFavorite; saveToStorage(); renderNotes(); } }
+        function restoreFromTrash(id, e) { e.stopPropagation(); const noteIndex = trash.findIndex(n => n.id === id); if (noteIndex > -1) { notes.unshift(trash.splice(noteIndex, 1)[0]); saveToStorage(); renderNotes(); } }
+        function permanentDelete(id, e) { e.stopPropagation(); if(confirm("Kalıcı olarak silinecek. Emin misin?")) { trash = trash.filter(n => n.id !== id); saveToStorage(); renderNotes(); } }
+        function moveToTrash(id, e) {
+            if(e) e.stopPropagation(); const note = notes.find(n => n.id === id); const title = note ? (note.title || 'İsimsiz') : 'Öğe';
+            if (confirm(`"${title}" çöp kutusuna taşınsın mı?`)) { const noteIndex = notes.findIndex(n => n.id === id); if (noteIndex > -1) { trash.unshift(notes.splice(noteIndex, 1)[0]); saveToStorage(); renderNotes(); } }
+        }
+
+        function handleCardContext(event, id) {
+            event.preventDefault(); const item = notes.find(n => n.id === id); if (!item) return;
+            document.getElementById('activeCardId').value = id; switchToolbar('main');
+            const toolbar = document.getElementById('cardToolbar');
+            toolbar.classList.remove('hidden'); void toolbar.offsetWidth; toolbar.classList.remove('translate-y-10', 'opacity-0'); toolbar.classList.add('translate-y-0', 'opacity-100');
+        }
+
+        function closeCardToolbar() {
+            const toolbar = document.getElementById('cardToolbar'); toolbar.classList.add('translate-y-10', 'opacity-0'); setTimeout(() => toolbar.classList.add('hidden'), 300);
+        }
+
+        function switchToolbar(menuId) {
+            const menus = ['main', 'edit', 'color', 'tag'];
+            menus.forEach(id => {
+                const el = document.getElementById(id + 'ToolbarActions');
+                if (el) { if (id === menuId) { el.classList.remove('hidden'); el.classList.add('flex'); } else { el.classList.add('hidden'); el.classList.remove('flex'); } }
+            }); lucide.createIcons(); if (menuId === 'tag') populateToolbarTags();
+        }
+
+        function toolbarAction(action) {
+            const id = document.getElementById('activeCardId').value; const note = notes.find(n => n.id === id); if (!note) return;
+            if (action === 'trash') { closeCardToolbar(); const title = note.title || 'İsimsiz'; if (confirm(`"${title}" çöp kutusuna taşınsın mı?`)) { moveToTrash(id); } }
+        }
+
+        function handleEditAction(type) {
+            const id = document.getElementById('activeCardId').value; const note = notes.find(n => n.id === id); if (!note) return;
+            if (type === 'title') { const newTitle = prompt("Notun başlığını düzenleyin:", note.title || ""); if (newTitle !== null) { note.title = newTitle; saveToStorage(); renderNotes(); } } else if (type === 'content') { closeCardToolbar(); openEditor(id); }
+        }
+
+        function handleColorAction(colorCode) {
+            const id = document.getElementById('activeCardId').value; const note = notes.find(n => n.id === id); if (!note) return;
+            note.color = colorCode; saveToStorage(); renderNotes();
+        }
+
+        function populateToolbarTags() {
+            const id = document.getElementById('activeCardId').value; const note = notes.find(n => n.id === id); if (!note) return;
+            const allTags = [...new Set(notes.flatMap(n => n.tags || []))]; const container = document.getElementById('toolbarTagList'); container.innerHTML = '';
+            if (allTags.length === 0) { container.innerHTML = '<span class="text-[10px] text-slate-400 italic">Etiket yok</span>'; return; }
+            allTags.forEach(tag => {
+                const hasTag = (note.tags || []).includes(tag); const btn = document.createElement('button');
+                btn.className = `px-3 py-1.5 rounded-lg text-xs font-bold uppercase transition whitespace-nowrap ${hasTag ? 'bg-green-500 text-white shadow-md' : 'bg-white/10 text-slate-300 hover:bg-white/20'}`;
+                btn.innerText = tag; btn.onclick = () => handleTagAction('toggle', tag); container.appendChild(btn);
+            });
+        }
+
+        function handleTagAction(type, tagValue = '') {
+            const id = document.getElementById('activeCardId').value; const note = notes.find(n => n.id === id); if (!note) return;
+            if (!note.tags) note.tags = [];
+            if (type === 'new') {
+                const newTag = prompt("Yeni oluşturulacak etiket adını girin:");
+                if (newTag && newTag.trim() !== "") { const trimmed = newTag.trim(); if (!note.tags.includes(trimmed)) note.tags.push(trimmed); saveToStorage(); renderNotes(); renderTags(); populateToolbarTags(); }
+            } else if (type === 'toggle') {
+                if (note.tags.includes(tagValue)) { note.tags = note.tags.filter(t => t !== tagValue); } else { note.tags.push(tagValue); }
+                saveToStorage(); renderNotes(); renderTags(); populateToolbarTags();
+            }
+        }
+
+        // --- GLOBAL TIKLAMA (PENCERELERİ KAPATMA) ---
         window.onclick = function(event) {
             if (!event.target.closest('button[onclick="toggleExportMenu()"]') && !event.target.closest('#exportMenu')) {
                 const exMenu = document.getElementById('exportMenu'); if (exMenu) exMenu.classList.add('hidden');
             }
-            // HATA DÜZELTMESİ: Arka plan karanlık alana tıklayınca pencereler artık kapanacak
             if (event.target.id === 'settingsModal') { closeSettings(); }
             if (event.target.id === 'shareModal') { closeShareModal(); }
+            if (event.target.id === 'eventModal') { closeEventModal(); }
             
             const toolbar = document.getElementById('cardToolbar');
             if (toolbar && !toolbar.classList.contains('hidden') && !event.target.closest('.note-card') && !event.target.closest('#cardToolbar')) { closeCardToolbar(); }
-        }
-
-        // Editör içinden Paylaş ekranını (Erişimi Yönet) açmayı sağlayan yeni fonksiyon
-        function openShareModalFromEditor() {
-            if (!currentNoteId) return;
-            document.getElementById('activeCardId').value = currentNoteId;
-            openShareModal();
         }
     </script>
 </body>
