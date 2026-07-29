@@ -33,10 +33,11 @@
         body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         
         /* Tema Stilleri */
-        .theme-dark { background-color: #0f172a; color: #f1f5f9; }
-        .theme-dark .bg-card { background-color: #1e293b; border-color: #334155; }
-        .theme-dark aside { background-color: #020617; border-color: #1e293b; }
-        .theme-dark header { background-color: #0f172a; border-color: #1e293b; }
+        /* Koyu Mod Stilleri (.theme-dark yerine standart .dark kullanıyoruz) */
+        .dark { background-color: #0f172a; color: #f1f5f9; }
+        .dark .bg-card { background-color: #1e293b; border-color: #334155; }
+        .dark aside { background-color: #020617; border-color: #1e293b; }
+        .dark header { background-color: #0f172a; border-color: #1e293b; }
 
         /* Yazı Kaybolma / Geçiş Hatalarını Düzelten Yumuşak Transizyonlar */
         body, aside, header, main, .bg-card, .note-card, input, select, button, .nav-btn, 
@@ -56,11 +57,11 @@
         .note-color-blue { background-color: #dbeafe; border-color: #93c5fd; }
         .note-color-purple { background-color: #f3e8ff; border-color: #d8b4fe; }
 
-        .theme-dark .note-color-red { background-color: rgba(220, 38, 38, 0.15); border-color: rgba(220, 38, 38, 0.3); }
-        .theme-dark .note-color-yellow { background-color: rgba(217, 119, 6, 0.15); border-color: rgba(217, 119, 6, 0.3); }
-        .theme-dark .note-color-green { background-color: rgba(22, 163, 74, 0.15); border-color: rgba(22, 163, 74, 0.3); }
-        .theme-dark .note-color-blue { background-color: rgba(37, 99, 235, 0.15); border-color: rgba(37, 99, 235, 0.3); }
-        .theme-dark .note-color-purple { background-color: rgba(147, 51, 234, 0.15); border-color: rgba(147, 51, 234, 0.3); }
+        .dark .note-color-red { background-color: rgba(220, 38, 38, 0.15); border-color: rgba(220, 38, 38, 0.3); }
+        .dark .note-color-yellow { background-color: rgba(217, 119, 6, 0.15); border-color: rgba(217, 119, 6, 0.3); }
+        .dark .note-color-green { background-color: rgba(22, 163, 74, 0.15); border-color: rgba(22, 163, 74, 0.3); }
+        .dark .note-color-blue { background-color: rgba(37, 99, 235, 0.15); border-color: rgba(37, 99, 235, 0.3); }
+        .dark .note-color-purple { background-color: rgba(147, 51, 234, 0.15); border-color: rgba(147, 51, 234, 0.3); }
 
         /* Quill Editor (Notion Tarzı Özelleştirme) */
         .ql-toolbar.ql-snow { 
@@ -73,18 +74,20 @@
             border-bottom: 1px solid #f1f5f9 !important; 
             padding: 12px 0 !important; 
         }
-        .theme-dark .ql-toolbar.ql-snow { 
+        .dark .ql-toolbar.ql-snow { 
             background: rgba(15,23,42,0.95); 
             border-bottom-color: #1e293b !important; 
         }
         .ql-container.ql-snow { border: none !important; font-size: 1.1rem; }
         .ql-editor { padding: 1rem 0 !important; min-height: 50vh; }
         .ql-editor.ql-blank::before { left: 0; font-style: italic; color: #cbd5e1; }
-        .theme-dark .ql-editor.ql-blank::before { color: #475569; }
-        .theme-dark .ql-snow .ql-stroke { stroke: #f1f5f9; }
-        .theme-dark .ql-snow .ql-fill { fill: #f1f5f9; }
-        .theme-dark .ql-snow .ql-picker { color: #f1f5f9; }
-        .theme-dark .ql-editor { color: #f1f5f9; }
+        
+        /* Editör Koyu Mod İkon ve Renk Düzeltmeleri */
+        .dark .ql-editor.ql-blank::before { color: #475569; }
+        .dark .ql-snow .ql-stroke { stroke: #f1f5f9; }
+        .dark .ql-snow .ql-fill { fill: #f1f5f9; }
+        .dark .ql-snow .ql-picker { color: #f1f5f9; }
+        .dark .ql-editor { color: #f1f5f9; }
         
         /* Eklenen Yeni Fontların Tanımları */
         .ql-font-serif { font-family: Georgia, serif; }
@@ -113,10 +116,10 @@
         @media (min-width: 640px) { .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; } }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        .theme-dark .custom-scrollbar::-webkit-scrollbar-thumb { background: #475569; }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb { background: #475569; }
     </style>
 </head>
-<body class="bg-gray-50 text-slate-900 overflow-hidden">
+<body class="bg-gray-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 overflow-hidden transition-colors duration-300">
     <!-- Giriş Ekranı (Landing Page) -->
     <div id="loginScreen" class="fixed inset-0 bg-slate-50 dark:bg-slate-900 z-[100] flex flex-col items-center justify-center p-4 transition-opacity duration-500">
         <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-2xl max-w-md w-full text-center border border-slate-100 dark:border-slate-700">
