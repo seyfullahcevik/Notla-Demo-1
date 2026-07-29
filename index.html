@@ -883,7 +883,7 @@
                             if(note) {
                                 if (id === 'noteTitle') note.title = e.target.value;
                                 if (id === 'noteTags') note.tags = e.target.value.split(',').map(t => t.trim()).filter(t => t !== '');
-                                if (id === 'noteColor') note.color = e.target.value;
+                                if (id === 'noteColor') { note.color = e.target.value; applyEditorColor(note.color); }
                                 if (id === 'noteReminder') note.reminder = e.target.value || null;
                                 if (id === 'noteLocation') note.location = e.target.value || '';
                                 note.reminderShown = false; triggerAutoSaveUI(); pushUpdateToFirebase(note);
@@ -893,13 +893,32 @@
                 }
             });
         }
+function applyEditorColor(colorHex) {
+            const modal = document.getElementById('editorModal');
+            const header = document.getElementById('editorHeader');
+            
+            // Mevcut renkleri temizle
+            modal.classList.remove('bg-white', 'dark:bg-slate-900', 'bg-red-50', 'dark:bg-red-950', 'bg-yellow-50', 'dark:bg-yellow-950', 'bg-green-50', 'dark:bg-green-950', 'bg-blue-50', 'dark:bg-blue-950', 'bg-purple-50', 'dark:bg-purple-950');
+            header.classList.remove('bg-white/90', 'dark:bg-slate-900/90', 'bg-red-50/90', 'dark:bg-red-950/90', 'bg-yellow-50/90', 'dark:bg-yellow-950/90', 'bg-green-50/90', 'dark:bg-green-950/90', 'bg-blue-50/90', 'dark:bg-blue-950/90', 'bg-purple-50/90', 'dark:bg-purple-950/90');
+            
+            const bgMap = {
+                'white': ['bg-white', 'dark:bg-slate-900'], '#fee2e2': ['bg-red-50', 'dark:bg-red-950'], '#fef3c7': ['bg-yellow-50', 'dark:bg-yellow-950'],
+                '#dcfce7': ['bg-green-50', 'dark:bg-green-950'], '#dbeafe': ['bg-blue-50', 'dark:bg-blue-950'], '#f3e8ff': ['bg-purple-50', 'dark:bg-purple-950']
+            };
+            const headerMap = {
+                'white': ['bg-white/90', 'dark:bg-slate-900/90'], '#fee2e2': ['bg-red-50/90', 'dark:bg-red-950/90'], '#fef3c7': ['bg-yellow-50/90', 'dark:bg-yellow-950/90'],
+                '#dcfce7': ['bg-green-50/90', 'dark:bg-green-950/90'], '#dbeafe': ['bg-blue-50/90', 'dark:bg-blue-950/90'], '#f3e8ff': ['bg-purple-50/90', 'dark:bg-purple-950/90']
+            };
 
+            modal.classList.add(...(bgMap[colorHex] || bgMap['white']));
+            header.classList.add(...(headerMap[colorHex] || headerMap['white']));
+        }
         function openEditor(id) {
             currentNoteId = id; const note = notes.find(n => n.id === id);
             if (note) {
                 const titleInput = document.getElementById('noteTitle'); titleInput.value = note.title; titleInput.placeholder = note.type === 'task' ? 'Görev adı...' : 'Başlıksız Not';
                 document.getElementById('noteTags').value = (note.tags || []).join(', '); document.getElementById('noteColor').value = note.color || 'white'; document.getElementById('noteLocation').value = note.location || '';
-                
+                applyEditorColor(note.color || 'white');
                 const isReadOnly = note.isSharedWithMe && note.shareMode === 'view';
                 if(editor) editor.enable(!isReadOnly); titleInput.readOnly = isReadOnly;
                 const quillToolbar = document.querySelector('.ql-toolbar'); if (quillToolbar) quillToolbar.style.display = isReadOnly ? 'none' : 'block';
@@ -1197,9 +1216,11 @@
                 
                 const dayNotes = notes.filter(n => (n.type === 'task' || n.type === 'event') && n.reminder && n.reminder.startsWith(currentDateStr));
                 
+               const calColors = { 'white': 'bg-slate-400 dark:bg-slate-500', '#fee2e2': 'bg-red-500', '#fef3c7': 'bg-yellow-500', '#dcfce7': 'bg-green-500', '#dbeafe': 'bg-blue-500', '#f3e8ff': 'bg-purple-500' };
+                
                 let dotsHtml = '';
                 if (dayNotes.length > 0) {
-                    dotsHtml = `<div class="flex gap-1 justify-center mt-1">` + dayNotes.slice(0,3).map(n => `<div class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-indigo-500"></div>`).join('') + (dayNotes.length > 3 ? `<div class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-slate-400"></div>` : '') + `</div>`;
+                    dotsHtml = `<div class="flex gap-1 justify-center mt-1">` + dayNotes.slice(0,3).map(n => `<div class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${calColors[n.color] || calColors['white']}"></div>`).join('') + (dayNotes.length > 3 ? `<div class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-slate-300"></div>` : '') + `</div>`;
                 }
 
                 const isToday = (i === today.getDate() && month === today.getMonth() && year === today.getFullYear());
@@ -1229,16 +1250,15 @@
             } else {
                 selectedDayEvents.forEach(ev => {
                     const time = ev.reminder.includes('T') ? ev.reminder.split('T')[1] : '';
+                    const evColor = calColors[ev.color] || calColors['white'];
                     
-                    // HATA DÜZELTMESİ: Tıklanan şey Görevse Editörü, Etkinlikse Modal'ı aç
                     const clickAction = ev.type === 'task' ? `openEditor('${ev.id}')` : `openEventModal(null, '${ev.id}')`;
-                    // Silme işlemi için de Görevse çöp kutusuna, etkinlikse tamamen sil
                     const deleteAction = ev.type === 'task' ? `moveToTrash('${ev.id}', event); renderCalendar();` : `deleteEvent('${ev.id}', event)`;
                     
                     html += `
                     <div onclick="${clickAction}" class="p-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-700 rounded-xl flex items-center justify-between cursor-pointer hover:shadow-md hover:border-indigo-200 dark:hover:border-indigo-800 transition group">
                         <div class="flex items-center gap-3">
-                            <div class="w-1.5 h-10 ${ev.type === 'task' ? 'bg-emerald-500' : 'bg-indigo-500'} rounded-full"></div>
+                            <div class="w-1.5 h-10 ${evColor} rounded-full"></div>
                             <div>
                                 <h4 class="font-bold text-sm text-slate-800 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">${ev.title || 'Adsız'}</h4>
                                 <div class="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-3 mt-1 font-medium">
@@ -1415,12 +1435,19 @@
                 container.innerHTML = `<div class="col-span-full flex flex-col items-center justify-center text-slate-400 py-20 h-full"><i data-lucide="ghost" class="w-16 h-16 sm:w-20 sm:h-20 mb-4 sm:mb-6 opacity-20"></i><p class="text-sm sm:text-lg font-medium opacity-60">Burada henüz bir şey yok.</p></div>`;
             }
 
-            const noteColorClassMap = { '#fee2e2': 'note-color-red', '#fef3c7': 'note-color-yellow', '#dcfce7': 'note-color-green', '#dbeafe': 'note-color-blue', '#f3e8ff': 'note-color-purple' };
+            const noteColorClassMap = { 
+                'white': 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700',
+                '#fee2e2': 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-900/40', 
+                '#fef3c7': 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-900/40', 
+                '#dcfce7': 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-900/40', 
+                '#dbeafe': 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-900/40', 
+                '#f3e8ff': 'bg-purple-50 dark:bg-purple-900/20 border-purple-200 dark:border-purple-900/40' 
+            };
 
             filteredNotes.forEach(note => {
                 const div = document.createElement('div');
-                const themeColorClass = (note.color && noteColorClassMap[note.color]) ? noteColorClassMap[note.color] : '';
-                div.className = `note-card bg-card p-5 sm:p-6 rounded-2xl border ${viewMode === 'list' ? 'flex items-center gap-4' : ''} dark:border-slate-800 ${themeColorClass} ${note.completed ? 'opacity-60' : ''}`;
+                const themeColorClass = noteColorClassMap[note.color] || noteColorClassMap['white'];
+                div.className = `note-card p-5 sm:p-6 rounded-2xl border transition-colors ${viewMode === 'list' ? 'flex items-center gap-4' : ''} ${themeColorClass} ${note.completed ? 'opacity-60' : ''}`;
                 div.onclick = () => currentFilter !== 'trash' && openEditor(note.id);
                 div.oncontextmenu = (e) => currentFilter !== 'trash' && handleCardContext(e, note.id);
                 
