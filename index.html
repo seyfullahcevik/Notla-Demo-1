@@ -798,13 +798,24 @@
         }
 
         function saveToStorage() {
-            const user = firebase.auth().currentUser;
-            if (user) {
-                firebase.firestore().collection('user_notes').doc(user.uid).set({ notes: notes, trash: trash, updatedAt: new Date().toISOString() }).catch(err => {});
-            }
-            localforage.setItem('notla_notes', notes).catch(err => {});
-            localforage.setItem('notla_trash', trash).catch(err => {});
-        }
+    const user = firebase.auth().currentUser;
+    if (user) {
+        // Firebase 1MB sınırına takılmamak için Base64 resimleri/ekleri Firebase'e GÖNDERMİYORUZ.
+        // Sadece metinleri senkronize ediyoruz.
+        const safeNotes = notes.map(note => {
+            const { attachments, ...safeNote } = note; 
+            return safeNote;
+        });
+        
+        firebase.firestore().collection('user_notes').doc(user.uid)
+            .set({ notes: safeNotes, trash: trash, updatedAt: new Date().toISOString() })
+            .catch(err => console.error("Firebase kayıt hatası:", err));
+    }
+    
+    // Cihaz hafızasına (LocalForage) resimlerle birlikte (tam halini) kaydediyoruz.
+    localforage.setItem('notla_notes', notes).catch(err => {});
+    localforage.setItem('notla_trash', trash).catch(err => {});
+}
 
         async function syncSharedNotes() {
             let hasChanges = false;
@@ -1284,10 +1295,12 @@ function applyEditorColor(colorHex) {
         }
 
         function openEventModal(dateStr = null, id = null) {
-            // HATA DÜZELTMESİ: Gelen veri gizli bir 'tıklama olayı' ise onu yok say
-            if (typeof dateStr === 'object') dateStr = null; 
+    // HATA DÜZELTMESİ: Eğer event objesi (MouseEvent) gelirse bunu yok say (dateStr null kalsın)
+    if (dateStr && typeof dateStr === 'object') {
+        dateStr = null;
+    }
 
-            const modal = document.getElementById('eventModal');
+    const modal = document.getElementById('eventModal');
             const content = document.getElementById('eventModalContent');
             
             document.getElementById('eventTitle').value = '';
@@ -1740,7 +1753,162 @@ function applyEditorColor(colorHex) {
                 saveToStorage(); renderNotes(); renderTags(); populateToolbarTags();
             }
         }
+       // --- PAYLAŞILAN NOT İŞLEMLERİ ---
+function requestAccess(ownerEmail, title, userEmail) {
+    if(!ownerEmail) {
+        alert("Bu notun sahibi bulunamadı."); return;
+    }
+    const subject = encodeURIComponent(`"${title}" NotLa Erişimi İsteği`);
+    const body = encodeURIComponent(`Merhaba,\n\n"${title}" başlıklı notunuza erişim izni talep ediyorum.\n\nErişim verilecek hesabım: ${userEmail}\n\nLütfen beni paylaşım listenize ekler misiniz?`);
+    window.location.href = `mailto:${ownerEmail}?subject=${subject}&body=${body}`;
+}
 
+async function importSharedNote(sharedId, importType) {
+    try {
+        const doc = await firebase.firestore().collection('shared_notes').doc(sharedId).get();
+        if (!doc.exists) { alert("Not bulunamadı."); return; }
+        
+        const sharedData = doc.data();
+        const newNote = {
+            id: Date.now().toString(),
+            type: 'note',
+            title: sharedData.title || 'Paylaşılan Not',
+            content: sharedData.content || '',
+            tags: ['Paylaşılan'],
+            color: 'white',
+            isFavorite: false,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+        };
+
+        if (importType === 'linked') {
+            // Senkronize kopya (isSharedWithMe bayrağı ekliyoruz)
+            newNote.isSharedWithMe = true;
+            newNote.shareId = sharedId;
+            newNote.shareMode = sharedData.mode; // 'view' veya 'edit'
+        }
+
+        notes.unshift(newNote);
+        saveToStorage();
+        alert("Not defterinize eklendi!");
+        
+        // Kendi uygulamasına yönlendir (linkteki parametreyi temizle)
+        window.location.href = window.location.origin + window.location.pathname;
+    } catch (error) {
+        alert("Not eklenirken bir hata oluştu.");
+    }
+} 
+// --- MENÜ VE AYARLAR MODAL FONKSİYONLARI ---
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const backdrop = document.getElementById('sidebarBackdrop');
+    
+    if (sidebar.classList.contains('-translate-x-full')) {
+        // Menüyü Aç
+        sidebar.classList.remove('-translate-x-full');
+        backdrop.classList.remove('hidden');
+        setTimeout(() => backdrop.classList.remove('opacity-0'), 10);
+    } else {
+        // Menüyü Kapat
+        sidebar.classList.add('-translate-x-full');
+        backdrop.classList.add('opacity-0');
+        setTimeout(() => backdrop.classList.add('hidden'), 300);
+    }
+}
+
+function openSettings() {
+    if(window.innerWidth < 768) toggleSidebar(); // Mobildeyse menüyü kapat
+    const modal = document.getElementById('settingsModal');
+    const content = document.getElementById('settingsModalContent');
+    
+    modal.classList.remove('hidden');
+    void modal.offsetWidth; // Animasyon tetikleyici
+    modal.classList.remove('opacity-0');
+    content.classList.remove('scale-95');
+    
+    // Tema butonlarının aktifliğini ayarla
+    document.getElementById('theme-btn-light').classList.toggle('border-indigo-500', currentTheme === 'light');
+    document.getElementById('theme-btn-dark').classList.toggle('border-indigo-500', currentTheme === 'dark');
+}
+
+function closeSettings() {
+    const modal = document.getElementById('settingsModal');
+    const content = document.getElementById('settingsModalContent');
+    
+    modal.classList.add('opacity-0');
+    content.classList.add('scale-95');
+    setTimeout(() => modal.classList.add('hidden'), 300);
+}
+       // --- TEMA YÖNETİMİ ---
+function setTheme(theme) {
+    currentTheme = theme;
+    localStorage.setItem('notla_theme', theme);
+    
+    if (theme === 'dark') {
+        document.documentElement.classList.add('dark');
+    } else {
+        document.documentElement.classList.remove('dark');
+    }
+
+    // Eğer ayarlar menüsü açıksa buton çerçevelerini güncelle
+    const btnLight = document.getElementById('theme-btn-light');
+    const btnDark = document.getElementById('theme-btn-dark');
+    if(btnLight && btnDark) {
+        btnLight.classList.toggle('border-indigo-500', theme === 'light');
+        btnDark.classList.toggle('border-indigo-500', theme === 'dark');
+    }
+} 
+        // --- VERİ YÖNETİMİ (YEDEKLEME VE SİLME) ---
+function exportBackup() {
+    const backupData = { notes, trash, exportDate: new Date().toISOString() };
+    const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `NotLa_Yedek_${new Date().toISOString().split('T')[0]}.json`;
+    link.click();
+}
+
+function importBackup(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+        try {
+            const data = JSON.parse(e.target.result);
+            if (data.notes && Array.isArray(data.notes)) {
+                notes = data.notes;
+                if(data.trash) trash = data.trash;
+                
+                await saveToStorage();
+                renderNotes();
+                closeSettings();
+                alert("Yedek başarıyla yüklendi!");
+            } else {
+                alert("Geçersiz yedek dosyası!");
+            }
+        } catch (error) {
+            alert("Dosya okunurken hata oluştu.");
+        }
+    };
+    reader.readAsText(file);
+    event.target.value = ''; // Input'u sıfırla
+}
+
+async function clearAllData() {
+    if (confirm("DİKKAT! Tüm notlarınız, görevleriniz ve ayarlarınız kalıcı olarak silinecek. Emin misiniz?")) {
+        notes = [];
+        trash = [];
+        await localforage.clear();
+        localStorage.clear();
+        
+        const user = firebase.auth().currentUser;
+        if (user) {
+            await firebase.firestore().collection('user_notes').doc(user.uid).delete();
+        }
+        window.location.reload();
+    }
+}
         // --- GLOBAL TIKLAMA (PENCERELERİ KAPATMA) ---
         window.onclick = function(event) {
             if (!event.target.closest('button[onclick="toggleExportMenu()"]') && !event.target.closest('#exportMenu')) {
@@ -1754,5 +1922,7 @@ function applyEditorColor(colorHex) {
             if (toolbar && !toolbar.classList.contains('hidden') && !event.target.closest('.note-card') && !event.target.closest('#cardToolbar')) { closeCardToolbar(); }
         }
     </script>
+    <!-- Tailwind CDN'in dinamik renkleri okuyabilmesi için Gizli Konteyner (</body> etiketinden hemen önceye koyun) -->
+<div class="hidden bg-white dark:bg-slate-900 bg-red-50 dark:bg-red-950 bg-yellow-50 dark:bg-yellow-950 bg-green-50 dark:bg-green-950 bg-blue-50 dark:bg-blue-950 bg-purple-50 dark:bg-purple-950 bg-white/90 dark:bg-slate-900/90 bg-red-50/90 dark:bg-red-950/90 bg-yellow-50/90 dark:bg-yellow-950/90 bg-green-50/90 dark:bg-green-950/90 bg-blue-50/90 dark:bg-blue-950/90 bg-purple-50/90 dark:bg-purple-950/90 border-red-200 dark:border-red-900/40 border-yellow-200 dark:border-yellow-900/40 border-green-200 dark:border-green-900/40 border-blue-200 dark:border-blue-900/40 border-purple-200 dark:border-purple-900/40 bg-red-500 bg-yellow-500 bg-green-500 bg-blue-500 bg-purple-500"></div>
 </body>
 </html>
