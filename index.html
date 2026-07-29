@@ -205,69 +205,51 @@
 
     <!-- ANA UYGULAMA (Sidebar ve İçerik) -->
     <div id="app" class="flex h-screen w-full relative">
-        
         <!-- Mobil Sidebar Arka Plan Karartması -->
         <div id="sidebarBackdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-30 hidden md:hidden transition-opacity opacity-0"></div>
 
-        <!-- PROFESYONEL SİDEBAR (Mobilde gizli 'hidden md:flex', masaüstünde açık) -->
-        <aside id="sidebar" class="hidden md:flex absolute md:relative inset-y-0 left-0 w-72 bg-slate-50 dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col shrink-0 z-40 transition-transform duration-300 ease-in-out transform -translate-x-full md:translate-x-0 h-screen md:h-full shadow-2xl md:shadow-none">
-            
-            <!-- 1. Google Tarzı Profil Alanı ve Bar İçinde Bar -->
-            <div class="p-4 border-b border-slate-200 dark:border-slate-800 relative">
-                <button onclick="toggleProfileMenu(event)" class="w-full flex items-center justify-between p-2 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-xl transition group">
-                    <div class="flex items-center gap-3">
-                        <div id="userAvatarBtn" class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-sm shadow-inner">N</div>
-                        <div class="text-left flex-1 min-w-0">
-                            <div class="text-sm font-bold text-slate-800 dark:text-white truncate" id="userNameDisplay">Hesabım</div>
-                            <div class="text-[10px] text-slate-500 truncate" id="userEmailDisplay">Giriş bekleniyor...</div>
-                        </div>
+        <!-- Yan Menü (Mobil Duyarlı) -->
+        <aside id="sidebar" class="absolute md:relative inset-y-0 left-0 w-64 bg-white dark:bg-slate-900 border-r dark:border-slate-800 flex flex-col shrink-0 z-40 transition-transform duration-300 ease-in-out transform -translate-x-full md:translate-x-0 h-screen md:h-full shadow-2xl md:shadow-none">
+            <div class="p-6 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="bg-indigo-600 text-white p-2 rounded-xl shadow-lg shadow-indigo-500/50 dark:shadow-[0_0_15px_rgba(79,70,229,0.5)]">
+                        <i data-lucide="check-square"></i>
                     </div>
-                    <i data-lucide="chevrons-up-down" class="w-4 h-4 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200"></i>
-                </button>
-
-                <!-- Açılır Profil Menüsü -->
-                <div id="profileDropdown" class="absolute top-[70px] left-4 right-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl z-50 hidden flex-col overflow-hidden transform opacity-0 scale-95 transition-all duration-200">
-                    <div class="p-3 bg-slate-50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-700">
-                        <div class="text-xs text-slate-500 font-semibold uppercase tracking-wider">NotLa Hesabı</div>
-                    </div>
-                    <button onclick="setFilter('trash'); toggleProfileMenu();" class="flex items-center gap-3 px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-700 transition text-sm font-medium text-slate-700 dark:text-slate-200 text-left">
-                        <i data-lucide="trash-2" class="w-4 h-4 text-slate-400"></i> Çöp Kutusu
-                    </button>
-                    <button onclick="openSettings(); toggleProfileMenu();" class="flex items-center gap-3 px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-700 transition text-sm font-medium text-slate-700 dark:text-slate-200 text-left">
-                        <i data-lucide="settings" class="w-4 h-4 text-slate-400"></i> Ayarlar
-                    </button>
-                    <div class="w-full h-px bg-slate-100 dark:border-slate-700"></div>
-                    <button onclick="logoutUser()" class="flex items-center gap-3 px-4 py-3 hover:bg-red-50 dark:hover:bg-red-900/20 transition text-sm font-medium text-red-600 dark:text-red-400 text-left">
-                        <i data-lucide="log-out" class="w-4 h-4"></i> Çıkış Yap
-                    </button>
+                    <h1 class="text-2xl font-bold tracking-tight text-slate-800 dark:text-white">NotLa</h1>
                 </div>
+                <button onclick="toggleSidebar()" class="md:hidden p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
             </div>
 
-            <!-- 2. Arama Çubuğu (Sol Bar İçinde) -->
-            <div class="p-4 pb-2">
-                <div class="relative">
-                    <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>
-                    <input type="text" id="sidebarSearch" oninput="renderSidebarNotes()" placeholder="Notlarda ara..." class="w-full pl-9 pr-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition text-sm dark:text-white placeholder-slate-400 shadow-sm">
+            <nav class="flex-1 px-4 space-y-1 overflow-y-auto custom-scrollbar">
+                <div class="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 mt-2">Görünümler</div>
+                <button onclick="setFilter('notes')" class="nav-btn active w-full flex items-center gap-3 px-3 py-3 md:py-2.5 rounded-xl hover:bg-indigo-50 dark:hover:bg-slate-800 text-left transition text-sm font-medium text-slate-700 dark:text-slate-300" data-filter="notes">
+                    <i data-lucide="book-open" class="w-5 h-5 md:w-4 md:h-4"></i> Notlarım
+                </button>
+                <button onclick="setFilter('tasks')" class="nav-btn w-full flex items-center gap-3 px-3 py-3 md:py-2.5 rounded-xl hover:bg-indigo-50 dark:hover:bg-slate-800 text-left transition text-sm font-medium text-slate-700 dark:text-slate-300" data-filter="tasks">
+                    <i data-lucide="check-circle" class="w-5 h-5 md:w-4 md:h-4"></i> Görevlerim
+                </button>
+                <button onclick="setFilter('favorites')" class="nav-btn w-full flex items-center gap-3 px-3 py-3 md:py-2.5 rounded-xl hover:bg-indigo-50 dark:hover:bg-slate-800 text-left transition text-sm font-medium text-slate-700 dark:text-slate-300" data-filter="favorites">
+                    <i data-lucide="star" class="w-5 h-5 md:w-4 md:h-4"></i> Önemli
+                </button>
+                <button onclick="setFilter('trash')" class="nav-btn w-full flex items-center gap-3 px-3 py-3 md:py-2.5 rounded-xl hover:bg-indigo-50 dark:hover:bg-slate-800 text-left transition text-sm font-medium text-red-500 dark:text-red-400" data-filter="trash">
+                    <i data-lucide="trash-2" class="w-5 h-5 md:w-4 md:h-4"></i> Çöp Kutusu
+                </button>
+
+                <!-- Ayarlar Butonu Etiketlerin Üstüne Taşındı -->
+                <button onclick="openSettings()" class="w-full flex items-center gap-3 px-3 py-3 md:py-2.5 rounded-xl hover:bg-indigo-50 dark:hover:bg-slate-800 text-left transition text-sm font-medium text-slate-700 dark:text-slate-300 mt-6">
+                    <i data-lucide="settings" class="w-5 h-5 md:w-4 md:h-4 text-slate-500"></i> Ayarlar
+                </button>
+
+                <div class="mt-6 mb-2 px-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Etiketler</div>
+                <div id="tagList" class="space-y-1">
+                    <!-- Dinamik Etiketler -->
                 </div>
-            </div>
-
-            <!-- Görünüm Butonları (Notlar / Görevler) -->
-            <div class="px-4 py-1 flex gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
-                <button data-filter="notes" onclick="setFilter('notes')" class="nav-btn flex-1 flex items-center justify-center gap-2 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg text-xs font-bold text-slate-600 dark:text-slate-300 transition">
-                    <i data-lucide="book-open" class="w-3 h-3"></i> Notlar
-                </button>
-                <button data-filter="tasks" onclick="setFilter('tasks')" class="nav-btn flex-1 flex items-center justify-center gap-2 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg text-xs font-bold text-slate-600 dark:text-slate-300 transition">
-                    <i data-lucide="check-square" class="w-3 h-3"></i> Görevler
-                </button>
-            </div>
-
-            <!-- 3. Dinamik İçerik Alanı (Etiketler, Önemli, Diğerleri) -->
-            <nav class="flex-1 overflow-y-auto custom-scrollbar p-2 flex flex-col gap-1" id="sidebarNavContent">
-                <!-- Javascript ile doldurulacak -->
             </nav>
         </aside>
 
-        <!-- ANA ALAN (Sağ Taraf) -->
+        <!-- Ana Alan -->
         <main class="flex-1 flex flex-col relative min-w-0 w-full h-full">
             <!-- Header -->
             <header class="h-16 md:h-20 flex items-center justify-between px-4 md:px-8 bg-white/80 backdrop-blur-md sticky top-0 z-10 border-b dark:bg-slate-900/80 dark:border-slate-800">
@@ -275,34 +257,29 @@
                     <i data-lucide="menu" class="w-6 h-6"></i>
                 </button>
 
-                <div class="flex items-center gap-2 md:gap-4 ml-auto">
-                    <button id="viewToggleBtn" onclick="toggleView()" class="flex p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition" title="Görünümü Değiştir">
-                        <i data-lucide="grid" id="viewIcon" class="w-5 h-5 text-slate-600 dark:text-slate-300"></i>
-                    </button>
-                    <button id="calendarToggleBtn" onclick="toggleCalendarMode()" class="relative p-2 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/40 dark:to-purple-900/40 border border-indigo-100 dark:border-indigo-800/60 rounded-xl transition flex items-center justify-center shadow-sm hover:shadow-md hover:shadow-indigo-500/20 group overflow-hidden" title="Takvim (Planlananlar)">
-                        <div class="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 opacity-0 group-hover:opacity-10 transition-opacity"></div>
-                        <i data-lucide="calendar" id="calendarIcon" class="w-5 h-5 text-indigo-600 dark:text-indigo-400 transform group-hover:scale-110 transition-transform"></i>
-                    </button>
-                    <button onclick="createNewItem()" class="hidden md:flex bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl items-center gap-2 text-sm font-semibold shadow-lg shadow-indigo-200 transition active:scale-95" id="mainAddBtn">
-                        <i data-lucide="plus" class="w-4 h-4" id="mainAddBtnIcon"></i> <span id="mainAddBtnText">Yeni Not</span>
-                    </button>
+                <div class="flex-1 max-w-xl relative" id="searchContainer">
+                    <i data-lucide="search" class="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>
+                    <input type="text" id="searchBox" oninput="handleSearch()" placeholder="Ara..." class="w-full pl-9 md:pl-11 pr-4 py-2 md:py-2.5 bg-slate-100 dark:bg-slate-800 rounded-xl md:rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition text-sm dark:text-white border border-transparent dark:border-slate-700">
                 </div>
+
+                <div class="flex items-center gap-2 md:gap-4 ml-2 md:ml-6">
+    <!-- Görünüm Butonu (ÖNE ALINDI) -->
+    <button id="viewToggleBtn" onclick="toggleView()" class="flex p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition" title="Görünümü Değiştir">
+        <i data-lucide="grid" id="viewIcon" class="w-5 h-5 text-slate-600 dark:text-slate-300"></i>
+    </button>
+    <!-- Takvim Butonu (ARKAYA ALINDI) -->
+    <button id="calendarToggleBtn" onclick="toggleCalendarMode()" class="relative p-2 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/40 dark:to-purple-900/40 border border-indigo-100 dark:border-indigo-800/60 rounded-xl transition flex items-center justify-center shadow-sm hover:shadow-md hover:shadow-indigo-500/20 group overflow-hidden" title="Takvim (Planlananlar)">
+        <div class="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 opacity-0 group-hover:opacity-10 transition-opacity"></div>
+        <i data-lucide="calendar" id="calendarIcon" class="w-5 h-5 text-indigo-600 dark:text-indigo-400 transform group-hover:scale-110 transition-transform"></i>
+    </button>
+    <!-- Masaüstü Yeni Butonu -->
+    <button onclick="createNewItem()" class="hidden md:flex bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl items-center gap-2 text-sm font-semibold shadow-lg shadow-indigo-200 transition active:scale-95" id="mainAddBtn">
+        <i data-lucide="plus" class="w-4 h-4" id="mainAddBtnIcon"></i> <span id="mainAddBtnText">Yeni Not</span>
+    </button>
+</div>
             </header>
 
-            <!-- MOBİL ARAMA ÇUBUĞU (Sadece Mobilde Görünür) -->
-            <div class="md:hidden p-4 bg-white dark:bg-slate-900 border-b dark:border-slate-800 shrink-0">
-                <div class="relative">
-                    <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>
-                    <input type="text" id="mobileSearch" oninput="handleMobileSearch(event)" placeholder="Notlarda ara..." class="w-full pl-9 pr-3 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl text-sm dark:text-white outline-none">
-                </div>
-            </div>
-
-            <!-- MASAÜSTÜ SEKME BARI (Sadece Masaüstünde Görünür - Birden çok not sekmesi için) -->
-            <div id="desktopTabBar" class="hidden md:flex items-center gap-1 px-4 bg-slate-100 dark:bg-slate-950 border-b dark:border-slate-800 overflow-x-auto custom-scrollbar shrink-0 h-11">
-                <!-- Sekmeler JavaScript ile buraya eklenecek -->
-            </div>
-
-            <!-- Notlar Grid / Calendar / Tasks Container / Veya Masaüstü Inline Editör Alanı -->
+            <!-- Notlar Grid / Calendar / Tasks Container -->
             <div id="notesContainer" class="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar pb-24 md:pb-8">
                 <!-- İçerik JavaScript ile buraya gelecek -->
             </div>
@@ -313,6 +290,7 @@
             </button>
         </main>
     </div>
+
     <!-- Editör (Notion Tarzı Tam Sayfa) -->
     <div id="editorModal" class="fixed inset-0 z-50 hidden bg-white dark:bg-slate-900 transition-all duration-400 ease-[cubic-bezier(0.22,1,0.36,1)] opacity-0 translate-y-12 overflow-y-auto custom-scrollbar">
         
@@ -635,10 +613,7 @@
 
         let notes = [];
         let trash = [];
-        let currentNoteId = null; 
-        // --- SEKME SİSTEMİ DEĞİŞKENLERİ ---
-        let openTabs = [];    // Açık olan not ID'leri listesi ['123', '456']
-        let activeTabId = null; // Şu an ekranda aktif olan sekmenin ID'si
+        let currentNoteId = null;
         let currentFilter = localStorage.getItem('notla_filter') || 'notes'; 
         let viewMode = localStorage.getItem('notla_view') || 'grid';
         let currentTheme = localStorage.getItem('notla_theme') || 'light';
@@ -690,15 +665,6 @@
 
             if (user) {
                 window.continueAsGuest();
-                
-                // --- 1. EKLENEN KISIM: KULLANICI GİRİŞ YAPTIYSA BİLGİLERİNİ YAZDIR ---
-                const email = user.email;
-                const initial = email.charAt(0).toUpperCase(); // İsmin ilk harfini al
-                document.getElementById('userAvatarBtn').innerText = initial;
-                document.getElementById('userNameDisplay').innerText = user.displayName || email.split('@')[0];
-                document.getElementById('userEmailDisplay').innerText = email;
-                // ------------------------------------------------------------------
-
                 try {
                     const doc = await firebase.firestore().collection('user_notes').doc(user.uid).get();
                     if (doc.exists) {
@@ -715,16 +681,9 @@
                     renderNotes(); syncSharedNotes();
                 }
             } else {
-                // --- 2. EKLENEN KISIM: MİSAFİRSE EKRANA MİSAFİR YAZDIR ---
-                document.getElementById('userAvatarBtn').innerText = 'M';
-                document.getElementById('userNameDisplay').innerText = 'Misafir';
-                document.getElementById('userEmailDisplay').innerText = 'Giriş yapılmadı';
-                // ---------------------------------------------------------
-
                 if (sharedId) { renderSharedScreen(sharedId, null); }
             }
         });
-        
 
         // --- GİRİŞ VE KULLANICI FONKSİYONLARI ---
         window.continueAsGuest = function() {
@@ -830,7 +789,6 @@
                 if(window.recaptchaVerifier) window.recaptchaVerifier.render().then((widgetId) => grecaptcha.reset(widgetId));
             });
         };
-        
 
         window.verifySMSCode = function() {
             const code = document.getElementById('smsCodeInput').value.trim();
@@ -1027,15 +985,7 @@ function applyEditorColor(colorHex) {
     header.classList.add('bg-white/90', 'dark:bg-slate-900/90');
 }
         function openEditor(id) {
-            // MASAÜSTÜ KONTROLÜ: Eğer ekran 768px (masaüstü) üzerindeyse modal açma, Sekme aç!
-            if (window.innerWidth >= 768) {
-                openTab(id);
-                return;
-            }
-
-            // MOBİL İÇİN ESKİ MODAL SİSTEMİ AYNEN ÇALIŞIR:
             currentNoteId = id; const note = notes.find(n => n.id === id);
-          
             if (note) {
                 const titleInput = document.getElementById('noteTitle'); titleInput.value = note.title; titleInput.placeholder = note.type === 'task' ? 'Görev adı...' : 'Başlıksız Not';
                 document.getElementById('noteTags').value = (note.tags || []).join(', '); document.getElementById('noteColor').value = note.color || 'white'; document.getElementById('noteLocation').value = note.location || '';
@@ -1075,116 +1025,6 @@ function applyEditorColor(colorHex) {
                 
                 if(window.innerWidth > 768 && !isReadOnly) { setTimeout(() => { if(editor) editor.focus(); }, 400); }
             }
-        }
-        // --- SEKME YÖNETİMİ (DESKTOP TABS) ---
-        function openTab(id) {
-            if (!openTabs.includes(id)) {
-                openTabs.push(id);
-            }
-            switchTab(id);
-        }
-
-        function closeTab(id, event) {
-            if (event) event.stopPropagation();
-            openTabs = openTabs.filter(tabId => tabId !== id);
-            
-            if (activeTabId === id) {
-                if (openTabs.length > 0) {
-                    switchTab(openTabs[openTabs.length - 1]); // Bir önceki sekmeye geç
-                } else {
-                    activeTabId = null;
-                    renderNotes(); // Hiç sekme kalmadıysa ana sayfaya (grid görünümüne) dön
-                }
-            }
-            renderTabBar();
-        }
-
-        function switchTab(id) {
-            activeTabId = id;
-            currentNoteId = id;
-            renderTabBar();
-            renderInlineEditorForTab(id);
-        }
-
-        function renderTabBar() {
-            const tabBar = document.getElementById('desktopTabBar');
-            if (!tabBar) return;
-
-            if (window.innerWidth < 768 || openTabs.length === 0) {
-                tabBar.classList.add('hidden');
-                return;
-            }
-
-            tabBar.classList.remove('hidden');
-            let html = '';
-
-            openTabs.forEach(tabId => {
-                const note = notes.find(n => n.id === tabId);
-                if (!note) return;
-                const isActive = activeTabId === tabId;
-
-                html += `
-                    <div onclick="switchTab('${tabId}')" class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition whitespace-nowrap border ${isActive ? 'bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 border-slate-200 dark:border-slate-700 shadow-sm' : 'text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-800 border-transparent'}">
-                        <i data-lucide="${note.type === 'task' ? 'check-square' : 'file-text'}" class="w-3.5 h-3.5"></i>
-                        <span class="max-w-[120px] truncate">${note.title || 'Başlıksız'}</span>
-                        <button onclick="closeTab('${tabId}', event)" class="p-0.5 hover:bg-slate-300 dark:hover:bg-slate-700 rounded-full transition"><i data-lucide="x" class="w-3 h-3"></i></button>
-                    </div>
-                `;
-            });
-
-            tabBar.innerHTML = html;
-            lucide.createIcons({ root: tabBar });
-        }
-
-        function renderInlineEditorForTab(id) {
-            const note = notes.find(n => n.id === id);
-            const container = document.getElementById('notesContainer');
-            if (!note || !container) return;
-
-            // Masaüstü sekmeler için ana içerik alanına editörü inline (sayfa içinde) yüklüyoruz
-            container.innerHTML = `
-                <div class="max-w-4xl mx-auto w-full bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700 flex flex-col min-h-[70vh]">
-                    <input type="text" id="inlineNoteTitle" value="${note.title || ''}" placeholder="Başlıksız" class="w-full text-3xl font-bold bg-transparent outline-none mb-4 dark:text-white placeholder-slate-300">
-                    <div class="flex items-center gap-4 mb-4 pb-4 border-b dark:border-slate-700 text-xs text-slate-500">
-                        <span>Son Güncelleme: ${new Date(note.updatedAt).toLocaleDateString('tr-TR')}</span>
-                    </div>
-                    <div id="inlineQuillEditor" class="flex-1"></div>
-                </div>
-            `;
-
-            // Inline Quill Editör Başlatma
-            const inlineEditor = new Quill('#inlineQuillEditor', {
-                theme: 'snow',
-                placeholder: 'Bir şeyler yazın...',
-                modules: { toolbar: [['bold', 'italic', 'underline'], [{ header: [1, 2, false] }], ['list', 'bullet'], ['clean']] }
-            });
-            inlineEditor.root.innerHTML = note.content || '';
-
-            // Otomatik Kayıt Bağlantısı
-            inlineEditor.on('text-change', () => {
-                note.content = inlineEditor.root.innerHTML;
-                note.updatedAt = new Date().toISOString();
-                saveToStorage();
-                renderSidebarNotes();
-            });
-
-            document.getElementById('inlineNoteTitle').addEventListener('input', (e) => {
-                note.title = e.target.value;
-                note.updatedAt = new Date().toISOString();
-                saveToStorage();
-                renderSidebarNotes();
-                renderTabBar();
-            });
-
-            lucide.createIcons({ root: container });
-        }
-        function handleMobileSearch(e) {
-            const query = e.target.value.toLowerCase();
-            const container = document.getElementById('notesContainer');
-            // Arama değerini sidebar aramasıyla senkronize edip notları filtrele
-            const sidebarSearch = document.getElementById('sidebarSearch');
-            if(sidebarSearch) sidebarSearch.value = e.target.value;
-            renderNotes();
         }
         // --- SLASH KOMUTU FONKSİYONLARI ---
 function showSlashMenu(index) {
@@ -1562,7 +1402,7 @@ function filterPalette() {
         function renderCalendar() {
             destroySortable(); const container = document.getElementById('notesContainer');
             const viewBtn = document.getElementById('viewToggleBtn'); if(viewBtn) { viewBtn.classList.add('invisible', 'pointer-events-none'); viewBtn.classList.remove('hidden'); }
-            
+            document.getElementById('searchContainer').classList.add('opacity-0', 'pointer-events-none');
             container.className = 'flex-1 overflow-y-auto p-4 sm:p-8 custom-scrollbar bg-slate-50 dark:bg-transparent pb-24 md:pb-8';
             
             const year = currentCalendarDate.getFullYear(); const month = currentCalendarDate.getMonth();
@@ -1765,10 +1605,10 @@ function filterPalette() {
         }
 
         // --- TASKS VE KART (NOT) RENDER İŞLEMLERİ ---
-       function renderTasksView(filteredTasks) {
+        function renderTasksView(filteredTasks) {
             destroySortable(); const container = document.getElementById('notesContainer');
             const viewBtn = document.getElementById('viewToggleBtn'); if(viewBtn) { viewBtn.classList.add('invisible', 'pointer-events-none'); viewBtn.classList.remove('hidden'); }
-            
+            document.getElementById('searchContainer').classList.remove('opacity-0', 'pointer-events-none');
             container.className = 'flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar pb-24 md:pb-8 max-w-4xl mx-auto w-full';
             
             const now = new Date(); const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime(); const tomorrowStart = todayStart + 86400000;
@@ -1828,7 +1668,8 @@ function filterPalette() {
         function renderCardsView(filteredNotes) {
             const container = document.getElementById('notesContainer');
             const viewBtn = document.getElementById('viewToggleBtn'); if(viewBtn) { viewBtn.classList.remove('invisible', 'pointer-events-none', 'hidden'); }
-            
+            if(viewBtn) viewBtn.classList.remove('hidden'); 
+            document.getElementById('searchContainer').classList.remove('opacity-0', 'pointer-events-none');
             container.className = `flex-1 overflow-y-auto p-4 md:p-8 ${viewMode === 'grid' ? 'grid-view' : 'list-view'} custom-scrollbar relative z-10 pb-24 md:pb-8`;
             container.innerHTML = '';
 
@@ -1877,16 +1718,12 @@ function filterPalette() {
                 container.appendChild(div);
             });
             lucide.createIcons({ root: document.getElementById('notesContainer') });
-            initSortable();
+            renderTags(); initSortable();
         }
 
-       function renderNotes() {
+        function renderNotes() {
             if (currentFilter === 'calendar') { renderCalendar(); return; }
-            
-            // DÜZELTME: Eski searchBox yerine sol bardaki yeni 'sidebarSearch' ID'sini kullanıyoruz
-            const searchInput = document.getElementById('sidebarSearch');
-            const searchVal = searchInput ? searchInput.value.toLowerCase() : '';
-            
+            const searchVal = document.getElementById('searchBox').value.toLowerCase();
             let dataList = currentFilter === 'trash' ? trash : notes;
             let filtered = [];
             
@@ -1901,113 +1738,22 @@ function filterPalette() {
             }
 
             if (currentFilter === 'tasks') { renderTasksView(filtered); } else { renderCardsView(filtered); }
-
-            // --- YENİ EKLENEN SATIR: Ana ekran her değiştiğinde Sol Bar'ı da güncelle ---
-            if (typeof renderSidebarNotes === 'function') {
-                renderSidebarNotes();
-            }
         }
-        // --- YENİ PROFESYONEL SİDEBAR MANTIĞI ---
 
-// Profil Menüsünü Aç/Kapat
-function toggleProfileMenu(e) {
-    if(e) e.stopPropagation();
-    const menu = document.getElementById('profileDropdown');
-    if (menu.classList.contains('hidden')) {
-        menu.classList.remove('hidden');
-        void menu.offsetWidth;
-        menu.classList.remove('opacity-0', 'scale-95');
-    } else {
-        menu.classList.add('opacity-0', 'scale-95');
-        setTimeout(() => menu.classList.add('hidden'), 200);
-    }
-}
-
-// Etiketler Bölümünü Aç/Kapat
-let isTagsCollapsed = false;
-function toggleSidebarTags() {
-    isTagsCollapsed = !isTagsCollapsed;
-    renderSidebarNotes();
-}
-
-// Sidebar'ı Doldurma (Arama, Etiketler, Önemli, Tarihe Göre)
-function renderSidebarNotes() {
-    const container = document.getElementById('sidebarNavContent');
-    const searchVal = document.getElementById('sidebarSearch').value.toLowerCase();
-    
-    // Silinmemiş metin notlarını ve görevleri al
-    let activeItems = notes.filter(n => n.type !== 'event');
-
-    // Arama varsa filtrele
-    if (searchVal) {
-        activeItems = activeItems.filter(n => 
-            (n.title && n.title.toLowerCase().includes(searchVal)) || 
-            (n.content && n.content.toLowerCase().includes(searchVal))
-        );
-    }
-
-    // 1. Etiketleri Topla
-    const allTags = [...new Set(activeItems.flatMap(n => n.tags || []))];
-    
-    // 2. Önemli ve Diğerleri olarak ayır ve Tarihe (updatedAt) göre sırala
-    activeItems.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
-    const favorites = activeItems.filter(n => n.isFavorite);
-    const others = activeItems.filter(n => !n.isFavorite);
-
-    let html = '';
-
-    // EĞER ARAMA YAPILMIYORSA ETİKETLERİ GÖSTER
-    if (!searchVal && allTags.length > 0) {
-        html += `
-            <div class="mb-2">
-                <button onclick="toggleSidebarTags()" class="w-full flex items-center justify-between px-2 py-1.5 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg group transition">
-                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2"><i data-lucide="tags" class="w-3 h-3"></i> Etiketler</span>
-                    <i data-lucide="${isTagsCollapsed ? 'chevron-down' : 'chevron-up'}" class="w-4 h-4 text-slate-400 group-hover:text-slate-600 dark:text-slate-500"></i>
-                </button>
-                <div class="flex flex-col gap-0.5 mt-1 overflow-hidden transition-all duration-300 ${isTagsCollapsed ? 'max-h-0' : 'max-h-96'} pl-2">
-        `;
-        allTags.forEach(tag => {
-            const isActive = currentFilter === 'tag:' + tag;
-            html += `<button onclick="setFilter('tag:${tag}')" class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition ${isActive ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800'}"><i data-lucide="hash" class="w-3 h-3 opacity-70"></i> <span class="truncate">${tag}</span></button>`;
-        });
-        html += `</div></div>`;
-    }
-
-    // YARDIMCI FONKSİYON: Sol Bar Kartı HTML'i
-    const createSidebarItemHtml = (note) => {
-        const icon = note.type === 'task' ? 'check-square' : 'file-text';
-        const colorClass = note.color === 'white' ? 'text-slate-400' : `text-[${note.color}]`; // Renk belirteci
-        return `
-            <button onclick="openEditor('${note.id}'); if(window.innerWidth < 768) toggleSidebar();" class="w-full flex flex-col text-left px-3 py-2.5 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800 transition group border border-transparent hover:border-slate-300 dark:hover:border-slate-700">
-                <div class="flex items-center gap-2 w-full">
-                    <i data-lucide="${icon}" class="w-4 h-4 shrink-0 opacity-50 group-hover:opacity-100 group-hover:text-indigo-500 transition-colors"></i>
-                    <span class="text-sm font-semibold text-slate-800 dark:text-slate-200 truncate flex-1">${note.title || 'Başlıksız'}</span>
-                </div>
-                <div class="text-[10px] text-slate-400 truncate pl-6 mt-0.5">${new Date(note.updatedAt).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' })}</div>
-            </button>
-        `;
-    };
-
-    // ÖNEMLİ NOTLAR
-    if (favorites.length > 0) {
-        html += `<div class="px-2 py-1.5 mt-2 text-[10px] font-bold text-orange-500 uppercase tracking-widest flex items-center gap-2"><i data-lucide="star" class="w-3 h-3 fill-current"></i> Önemli</div>`;
-        favorites.forEach(note => { html += createSidebarItemHtml(note); });
-    }
-
-    // DİĞER NOTLAR
-    if (others.length > 0) {
-        html += `<div class="px-2 py-1.5 mt-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Tüm Notlar</div>`;
-        others.forEach(note => { html += createSidebarItemHtml(note); });
-    }
-
-    if(activeItems.length === 0) {
-        html += `<div class="p-4 text-center text-xs text-slate-400 italic">Not bulunamadı.</div>`;
-    }
-
-    container.innerHTML = html;
-    lucide.createIcons({ root: container });
-}
-
+        function renderTags() {
+            const mainNotes = notes.filter(n => n.type !== 'event');
+            const allTags = [...new Set(mainNotes.flatMap(n => n.tags || []))];
+            const tagContainer = document.getElementById('tagList'); tagContainer.innerHTML = '';
+            allTags.forEach(tag => {
+                const btn = document.createElement('button'); const isActive = currentFilter === 'tag:'+tag;
+                btn.className = `w-full flex items-center gap-3 px-3 py-3 md:py-2 rounded-xl hover:bg-indigo-50 dark:hover:bg-slate-800 text-left transition text-sm font-medium nav-btn ${isActive ? 'bg-indigo-50 text-indigo-600 dark:bg-slate-800 dark:text-indigo-400' : 'text-slate-700 dark:text-slate-300'}`;
+                btn.dataset.filter = 'tag:'+tag;
+                btn.onclick = () => { setFilter('tag:' + tag); if(window.innerWidth < 768) toggleSidebar(); };
+                btn.innerHTML = `<i data-lucide="hash" class="w-4 h-4"></i> <span class="truncate">${tag}</span>`;
+                tagContainer.appendChild(btn);
+            });
+            lucide.createIcons();
+        }
 
         const handleSearch = debounce(() => { renderNotes(); }, 300);
 
@@ -2224,10 +1970,10 @@ function renderSidebarNotes() {
             if (!note.tags) note.tags = [];
             if (type === 'new') {
                 const newTag = prompt("Yeni oluşturulacak etiket adını girin:");
-                if (newTag && newTag.trim() !== "") { const trimmed = newTag.trim(); if (!note.tags.includes(trimmed)) note.tags.push(trimmed); saveToStorage(); renderNotes(); populateToolbarTags(); }
+                if (newTag && newTag.trim() !== "") { const trimmed = newTag.trim(); if (!note.tags.includes(trimmed)) note.tags.push(trimmed); saveToStorage(); renderNotes(); renderTags(); populateToolbarTags(); }
             } else if (type === 'toggle') {
                 if (note.tags.includes(tagValue)) { note.tags = note.tags.filter(t => t !== tagValue); } else { note.tags.push(tagValue); }
-                saveToStorage(); renderNotes(); populateToolbarTags();
+                saveToStorage(); renderNotes(); renderTags(); populateToolbarTags();
             }
         }
        // --- PAYLAŞILAN NOT İŞLEMLERİ ---
@@ -2396,13 +2142,6 @@ async function clearAllData() {
             if (event.target.id === 'settingsModal') { closeSettings(); }
             if (event.target.id === 'shareModal') { closeShareModal(); }
             if (event.target.id === 'eventModal') { closeEventModal(); }
-            // Profil Dropdown (Bar içinde bar) Dışarı tıklayınca kapat
-            const profileMenu = document.getElementById('profileDropdown');
-            if (profileMenu && !profileMenu.classList.contains('hidden')) {
-                if (!event.target.closest('#profileDropdown') && !event.target.closest('button[onclick="toggleProfileMenu(event)"]')) {
-                    toggleProfileMenu();
-                }
-            }
             
             // Kart araç çubuğu
             const toolbar = document.getElementById('cardToolbar');
