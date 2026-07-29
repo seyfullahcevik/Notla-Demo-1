@@ -277,91 +277,6 @@
         </main>
     </div>
 
-    <!-- Editör (Notion Tarzı Tam Sayfa) -->
-    <div id="editorModal" class="fixed inset-0 z-50 hidden bg-white dark:bg-slate-900 transition-all duration-400 ease-[cubic-bezier(0.22,1,0.36,1)] opacity-0 translate-y-12 overflow-y-auto custom-scrollbar">
-        
-        <!-- Üst Bar: Sadece Sol Üstte Geri Tuşu, Sağda İndir ve Menü -->
-        <div class="sticky top-0 z-20 bg-white/90 dark:bg-slate-900/90 backdrop-blur px-4 sm:px-8 py-3 flex items-center justify-between border-b border-transparent dark:border-transparent transition-colors" id="editorHeader">
-            <button onclick="saveAndClose()" class="flex items-center gap-2 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 transition group px-2 py-1 rounded-lg">
-                <i data-lucide="chevron-left" class="w-6 h-6 group-hover:-translate-x-1 transition-transform"></i>
-                <span class="font-medium text-sm sm:text-base">Geri</span>
-            </button>
-            
-            <div class="flex items-center gap-2 sm:gap-4 shrink-0">
-                <span class="text-[10px] sm:text-xs text-slate-400 font-medium italic hidden sm:block mr-2" id="saveStatus">Kaydedildi</span>
-                <button id="modalTaskCheck" onclick="toggleCurrentTaskCheck()" class="hidden w-7 h-7 rounded-full border-2 items-center justify-center shrink-0 transition-colors"></button>
-                
-               <!-- Kolay Paylaş Butonu -->
-                <button onclick="openShareModalFromEditor()" class="flex items-center gap-2 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 px-3 py-2 rounded-lg text-sm font-medium transition mr-1 sm:mr-2">
-                    <i data-lucide="share-2" class="w-5 h-5"></i>
-                    <span class="hidden sm:inline">Paylaş</span>
-                </button>
-
-                <!-- Dışa Aktar Dropdown -->
-                <div class="relative hidden sm:block">
-                    <button onclick="toggleExportMenu()" class="flex items-center gap-2 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 px-3 py-2 rounded-lg text-sm font-medium transition">
-                        <i data-lucide="more-horizontal" class="w-5 h-5"></i>
-                    </button>
-                    <div id="exportMenu" class="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-slate-800 shadow-xl rounded-xl border dark:border-slate-700 overflow-hidden py-1 z-50">
-                        <div class="px-4 py-2 text-xs font-bold text-slate-400 uppercase tracking-widest border-b dark:border-slate-700 mb-1">Dışa Aktar</div>
-                        <button onclick="exportNote('pdf')" class="w-full text-left px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-700 text-sm flex items-center gap-3 dark:text-white"><i data-lucide="file-text" class="w-4 h-4 text-red-500"></i> PDF Olarak</button>
-                        <button onclick="exportNote('txt')" class="w-full text-left px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-700 text-sm flex items-center gap-3 dark:text-white"><i data-lucide="file" class="w-4 h-4 text-blue-500"></i> TXT Olarak</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Sayfa (Sayfanın genişliği ve içeriği) -->
-        <div class="w-full max-w-4xl mx-auto px-4 sm:px-12 pb-32 flex flex-col mt-4" id="editorModalContent">
-            
-            <!-- Dev Başlık Alanı -->
-            <input type="text" id="noteTitle" placeholder="Başlıksız" class="w-full text-4xl sm:text-5xl font-bold bg-transparent outline-none mb-6 dark:text-white placeholder-slate-200 dark:placeholder-slate-800 transition-colors">
-            
-            <!-- Alt Meta Veriler (Renk, Etiket, Hatırlatıcı) -->
-            <div class="flex flex-wrap items-center gap-2 sm:gap-4 mb-6 border-b border-slate-100 dark:border-slate-800 pb-6">
-                <!-- Renk -->
-                <div class="flex items-center gap-2 px-2 py-1 rounded hover:bg-slate-50 dark:hover:bg-slate-800 transition">
-                    <i data-lucide="palette" class="w-4 h-4 text-slate-400"></i>
-                    <select id="noteColor" class="text-sm bg-transparent outline-none dark:text-slate-300 cursor-pointer font-medium">
-                        <option value="white">Sade</option>
-                        <option value="#fee2e2">Kırmızı</option>
-                        <option value="#fef3c7">Sarı</option>
-                        <option value="#dcfce7">Yeşil</option>
-                        <option value="#dbeafe">Mavi</option>
-                        <option value="#f3e8ff">Mor</option>
-                    </select>
-                </div>
-                <!-- Etiket -->
-                <div class="flex items-center gap-2 px-2 py-1 rounded hover:bg-slate-50 dark:hover:bg-slate-800 transition">
-                    <i data-lucide="tag" class="w-4 h-4 text-slate-400"></i>
-                    <input type="text" id="noteTags" placeholder="Etiket ekle..." class="text-sm font-medium bg-transparent outline-none dark:text-slate-300 w-28 sm:w-36 placeholder-slate-400">
-                </div>
-                <!-- Görevse: Hatırlatıcı -->
-                <div id="reminderContainer" class="flex items-center gap-2 px-2 py-1 rounded hover:bg-slate-50 dark:hover:bg-slate-800 transition hidden">
-                    <i data-lucide="clock" class="w-4 h-4 text-slate-400"></i>
-                    <input type="datetime-local" id="noteReminder" class="text-sm font-medium bg-transparent outline-none dark:text-slate-300 cursor-pointer w-full">
-                </div>
-                <!-- Görevse: Konum -->
-                <div id="locationContainer" class="flex items-center gap-2 px-2 py-1 rounded hover:bg-slate-50 dark:hover:bg-slate-800 transition hidden">
-                    <i data-lucide="map-pin" class="w-4 h-4 text-slate-400"></i>
-                    <input type="text" id="noteLocation" placeholder="Konum..." class="text-sm font-medium bg-transparent outline-none dark:text-slate-300 w-24">
-                </div>
-            </div>
-
-            <!-- Editör -->
-            <div id="quillEditor" class="flex-1"></div>
-
-            <!-- Ekler -->
-            <div class="mt-12 pt-6 border-t border-slate-100 dark:border-slate-800">
-                <div class="flex items-center gap-4 mb-4">
-                    <h4 class="text-sm font-semibold text-slate-600 dark:text-slate-400 flex items-center gap-2"><i data-lucide="paperclip" class="w-4 h-4"></i> Dosyalar</h4>
-                    <button onclick="document.getElementById('fileInput').click()" class="text-xs bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 px-3 py-1.5 rounded-lg font-medium transition dark:text-white flex items-center gap-1"><i data-lucide="plus" class="w-3 h-3"></i> Ekle</button>
-                    <input type="file" id="fileInput" class="hidden" multiple onchange="handleFileUpload(event)">
-                </div>
-                <div id="attachmentList" class="flex flex-wrap gap-2"></div>
-            </div>
-        </div>
-    </div>
 <!-- Google Docs Tarzı Paylaşım ve Erişim Yönetimi Modalı -->
     <div id="shareModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
         <div class="bg-white dark:bg-slate-900 w-full max-w-lg rounded-3xl shadow-2xl flex flex-col overflow-hidden transform transition-transform duration-300 scale-95" id="shareModalContent">
@@ -1484,7 +1399,7 @@
         // --- TAKVİM (CALENDAR) RENDER ---
         function changeCalendarMonth(offset) { currentCalendarDate.setMonth(currentCalendarDate.getMonth() + offset); renderCalendar(); }
         function resetCalendarToToday() { currentCalendarDate = new Date(); renderCalendar(); }
-        function renderCalendar() {
+       function renderCalendar() {
             destroySortable(); const container = document.getElementById('notesContainer');
             const viewBtn = document.getElementById('viewToggleBtn'); if(viewBtn) viewBtn.classList.add('hidden');
             document.getElementById('searchContainer').classList.add('opacity-0', 'pointer-events-none');
@@ -1521,7 +1436,6 @@
                                 <button onclick="changeCalendarMonth(-1)" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition text-slate-600 dark:text-slate-400"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
                                 <button onclick="changeCalendarMonth(1)" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition text-slate-600 dark:text-slate-400"><i data-lucide="chevron-right" class="w-5 h-5"></i></button>
                             </div>
-                            <!-- YENİ ETKİNLİK BUTONU -->
                             <button onclick="openEventModal()" class="px-3 sm:px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold transition shadow-md flex items-center gap-2"><i data-lucide="plus" class="w-4 h-4"></i><span class="hidden sm:inline">Etkinlik</span></button>
                         </div>
                     </div>
@@ -1547,7 +1461,6 @@
                 const isToday = (i === today.getDate() && month === today.getMonth() && year === today.getFullYear());
                 const isSelected = (currentDateStr === selectedCalendarDateStr);
                 
-                // Seçili güne özel kalın renkli çerçeve eklendi
                 const cellBgClass = isSelected ? 'bg-indigo-50 dark:bg-indigo-900/40 ring-2 ring-indigo-500 ring-inset' : (isToday ? 'bg-indigo-50/20 dark:bg-indigo-900/20' : 'bg-white dark:bg-slate-800');
                 const dayNumClass = isToday ? 'bg-indigo-600 text-white w-6 h-6 sm:w-7 sm:h-7 rounded-full shadow-md' : (isSelected ? 'text-indigo-600 dark:text-indigo-400 font-extrabold w-6 h-6 sm:w-7 sm:h-7' : 'text-slate-700 dark:text-slate-300 w-6 h-6 sm:w-7 sm:h-7 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full');
 
@@ -1560,7 +1473,6 @@
             for (let i = 0; i < remainingCells; i++) { html += `<div class="bg-slate-50/50 dark:bg-slate-900/30 p-1 sm:p-2 min-h-[60px] sm:min-h-[100px]"></div>`; }
             html += `</div></div>`;
 
-            // SEÇİLİ GÜNÜN ETKİNLİKLERİ BÖLÜMÜ (TAKVİMİN ALTINDA)
             const selectedDayEvents = notes.filter(n => (n.type === 'task' || n.type === 'event') && n.reminder && n.reminder.startsWith(selectedCalendarDateStr));
             const formattedDate = selectedCalendarDateStr.split('-').reverse().join('.');
             
@@ -1592,53 +1504,9 @@
             html += `</div></div></div>`;
             
             container.innerHTML = html; lucide.createIcons({ root: document.getElementById('notesContainer') });
-        };
-
-            let html = `
-               <div class="max-w-6xl mx-auto min-h-full flex flex-col min-w-[300px]" style="animation: fadeIn 0.3s ease-out;">
-                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-3 shrink-0 gap-4">
-                        <h2 class="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-white flex items-center gap-3">
-                            <div class="p-2 sm:p-2.5 bg-indigo-100 dark:bg-indigo-500/20 rounded-xl text-indigo-600 dark:text-indigo-400 shadow-sm"><i data-lucide="calendar-days" class="w-6 h-6 sm:w-7 sm:h-7"></i></div>
-                            ${monthNames[month]} ${year}
-                        </h2>
-                        <div class="flex items-center gap-2 sm:gap-3 w-full sm:w-auto justify-between sm:justify-end">
-                            <button onclick="resetCalendarToToday()" class="px-3 sm:px-4 py-2 text-sm font-semibold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition shadow-sm text-slate-700 dark:text-slate-300 flex items-center gap-2"><i data-lucide="calendar" class="w-4 h-4"></i> Bugün</button>
-                            <div class="flex gap-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm p-1">
-                                <button onclick="changeCalendarMonth(-1)" class="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition text-slate-600 dark:text-slate-400"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
-                                <button onclick="changeCalendarMonth(1)" class="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition text-slate-600 dark:text-slate-400"><i data-lucide="chevron-right" class="w-5 h-5"></i></button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="flex-1 flex flex-col min-h-[400px] border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-sm">
-                        <div class="grid grid-cols-7 gap-px shrink-0 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">`;
-            dayNames.forEach(day => { html += `<div class="p-2 sm:p-3 text-center text-[10px] sm:text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">${day}</div>`; });
-            html += `</div><div class="grid grid-cols-7 gap-px flex-1 bg-slate-200 dark:bg-slate-700">`;
-
-            for (let i = 0; i < startDay; i++) { html += `<div class="bg-slate-50/50 dark:bg-slate-900/30 p-1 sm:p-2"></div>`; }
-            const today = new Date();
-            for (let i = 1; i <= daysInMonth; i++) {
-                const currentDateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
-                const dayNotes = notes.filter(n => {
-                    if (n.type !== 'task' || !n.reminder) return false; 
-                    const targetDate = new Date(n.reminder); return targetDate.getFullYear() === year && targetDate.getMonth() === month && targetDate.getDate() === i;
-                });
-
-                let notesHtml = dayNotes.map(n => {
-                    const colorClass = colorMap[n.color || 'white']; const isCompleted = n.completed;
-                    const checkIcon = isCompleted ? '<i data-lucide="check-circle" class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-indigo-500 shrink-0"></i>' : '<i data-lucide="circle" class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-slate-400 group-hover/event:text-indigo-400 shrink-0 transition-colors"></i>';
-                    return `<div onclick="openEditor('${n.id}'); event.stopPropagation();" class="calendar-event mt-1 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-md border ${colorClass} ${isCompleted ? 'opacity-50 bg-slate-50 dark:bg-slate-800/50' : ''} shadow-sm flex items-center gap-1.5 transition-all hover:scale-[1.02] hover:shadow-md cursor-pointer group/event"><div onclick="toggleTaskCompletion('${n.id}', event)" class="shrink-0 flex items-center justify-center hover:scale-110 transition-transform">${checkIcon}</div><span class="truncate font-semibold text-[9px] sm:text-[11px] group-hover/event:opacity-100 opacity-90 ${isCompleted ? 'line-through' : ''}">${n.title || 'İsimsiz Görev'}</span></div>`;
-                }).join('');
-
-                const isToday = (i === today.getDate() && month === today.getMonth() && year === today.getFullYear());
-                const cellBgClass = isToday ? 'bg-indigo-50/40 dark:bg-indigo-900/20' : 'bg-white dark:bg-slate-800';
-                const dayNumClass = isToday ? 'bg-indigo-600 text-white w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center shadow-md' : 'text-slate-700 dark:text-slate-300 w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors';
-
-                html += `<div onclick="createNewNoteWithDate('${currentDateStr}')" class="calendar-day ${cellBgClass} min-h-[55px] sm:min-h-[110px] p-1 sm:p-2 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors cursor-pointer flex flex-col group relative"><div class="font-bold text-[11px] sm:text-sm mb-1 ${dayNumClass}">${i}</div><div class="flex-1 flex flex-col gap-0.5 sm:gap-1 overflow-y-auto custom-scrollbar pr-0.5 relative z-10">${notesHtml}</div><div class="hidden sm:flex absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"><div class="bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 rounded-md p-1 shadow-sm"><i data-lucide="plus" class="w-3 h-3"></i></div></div></div>`;
-            }
-            const totalCells = startDay + daysInMonth; const remainingCells = Math.ceil(totalCells / 7) * 7 - totalCells;
-            for (let i = 0; i < remainingCells; i++) { html += `<div class="bg-slate-50/50 dark:bg-slate-900/30 p-1 sm:p-2"></div>`; }
-            html += `</div></div></div>`; container.innerHTML = html; lucide.createIcons({ root: document.getElementById('notesContainer') });
         }
+
+        // --- TASKS (GÖREVLER) RENDER ---
 
         // --- TASKS (GÖREVLER) RENDER ---
         function renderTasksView(filteredTasks) {
