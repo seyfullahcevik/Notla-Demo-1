@@ -123,13 +123,12 @@
     <!-- 1. SLASH KOMUT MENÜSÜ -->
     <div id="slashMenu" class="fixed z-[120] hidden bg-white dark:bg-slate-800 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-700 w-56 overflow-hidden transform scale-95 opacity-0 transition-all duration-150">
         <div class="px-3 py-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest border-b dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50">Biçimlendirme</div>
-        <!-- DÜZELTME: onmousedown ve event.preventDefault eklendi -->
-        <button onmousedown="event.preventDefault(); applySlashCommand('h1');" class="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-700 transition text-sm dark:text-white text-left"><div class="p-1 bg-white dark:bg-slate-900 border dark:border-slate-600 rounded text-slate-500 shadow-sm"><i data-lucide="heading-1" class="w-4 h-4"></i></div> Büyük Başlık</button>
-        <button onmousedown="event.preventDefault(); applySlashCommand('h2');" class="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-700 transition text-sm dark:text-white text-left"><div class="p-1 bg-white dark:bg-slate-900 border dark:border-slate-600 rounded text-slate-500 shadow-sm"><i data-lucide="heading-2" class="w-4 h-4"></i></div> Orta Başlık</button>
-        <button onmousedown="event.preventDefault(); applySlashCommand('list');" class="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-700 transition text-sm dark:text-white text-left"><div class="p-1 bg-white dark:bg-slate-900 border dark:border-slate-600 rounded text-slate-500 shadow-sm"><i data-lucide="list" class="w-4 h-4"></i></div> Madde İmi</button>
+        <button onclick="applySlashCommand('h1')" class="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-700 transition text-sm dark:text-white text-left"><div class="p-1 bg-white dark:bg-slate-900 border dark:border-slate-600 rounded text-slate-500 shadow-sm"><i data-lucide="heading-1" class="w-4 h-4"></i></div> Büyük Başlık</button>
+        <button onclick="applySlashCommand('h2')" class="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-700 transition text-sm dark:text-white text-left"><div class="p-1 bg-white dark:bg-slate-900 border dark:border-slate-600 rounded text-slate-500 shadow-sm"><i data-lucide="heading-2" class="w-4 h-4"></i></div> Orta Başlık</button>
+        <button onclick="applySlashCommand('list')" class="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-700 transition text-sm dark:text-white text-left"><div class="p-1 bg-white dark:bg-slate-900 border dark:border-slate-600 rounded text-slate-500 shadow-sm"><i data-lucide="list" class="w-4 h-4"></i></div> Madde İmi</button>
         
         <div class="px-3 py-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest border-y dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50 mt-1">Eklentiler</div>
-        <button onmousedown="event.preventDefault(); applySlashCommand('reminder');" class="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition text-sm text-indigo-600 dark:text-indigo-400 text-left font-bold"><div class="p-1 bg-indigo-100 dark:bg-indigo-900/50 rounded text-indigo-600 dark:text-indigo-400"><i data-lucide="bell-ring" class="w-4 h-4"></i></div> Hatırlatıcı Ekle</button>
+        <button onclick="applySlashCommand('reminder')" class="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition text-sm text-indigo-600 dark:text-indigo-400 text-left font-bold"><div class="p-1 bg-indigo-100 dark:bg-indigo-900/50 rounded text-indigo-600 dark:text-indigo-400"><i data-lucide="bell-ring" class="w-4 h-4"></i></div> Hatırlatıcı Ekle</button>
     </div>
 
     <!-- 2. KOMUT PALETİ (Ctrl+K) -->
@@ -502,50 +501,7 @@
             </div>
         </div>
     </div>
-<!-- 1. DOSYA İŞLEM MENÜSÜ (Aç / İndir Barı) -->
-    <div id="attachmentActionMenu" class="fixed inset-0 z-[150] bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center p-4 transition-opacity duration-200 opacity-0" onclick="if(event.target.id === 'attachmentActionMenu') closeAttachmentMenu()">
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-6 w-full max-w-xs transform scale-95 transition-transform duration-200 border border-slate-200 dark:border-slate-700" id="attachmentActionContent">
-            <div class="text-center mb-6">
-                <div class="w-12 h-12 bg-red-100 dark:bg-red-900/30 text-red-500 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <i data-lucide="file-text" class="w-6 h-6"></i>
-                </div>
-                <h3 id="actionMenuFileName" class="font-bold text-slate-800 dark:text-white truncate">Dosya.pdf</h3>
-                <p class="text-xs text-slate-500 mt-1">Bu PDF ile ne yapmak istersiniz?</p>
-            </div>
-            <div class="flex flex-col gap-3">
-                <button id="actionMenuOpenBtn" class="w-full flex items-center justify-center gap-2 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition shadow-md">
-                    <i data-lucide="external-link" class="w-4 h-4"></i> Uygulama İçinde Aç
-                </button>
-                <button id="actionMenuDownloadBtn" class="w-full flex items-center justify-center gap-2 py-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-xl font-bold transition">
-                    <i data-lucide="download" class="w-4 h-4"></i> Cihaza İndir
-                </button>
-            </div>
-        </div>
-    </div>
 
-    <!-- 2. PDF GÖRÜNTÜLEYİCİ MODALI -->
-    <div id="pdfViewerModal" class="fixed inset-0 z-[200] bg-slate-900/90 backdrop-blur-md hidden flex-col transition-opacity duration-300 opacity-0">
-        <!-- Üst Bar -->
-        <div class="flex items-center justify-between p-4 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shrink-0">
-            <div class="flex items-center gap-3 text-slate-800 dark:text-white min-w-0">
-                <div class="p-2 bg-red-100 dark:bg-red-900/30 text-red-600 rounded-lg shrink-0"><i data-lucide="file-text" class="w-5 h-5"></i></div>
-                <h3 id="pdfViewerTitle" class="font-bold truncate max-w-[200px] sm:max-w-md">Belge.pdf</h3>
-            </div>
-            <div class="flex items-center gap-2 shrink-0">
-                <button id="pdfViewerDownloadBtn" class="flex items-center gap-2 px-3 sm:px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs sm:text-sm font-semibold transition">
-                    <i data-lucide="download" class="w-4 h-4"></i> <span class="hidden sm:inline">İndir</span>
-                </button>
-                <div class="w-px h-6 bg-slate-200 dark:bg-slate-700 mx-1"></div>
-                <button onclick="closePdfViewer()" class="p-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-xl transition">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
-            </div>
-        </div>
-        <!-- İframe Görüntüleyici Alanı -->
-        <div class="flex-1 p-2 sm:p-6 overflow-hidden">
-            <iframe id="pdfIframe" class="w-full h-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" src=""></iframe>
-        </div>
-    </div>
     <!-- TAKVİM ETKİNLİK EKLEME MODALI -->
     <div id="eventModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[80] hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
         <div class="bg-white dark:bg-slate-900 w-full max-w-lg rounded-3xl shadow-2xl flex flex-col overflow-hidden transform transition-transform duration-300 scale-95" id="eventModalContent">
@@ -594,50 +550,7 @@
             </div>
         </div>
     </div>
-<!-- 1. DOSYA İŞLEM MENÜSÜ (Aç / İndir Barı) -->
-    <div id="attachmentActionMenu" class="fixed inset-0 z-[150] bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center p-4 transition-opacity duration-200 opacity-0" onclick="if(event.target.id === 'attachmentActionMenu') closeAttachmentMenu()">
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-6 w-full max-w-xs transform scale-95 transition-transform duration-200 border border-slate-200 dark:border-slate-700" id="attachmentActionContent">
-            <div class="text-center mb-6">
-                <div class="w-12 h-12 bg-red-100 dark:bg-red-900/30 text-red-500 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <i data-lucide="file-text" class="w-6 h-6"></i>
-                </div>
-                <h3 id="actionMenuFileName" class="font-bold text-slate-800 dark:text-white truncate">Dosya.pdf</h3>
-                <p class="text-xs text-slate-500 mt-1">Bu PDF ile ne yapmak istersiniz?</p>
-            </div>
-            <div class="flex flex-col gap-3">
-                <button id="actionMenuOpenBtn" class="w-full flex items-center justify-center gap-2 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition shadow-md">
-                    <i data-lucide="external-link" class="w-4 h-4"></i> Uygulama İçinde Aç
-                </button>
-                <button id="actionMenuDownloadBtn" class="w-full flex items-center justify-center gap-2 py-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-xl font-bold transition">
-                    <i data-lucide="download" class="w-4 h-4"></i> Cihaza İndir
-                </button>
-            </div>
-        </div>
-    </div>
 
-    <!-- 2. PDF GÖRÜNTÜLEYİCİ MODALI -->
-    <div id="pdfViewerModal" class="fixed inset-0 z-[200] bg-slate-900/90 backdrop-blur-md hidden flex-col transition-opacity duration-300 opacity-0">
-        <!-- Üst Bar -->
-        <div class="flex items-center justify-between p-4 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shrink-0">
-            <div class="flex items-center gap-3 text-slate-800 dark:text-white min-w-0">
-                <div class="p-2 bg-red-100 dark:bg-red-900/30 text-red-600 rounded-lg shrink-0"><i data-lucide="file-text" class="w-5 h-5"></i></div>
-                <h3 id="pdfViewerTitle" class="font-bold truncate max-w-[200px] sm:max-w-md">Belge.pdf</h3>
-            </div>
-            <div class="flex items-center gap-2 shrink-0">
-                <button id="pdfViewerDownloadBtn" class="flex items-center gap-2 px-3 sm:px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs sm:text-sm font-semibold transition">
-                    <i data-lucide="download" class="w-4 h-4"></i> <span class="hidden sm:inline">İndir</span>
-                </button>
-                <div class="w-px h-6 bg-slate-200 dark:bg-slate-700 mx-1"></div>
-                <button onclick="closePdfViewer()" class="p-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-xl transition">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
-            </div>
-        </div>
-        <!-- İframe Görüntüleyici Alanı -->
-        <div class="flex-1 p-2 sm:p-6 overflow-hidden">
-            <iframe id="pdfIframe" class="w-full h-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" src=""></iframe>
-        </div>
-    </div>
     <!-- Export İçin Görünmez Konteyner -->
     <div id="exportContainer" class="hidden bg-white p-8 text-black w-[800px]"></div>
 
@@ -685,7 +598,6 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
     
     <script>
         // Firebase Başlatma
@@ -753,37 +665,15 @@
 
             if (user) {
                 window.continueAsGuest();
-                // (try kısmını şununla değiştiriyoruz)
                 try {
-                    // .get() yerine .onSnapshot() kullanıyoruz. Bu sayede buluttaki her değişiklik anında ekrana düşer!
-                    firebase.firestore().collection('user_notes').doc(user.uid)
-                        .onSnapshot(async (doc) => {
-                            if (doc.exists) {
-                                const data = doc.data();
-                                // Sadece şu an editördeaktif olarak yazmadığımız bir şey değiştiyse listeyi güncelle 
-                                // (Yazı yazarken aniden yenilenip yazıyı kesmesini engellemek için)
-                                notes = data.notes || []; 
-                                trash = data.trash || [];
-                                
-                                await localforage.setItem('notla_notes', notes);
-                                await localforage.setItem('notla_trash', trash);
-                                
-                                // Editör kapalıysa veya sekmeler açıksa arka planda yenile
-                                if (typeof renderSidebarNotes === 'function') renderSidebarNotes();
-                                if (window.innerWidth >= 768) renderTabBar();
-                                
-                                if (currentFilter === 'calendar') {
-                                    renderCalendar();
-                                } else {
-                                    // Arama vs devam ediyorsa bozmamak için dolaylı render çağrısı
-                                    const searchInput = document.getElementById('sidebarSearch');
-                                    if(!searchInput || !searchInput.value) renderNotes();
-                                }
-                            }
-                        });
-                } catch (e) {
-                    console.error("Senkronizasyon başlatılamadı:", e);
-                }
+                    const doc = await firebase.firestore().collection('user_notes').doc(user.uid).get();
+                    if (doc.exists) {
+                        const data = doc.data();
+                        notes = data.notes || []; trash = data.trash || [];
+                        await localforage.setItem('notla_notes', notes);
+                        await localforage.setItem('notla_trash', trash);
+                    }
+                } catch (e) {}
 
                 if (sharedId) {
                     renderSharedScreen(sharedId, user.email);
@@ -940,105 +830,26 @@
             debouncedSaveToStorage(); 
         }
 
-        // --- DOSYA YÜKLEME VE SENKRONİZASYON SİSTEMİ (FIREBASE STORAGE) ---
-        
         function saveToStorage() {
-            const user = firebase.auth().currentUser;
-            
-            // 1. Cihaza Tam Kayıt (Offline çalışma ve hız için)
-            localforage.setItem('notla_notes', notes).catch(err => {});
-            localforage.setItem('notla_trash', trash).catch(err => {});
-
-            if (user) {
-                // 2. Buluta Kayıt (Firebase veritabanının çökmemesi için sadece URL'ler gönderilir)
-                const cloudSyncNotes = notes.map(note => {
-                    const safeNote = { ...note };
-                    if (safeNote.attachments) {
-                        safeNote.attachments = safeNote.attachments.filter(a => a.data && a.data.startsWith('http'));
-                    }
-                    return safeNote;
-                });
-                
-                firebase.firestore().collection('user_notes').doc(user.uid)
-                    .set({ notes: cloudSyncNotes, trash: trash, updatedAt: new Date().toISOString() })
-                    .catch(err => console.error("Firebase kayıt hatası:", err));
-            }
-        }
-
-        async function handleFileUpload(event) {
-            const files = event.target.files; if(!files.length || !currentNoteId) return;
-            const note = notes.find(n => n.id === currentNoteId); if(!note) return;
-            
-            const user = firebase.auth().currentUser;
-            if(!user) {
-                alert("Uyarı: Dosyaların cihazlar arası senkronize olması için giriş yapmalısınız.");
-                event.target.value = '';
-                return;
-            }
-
-            Array.from(files).forEach(async (file) => {
-                if(file.size > 15 * 1024 * 1024) { alert(`${file.name} çok büyük (Maks. 15MB).`); return; }
-                
-                const fileId = Date.now().toString() + Math.random().toString(36).substr(2, 5);
-                
-                // Arayüzde anında "Yükleniyor..." ikonunu çıkar
-                if (!note.attachments) note.attachments = [];
-                note.attachments.push({ 
-                    id: fileId, name: file.name, type: file.type, data: '#', isUploading: true 
-                });
-                renderAttachments();
-
-                try {
-                    // Firebase Storage'da dosyanın kaydedileceği yol (Klasör yapısı)
-                    const storagePathStr = `user_uploads/${user.uid}/${currentNoteId}/${fileId}_${file.name}`;
-                    const storageRef = firebase.storage().ref(storagePathStr);
-
-                    // Firebase Storage'a PDF vb. bilgisini (metadata) belirterek yükleme
-                    const metadata = { contentType: file.type };
-                    const snapshot = await storageRef.put(file, metadata);
-                    
-                    // Yükleme Başarılı! Sahte linki gerçek bulut linkiyle değiştir
-                    const targetAtt = note.attachments.find(a => a.id === fileId);
-                    if (targetAtt) {
-                        targetAtt.data = cloudUrl; 
-                        targetAtt.storagePath = storagePathStr; // Silme işlemi için yolu da kaydet
-                        delete targetAtt.isUploading;
-                        saveToStorage(); 
-                        renderAttachments();
-                    }
-                } catch (error) {
-                    console.error("Firebase Storage Yükleme Hatası:", error);
-                    alert(`${file.name} buluta yüklenemedi.`);
-                    // Hata olursa dönen yükleme ikonunu (spinner) sil
-                    note.attachments = note.attachments.filter(a => a.id !== fileId);
-                    saveToStorage();
-                    renderAttachments();
-                }
-            }); 
-            event.target.value = '';
-        }
-
-        async function removeAttachment(id) {
-            if(!currentNoteId) return; const note = notes.find(n => n.id === currentNoteId);
-            if(note && note.attachments) { 
-                const att = note.attachments.find(a => a.id === id);
-                
-                // Eğer bulutta yüklüyse Storage'dan da kalıcı olarak sil ki kotanı doldurmasın
-                if (att && att.storagePath) {
-                    try {
-                        await firebase.storage().ref(att.storagePath).delete();
-                    } catch(e) {
-                        console.warn("Storage silme hatası:", e);
-                    }
-                }
-                
-                note.attachments = note.attachments.filter(a => a.id !== id); 
-                saveToStorage(); 
-                renderAttachments(); 
-            }
-        }
+    const user = firebase.auth().currentUser;
+    if (user) {
+        // Firebase 1MB sınırına takılmamak için Base64 resimleri/ekleri Firebase'e GÖNDERMİYORUZ.
+        // Sadece metinleri senkronize ediyoruz.
+        const safeNotes = notes.map(note => {
+            const { attachments, ...safeNote } = note; 
+            return safeNote;
+        });
         
-        
+        firebase.firestore().collection('user_notes').doc(user.uid)
+            .set({ notes: safeNotes, trash: trash, updatedAt: new Date().toISOString() })
+            .catch(err => console.error("Firebase kayıt hatası:", err));
+    }
+    
+    // Cihaz hafızasına (LocalForage) resimlerle birlikte (tam halini) kaydediyoruz.
+    localforage.setItem('notla_notes', notes).catch(err => {});
+    localforage.setItem('notla_trash', trash).catch(err => {});
+}
+
         async function syncSharedNotes() {
             let hasChanges = false;
             for (let i = 0; i < notes.length; i++) {
@@ -1100,16 +911,49 @@
                 }
             });
 
-           
-            // 1. SLASH MENÜSÜNÜ MOBİL EDİTÖRE BAĞLA
-            bindSlashMenuToEditor(editor);
+            // Slash Menüsü Değişkenleri
+            let slashIndex = null;
+            let slashMenuActive = false;
 
-            // 2. OTOMATİK KAYIT İŞLEMİ
-            editor.on('text-change', () => {
+            editor.on('text-change', (delta, oldDelta, source) => {
+                if (source === 'user') {
+                    const range = editor.getSelection();
+                    if (range) {
+                        const textBeforeCursor = editor.getText(range.index - 1, 1);
+                        
+                        // '/' yazıldığını algıla
+                        if (textBeforeCursor === '/') {
+                            slashIndex = range.index - 1;
+                            slashMenuActive = true;
+                            showSlashMenu(range.index);
+                        } 
+                        else if (slashMenuActive) {
+                            // Kullanıcı backspace ile '/' işaretini silerse menüyü kapat
+                            const textAtSlash = editor.getText(slashIndex, 1);
+                            if (textAtSlash !== '/') {
+                                hideSlashMenu();
+                            }
+                        }
+                    }
+                }
+
+                // Otomatik Kayıt İşlemi
                 if (currentNoteId) {
                     const note = notes.find(n => n.id === currentNoteId);
                     if (note) { note.content = editor.root.innerHTML; note.updatedAt = new Date().toISOString(); triggerAutoSaveUI(); pushUpdateToFirebase(note); }
                 }
+            });
+
+            // İmleç hareket ettiğinde (Tıklama Çakışması Çözümü)
+            editor.on('selection-change', (range) => {
+                if (slashMenuActive && range) {
+                    // Kullanıcı '/' yazdıktan sonra yön tuşlarıyla veya tıklayarak başka yere geçerse menüyü kapat
+                    if (range.index < slashIndex || range.index > slashIndex + 1) {
+                        hideSlashMenu();
+                    }
+                }
+                // DİKKAT: range == null olduğunda (menüye veya dışarı tıklandığında) menüyü KASTEN kapatmıyoruz!
+                // Böylece butonlara tıklamak için zaman kazanıyoruz. Dışarı tıklamayı window.onclick halledecek.
             });
 
             ['noteTitle', 'noteTags', 'noteColor', 'noteReminder', 'noteLocation'].forEach(id => {
@@ -1182,122 +1026,75 @@ function applyEditorColor(colorHex) {
                 if(window.innerWidth > 768 && !isReadOnly) { setTimeout(() => { if(editor) editor.focus(); }, 400); }
             }
         }
-  // --- SLASH KOMUTU MERKEZİ SİSTEMİ ---
-let slashIndex = null;
-let slashMenuActive = false;
-let activeQuillInstance = null; // Menünün masaüstü (inline) mi yoksa mobil (modal) editörde mi açıldığını takip eder
-
-// Bu fonksiyonu her iki editöre de (mobil ve masaüstü) bağlayacağız
-function bindSlashMenuToEditor(quillInstance) {
-    quillInstance.on('text-change', (delta, oldDelta, source) => {
-        if (source === 'user') {
-            const range = quillInstance.getSelection();
-            if (range) {
-                const textBeforeCursor = quillInstance.getText(range.index - 1, 1);
-                
-                // '/' yazıldığını algıla
-                if (textBeforeCursor === '/') {
-                    slashIndex = range.index - 1;
-                    slashMenuActive = true;
-                    activeQuillInstance = quillInstance; // İşlemin yapılacağı editörü kaydet
-                    
-                    const menu = document.getElementById('slashMenu');
-                    const bounds = quillInstance.getBounds(range.index);
-                    const editorRect = quillInstance.container.getBoundingClientRect();
-                    
-                    // Menüyü imlecin tam altına yerleştir
-                    menu.style.left = (editorRect.left + bounds.left) + 'px';
-                    menu.style.top = (editorRect.top + bounds.bottom + 10) + 'px';
-                    
-                    menu.classList.remove('hidden');
-                    void menu.offsetWidth;
-                    menu.classList.remove('opacity-0', 'scale-95');
-                    menu.classList.add('opacity-100', 'scale-100');
-                } 
-                else if (slashMenuActive) {
-                    // Kullanıcı silme tuşuyla '/' işaretini silerse menüyü kapat
-                    const textAtSlash = quillInstance.getText(slashIndex, 1);
-                    if (textAtSlash !== '/') {
-                        hideSlashMenu();
-                    }
-                }
-            }
-        }
-    });
-
-    quillInstance.on('selection-change', (range) => {
-        if (slashMenuActive && range) {
-            // İmleç slash'in yanından yön tuşlarıyla uzaklaşırsa menüyü kapat
-            if (range.index < slashIndex || range.index > slashIndex + 1) {
-                hideSlashMenu();
-            }
-        }
-    });
+        // --- SLASH KOMUTU FONKSİYONLARI ---
+function showSlashMenu(index) {
+    const menu = document.getElementById('slashMenu');
+    const bounds = editor.getBounds(index); // İmlecin pozisyonunu al
+    const editorRect = document.getElementById('quillEditor').getBoundingClientRect();
+    
+    // Menüyü imlecin tam altına yerleştir
+    menu.style.left = (editorRect.left + bounds.left) + 'px';
+    menu.style.top = (editorRect.top + bounds.bottom + 10) + 'px';
+    
+    menu.classList.remove('hidden');
+    void menu.offsetWidth;
+    menu.classList.remove('opacity-0', 'scale-95');
+    menu.classList.add('opacity-100', 'scale-100');
 }
 
 function hideSlashMenu() {
     const menu = document.getElementById('slashMenu');
-    if (!menu) return;
     menu.classList.remove('opacity-100', 'scale-100');
     menu.classList.add('opacity-0', 'scale-95');
     setTimeout(() => menu.classList.add('hidden'), 150);
     slashMenuActive = false;
     slashIndex = null;
-    activeQuillInstance = null;
 }
 
 function applySlashCommand(command) {
     if (slashIndex === null) return;
     
-    // İşlem yapabilmek için editöre odağı geri ver
+    // 1. İşlem yapabilmek için editöre odağı geri ver (Mobilde şarttır)
     editor.focus();
 
-    // Yazılan '/' harfini sil
+    // 2. Yazılan '/' harfini sil
     editor.deleteText(slashIndex, 1);
     
-    // İstenen komutu uygula
+    // 3. İmleci Slash'in olduğu noktaya sabitle
+    editor.setSelection(slashIndex, 0);
+    
+    // 4. İstenen komutu uygula
     if (command === 'h1') {
-        editor.setSelection(slashIndex, 0);
         editor.formatLine(slashIndex, 1, 'header', 1);
-    } 
-    else if (command === 'h2') {
-        editor.setSelection(slashIndex, 0);
+    } else if (command === 'h2') {
         editor.formatLine(slashIndex, 1, 'header', 2);
-    } 
-    else if (command === 'list') {
-        editor.setSelection(slashIndex, 0);
+    } else if (command === 'list') {
         editor.formatLine(slashIndex, 1, 'list', 'bullet');
-    } 
-    else if (command === 'reminder') {
-        // NOTION MANTIĞI: Notu göreve ÇEVİRME. Satır içine renkli hatırlatıcı etiketi ekle.
-        
-        // 1. Editöre renkli, belirgin bir metin etiketi bas
-        editor.insertText(slashIndex, ' ⏰ Hatırlatıcı ', { color: '#4f46e5', bold: true });
-        
-        // 2. Etiketten sonra yazının rengini normale (siyaha/temaya) döndürmek için boşluk ekle
-        editor.insertText(slashIndex + 14, ' ', { color: false, bold: false });
-        
-        // 3. İmleci etiketin en sonuna taşı ki kullanıcı yazmaya devam edebilsin
-        editor.setSelection(slashIndex + 15, 0);
-
-        // 4. Zamanı ayarlayabilmesi için Takvim (Etkinlik) Modalını aç
-        openEventModal();
-        
-        // 5. Takvim açıldığında, o etkinliğin başlığına otomatik olarak notun adını yaz
-        setTimeout(() => {
-            const note = notes.find(n => n.id === currentNoteId);
-            const evtTitle = document.getElementById('eventTitle');
-            if (evtTitle) {
-                evtTitle.value = (note && note.title) ? `Hatırlatma: ${note.title}` : 'Hatırlatma';
-            }
-        }, 150);
-        
-        saveToStorage();
+    } else if (command === 'reminder') {
+        const note = notes.find(n => n.id === currentNoteId);
+        if (note) {
+            // Notu bir "Görev (Task)" yapısına çevir ki hatırlatıcı çalışsın
+            note.type = 'task';
+            document.getElementById('noteTitle').placeholder = 'Görev adı...';
+            document.getElementById('reminderContainer').classList.remove('hidden');
+            document.getElementById('locationContainer').classList.remove('hidden');
+            document.getElementById('modalTaskCheck').classList.remove('hidden');
+            
+            // Hatırlatıcı seçiciyi (Tarih Paneli) aç
+            const reminderInput = document.getElementById('noteReminder');
+            setTimeout(() => { 
+                reminderInput.focus(); 
+                if(reminderInput.showPicker) reminderInput.showPicker(); 
+                else reminderInput.click(); 
+            }, 100);
+            
+            saveToStorage();
+        }
     }
     
     // İşlem bittikten sonra menüyü kapat
     hideSlashMenu();
-}     
+}
 // --- KOMUT PALETİ (CTRL+K) FONKSİYONLARI ---
 
 // Klavye Kısayolu Dinleyicisi
@@ -1404,108 +1201,35 @@ function filterPalette() {
             }, 400);
         }
 
+        // --- DOSYA EKLERİ ---
+        function handleFileUpload(event) {
+            const files = event.target.files; if(!files.length || !currentNoteId) return;
+            const note = notes.find(n => n.id === currentNoteId); if(!note) return;
+            Array.from(files).forEach(file => {
+                if(file.size > 5 * 1024 * 1024) { alert(`${file.name} çok büyük (Maks. 5MB).`); return; }
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    if(!note.attachments) note.attachments = [];
+                    note.attachments.push({ name: file.name, type: file.type, data: e.target.result, id: Date.now().toString() + Math.random().toString(36).substr(2, 5) });
+                    triggerAutoSaveUI(); renderAttachments();
+                }; reader.readAsDataURL(file);
+            }); event.target.value = '';
+        }
+
         function renderAttachments() {
             const list = document.getElementById('attachmentList'); list.innerHTML = '';
             const note = notes.find(n => n.id === currentNoteId); if(!note || !note.attachments || note.attachments.length === 0) return;
-            
             note.attachments.forEach(att => {
-                const isImage = att.type.startsWith('image/');
-                const isPdf = att.type === 'application/pdf';
-                const el = document.createElement('div');
-                
+                const isImage = att.type.startsWith('image/'); const el = document.createElement('div');
                 el.className = 'flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-lg border dark:border-slate-700 text-xs sm:text-sm group';
-                
-                let linkHtml = '';
-                // EĞER PDF İSE: Doğrudan indirmek yerine İşlem Menüsünü Aç
-                if (isPdf) {
-                    linkHtml = `<button onclick="showAttachmentMenu('${att.id}', '${att.name}', '${att.data}')" class="text-indigo-600 dark:text-indigo-400 font-medium hover:underline truncate max-w-[100px] sm:max-w-[150px] text-left cursor-pointer">${att.name}</button>`;
-                } else {
-                    // DİĞER DOSYALAR (Örn. Görseller)
-                    linkHtml = `<a href="${att.data}" download="${att.name}" target="_blank" class="text-indigo-600 dark:text-indigo-400 font-medium hover:underline truncate max-w-[100px] sm:max-w-[150px]">${att.name}</a>`;
-                }
-
-                const iconName = isImage ? 'image' : (isPdf ? 'file-text' : 'file');
-                const iconColor = isPdf ? 'text-red-500' : 'text-slate-500';
-                const uploadSpinner = att.isUploading ? `<svg class="animate-spin ml-1 h-3 w-3 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>` : '';
-
-                el.innerHTML = `<i data-lucide="${iconName}" class="w-3 h-3 sm:w-4 sm:h-4 ${iconColor}"></i>${linkHtml}${uploadSpinner}<button onclick="removeAttachment('${att.id}')" class="text-slate-400 hover:text-red-500 ml-1 sm:ml-2 p-1 transition-colors"><i data-lucide="x" class="w-3 h-3 sm:w-4 sm:h-4"></i></button>`;
-                
+                el.innerHTML = `<i data-lucide="${isImage ? 'image' : 'file'}" class="w-3 h-3 sm:w-4 sm:h-4 text-slate-500"></i><a href="${att.data}" download="${att.name}" class="text-indigo-600 dark:text-indigo-400 font-medium hover:underline truncate max-w-[100px] sm:max-w-[150px]">${att.name}</a><button onclick="removeAttachment('${att.id}')" class="text-slate-400 hover:text-red-50 ml-1 sm:ml-2 p-1"><i data-lucide="x" class="w-3 h-3 sm:w-4 sm:h-4"></i></button>`;
                 list.appendChild(el);
-            });
-            lucide.createIcons();
+            }); lucide.createIcons();
         }
 
-        // --- PDF İŞLEM VE GÖRÜNTÜLEYİCİ MANTIĞI ---
-        function showAttachmentMenu(id, name, dataUrl) {
-            const menu = document.getElementById('attachmentActionMenu');
-            const content = document.getElementById('attachmentActionContent');
-            
-            document.getElementById('actionMenuFileName').innerText = name;
-            
-            const openBtn = document.getElementById('actionMenuOpenBtn');
-            const downloadBtn = document.getElementById('actionMenuDownloadBtn');
-            
-            openBtn.onclick = () => { closeAttachmentMenu(); openPdfViewer(name, dataUrl); };
-            downloadBtn.onclick = () => { closeAttachmentMenu(); triggerDownload(name, dataUrl); };
-            
-            menu.classList.remove('hidden');
-            void menu.offsetWidth;
-            menu.classList.remove('opacity-0');
-            content.classList.remove('scale-95');
-        }
-
-        function closeAttachmentMenu() {
-            const menu = document.getElementById('attachmentActionMenu');
-            const content = document.getElementById('attachmentActionContent');
-            menu.classList.add('opacity-0');
-            content.classList.add('scale-95');
-            setTimeout(() => menu.classList.add('hidden'), 200);
-        }
-
-        function triggerDownload(name, dataUrl) {
-            if (dataUrl.startsWith('http')) {
-                window.open(dataUrl, '_blank'); // Bulut URL'si ise
-            } else {
-                const link = document.createElement('a');
-                link.href = dataUrl;
-                link.download = name;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            }
-        }
-
-        function openPdfViewer(name, dataUrl) {
-            const modal = document.getElementById('pdfViewerModal');
-            document.getElementById('pdfViewerTitle').innerText = name;
-            
-            const iframe = document.getElementById('pdfIframe');
-            
-            // MOBİL ÇÖZÜMÜ: Telefon tarayıcıları iframe içinde PDF açamaz. 
-            // Eğer mobildeysek ve URL geçerliyse Google Docs Viewer ile açarız.
-            if (window.innerWidth < 768 && dataUrl.startsWith('http')) {
-                iframe.src = `https://docs.google.com/viewer?url=${encodeURIComponent(dataUrl)}&embedded=true`;
-            } else {
-                iframe.src = dataUrl;
-            }
-            
-            const downloadBtn = document.getElementById('pdfViewerDownloadBtn');
-            downloadBtn.onclick = () => triggerDownload(name, dataUrl);
-            
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            void modal.offsetWidth;
-            modal.classList.remove('opacity-0');
-        }
-
-        function closePdfViewer() {
-            const modal = document.getElementById('pdfViewerModal');
-            modal.classList.add('opacity-0');
-            setTimeout(() => {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-                document.getElementById('pdfIframe').src = ''; // Bellek temizliği
-            }, 300);
+        function removeAttachment(id) {
+            if(!currentNoteId) return; const note = notes.find(n => n.id === currentNoteId);
+            if(note && note.attachments) { note.attachments = note.attachments.filter(a => a.id !== id); triggerAutoSaveUI(); renderAttachments(); }
         }
 
         // --- GOOGLE DOCS TARZI ERİŞİM YÖNETİMİ ---
@@ -1677,7 +1401,8 @@ function filterPalette() {
 
         function renderCalendar() {
             destroySortable(); const container = document.getElementById('notesContainer');
-            const viewBtn = document.getElementById('viewToggleBtn'); if(viewBtn) { viewBtn.classList.add('invisible', 'pointer-events-none'); viewBtn.classList.remove('hidden'); };
+            const viewBtn = document.getElementById('viewToggleBtn'); if(viewBtn) { viewBtn.classList.add('invisible', 'pointer-events-none'); viewBtn.classList.remove('hidden'); }
+            document.getElementById('searchContainer').classList.add('opacity-0', 'pointer-events-none');
             container.className = 'flex-1 overflow-y-auto p-4 sm:p-8 custom-scrollbar bg-slate-50 dark:bg-transparent pb-24 md:pb-8';
             
             const year = currentCalendarDate.getFullYear(); const month = currentCalendarDate.getMonth();
@@ -1731,8 +1456,7 @@ function filterPalette() {
                 
                 let dotsHtml = '';
                 if (dayNotes.length > 0) {
-                    // DÜZELTME: "pointer-events-none" eklendi. Böylece renkli noktalar tıklamayı engellemeyecek.
-                    dotsHtml = `<div class="flex gap-1 justify-center mt-1 pointer-events-none">` + dayNotes.slice(0,3).map(n => `<div class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${calColors[n.color] || calColors['white']}"></div>`).join('') + (dayNotes.length > 3 ? `<div class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-slate-300"></div>` : '') + `</div>`;
+                    dotsHtml = `<div class="flex gap-1 justify-center mt-1">` + dayNotes.slice(0,3).map(n => `<div class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${calColors[n.color] || calColors['white']}"></div>`).join('') + (dayNotes.length > 3 ? `<div class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-slate-300"></div>` : '') + `</div>`;
                 }
 
                 const isToday = (i === today.getDate() && month === today.getMonth() && year === today.getFullYear());
@@ -1884,6 +1608,7 @@ function filterPalette() {
         function renderTasksView(filteredTasks) {
             destroySortable(); const container = document.getElementById('notesContainer');
             const viewBtn = document.getElementById('viewToggleBtn'); if(viewBtn) { viewBtn.classList.add('invisible', 'pointer-events-none'); viewBtn.classList.remove('hidden'); }
+            document.getElementById('searchContainer').classList.remove('opacity-0', 'pointer-events-none');
             container.className = 'flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar pb-24 md:pb-8 max-w-4xl mx-auto w-full';
             
             const now = new Date(); const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime(); const tomorrowStart = todayStart + 86400000;
@@ -1944,6 +1669,7 @@ function filterPalette() {
             const container = document.getElementById('notesContainer');
             const viewBtn = document.getElementById('viewToggleBtn'); if(viewBtn) { viewBtn.classList.remove('invisible', 'pointer-events-none', 'hidden'); }
             if(viewBtn) viewBtn.classList.remove('hidden'); 
+            document.getElementById('searchContainer').classList.remove('opacity-0', 'pointer-events-none');
             container.className = `flex-1 overflow-y-auto p-4 md:p-8 ${viewMode === 'grid' ? 'grid-view' : 'list-view'} custom-scrollbar relative z-10 pb-24 md:pb-8`;
             container.innerHTML = '';
 
@@ -2416,7 +2142,6 @@ async function clearAllData() {
             if (event.target.id === 'settingsModal') { closeSettings(); }
             if (event.target.id === 'shareModal') { closeShareModal(); }
             if (event.target.id === 'eventModal') { closeEventModal(); }
-            if (event.target.id === 'pdfViewerModal') { closePdfViewer(); }
             
             // Kart araç çubuğu
             const toolbar = document.getElementById('cardToolbar');
