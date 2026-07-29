@@ -62,20 +62,34 @@
         .theme-dark .note-color-blue { background-color: rgba(37, 99, 235, 0.15); border-color: rgba(37, 99, 235, 0.3); }
         .theme-dark .note-color-purple { background-color: rgba(147, 51, 234, 0.15); border-color: rgba(147, 51, 234, 0.3); }
 
-        /* Quill Editor Özelleştirme */
-        .ql-toolbar.ql-snow { border: none !important; border-bottom: 1px solid #e2e8f0 !important; background: #f8fafc; border-radius: 0 !important; }
-        .theme-dark .ql-toolbar.ql-snow { background: #1e293b; border-bottom-color: #334155 !important; }
+        /* Quill Editor (Notion Tarzı Özelleştirme) */
+        .ql-toolbar.ql-snow { 
+            position: sticky; 
+            top: 60px; /* Geri butonunun hemen altında yapışık durur */
+            z-index: 10; 
+            background: rgba(255,255,255,0.95); 
+            backdrop-filter: blur(5px); 
+            border: none !important; 
+            border-bottom: 1px solid #f1f5f9 !important; 
+            padding: 12px 0 !important; 
+        }
+        .theme-dark .ql-toolbar.ql-snow { 
+            background: rgba(15,23,42,0.95); 
+            border-bottom-color: #1e293b !important; 
+        }
+        .ql-container.ql-snow { border: none !important; font-size: 1.1rem; }
+        .ql-editor { padding: 1rem 0 !important; min-height: 50vh; }
+        .ql-editor.ql-blank::before { left: 0; font-style: italic; color: #cbd5e1; }
+        .theme-dark .ql-editor.ql-blank::before { color: #475569; }
         .theme-dark .ql-snow .ql-stroke { stroke: #f1f5f9; }
         .theme-dark .ql-snow .ql-fill { fill: #f1f5f9; }
         .theme-dark .ql-snow .ql-picker { color: #f1f5f9; }
-        .theme-dark .ql-editor.ql-blank::before { color: #94a3b8; }
         .theme-dark .ql-editor { color: #f1f5f9; }
         
-        .ql-container { font-size: 1.1rem; height: calc(100% - 42px) !important; min-height: 250px; }
-        .ql-editor { height: 100%; min-height: 250px; }
-
-        .note-card { cursor: pointer; position: relative; }
-        .note-card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        /* Eklenen Yeni Fontların Tanımları */
+        .ql-font-serif { font-family: Georgia, serif; }
+        .ql-font-monospace { font-family: 'Courier New', monospace; }
+        .ql-font-comic { font-family: 'Comic Sans MS', cursive; }
         
         /* Mobil Uyumlu Grid */
         .grid-view { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
