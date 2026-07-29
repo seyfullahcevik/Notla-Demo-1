@@ -727,9 +727,27 @@
         function toggleSpellcheck() { spellcheckEnabled = document.getElementById('spellcheckToggle').checked; localStorage.setItem('notla_spellcheck', spellcheckEnabled); applySpellcheck(); }
 
         function initEditor() {
+            // Fontları Tanıt
+            var Font = Quill.import('formats/font');
+            Font.whitelist = ['sans-serif', 'serif', 'monospace', 'comic'];
+            Quill.register(Font, true);
+
             editor = new Quill('#quillEditor', {
-                theme: 'snow', placeholder: 'Detayları yaz...',
-                modules: { toolbar: [ [{ 'header': [1, 2, false] }], ['bold', 'italic', 'underline'], [{ 'list': 'ordered'}, { 'list': 'bullet' }], [{ 'color': [] }, { 'background': [] }], ['link', 'image'] ] }
+                theme: 'snow', 
+                placeholder: 'Bir şeyler yazın veya notunuzu şekillendirin...',
+                modules: { 
+                    toolbar: [ 
+                        [{ 'font': Font.whitelist }],
+                        [{ 'header': [1, 2, 3, false] }], 
+                        ['bold', 'italic', 'underline', 'strike'], 
+                        [{ 'color': [] }, { 'background': [] }], 
+                        [{ 'align': [] }],
+                        [{ 'list': 'ordered'}, { 'list': 'bullet' }, { 'indent': '-1'}, { 'indent': '+1' }], 
+                        ['blockquote', 'code-block'],
+                        ['link', 'image', 'video'],
+                        ['clean'] // Biçimlendirmeyi temizle
+                    ] 
+                }
             });
 
             editor.on('text-change', () => {
