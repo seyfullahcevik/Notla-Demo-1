@@ -821,17 +821,13 @@
         }
 
         function saveAndClose() {
-            const modal = document.getElementById('editorModal');
-            // Yeni sayfa hissi için yumuşak kapanış ve aşağı kayma
-            modal.classList.remove('opacity-100', 'translate-y-0'); 
-            modal.classList.add('opacity-0', 'translate-y-12');
-            
-            // Animasyon (500ms) bittiğinde ekranı tamamen temizle
-            setTimeout(() => {
+            const modal = document.getElementById('editorModal'); 
+            modal.classList.add('opacity-0', 'translate-y-12'); 
+            setTimeout(() => { 
                 modal.classList.add('hidden'); 
-                currentNoteId = null;
-                if(currentFilter === 'calendar') renderCalendar(); else renderNotes();
-            }, 500); 
+                currentNoteId = null; 
+                if(currentFilter === 'calendar') renderCalendar(); else renderNotes(); 
+            }, 400); // Animasyon süresi (400ms) beklenir
         }
 
         function triggerAutoSaveUI() {
@@ -1082,17 +1078,19 @@
 
         function toggleExportMenu() { document.getElementById('exportMenu').classList.toggle('hidden'); }
         function exportNote(type) {
-            const note = notes.find(n => n.id === currentNoteId); if(!note) return; toggleExportMenu(); const title = note.title || 'NotLa_Belgesi';
+            const note = notes.find(n => n.id === currentNoteId); if(!note) return; toggleExportMenu(); const title = note.title || 'Adsız Belge';
             if (type === 'txt') {
                 const tempDiv = document.createElement('div'); tempDiv.innerHTML = note.content;
-                const content = `${title.toUpperCase()}\n\n${tempDiv.innerText || tempDiv.textContent}\n\n---\nOluşturulma: ${new Date(note.createdAt).toLocaleString()}`;
+                // Sadece Başlık ve İçerik (Ek yazılar kaldırıldı)
+                const content = `${title.toUpperCase()}\n\n${tempDiv.innerText || tempDiv.textContent}`;
                 const blob = new Blob([content], { type: 'text/plain;charset=utf-8' }); const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `${title}.txt`; link.click();
             } 
             else if (type === 'pdf') {
                 const container = document.getElementById('exportContainer');
-                container.innerHTML = `<div style="font-family: Arial, sans-serif; padding: 20px;"><h1 style="color: #4f46e5; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px;">${title}</h1><div style="margin-top: 20px; font-size: 14px; line-height: 1.6;">${note.content}</div><div style="margin-top: 40px; font-size: 10px; color: #9ca3af; text-align: center; border-top: 1px solid #e5e7eb; padding-top: 10px;">NotLa Uygulaması • ${new Date().toLocaleString()}</div></div>`;
+                // PDF Çıktısı tamamen saf beyaz, sadece başlık ve içeriğe sahip A4 formunda
+                container.innerHTML = `<div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; padding: 40px; color: #000;"><h1 style="border-bottom: 2px solid #eaeaea; padding-bottom: 10px; margin-bottom: 20px; font-size: 28px;">${title}</h1><div style="font-size: 15px; line-height: 1.6;">${note.content}</div></div>`;
                 container.classList.remove('hidden');
-                html2pdf().set({ margin: 1, filename: `${title}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } }).from(container).save().then(() => { container.classList.add('hidden'); container.innerHTML = ''; });
+                html2pdf().set({ margin: 0.5, filename: `${title}.pdf`, image: { type: 'jpeg', quality: 1 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } }).from(container).save().then(() => { container.classList.add('hidden'); container.innerHTML = ''; });
             }
         }
 
