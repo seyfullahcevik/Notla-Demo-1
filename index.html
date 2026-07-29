@@ -291,6 +291,12 @@
                 <span class="text-[10px] sm:text-xs text-slate-400 font-medium italic hidden sm:block mr-2" id="saveStatus">Kaydedildi</span>
                 <button id="modalTaskCheck" onclick="toggleCurrentTaskCheck()" class="hidden w-7 h-7 rounded-full border-2 items-center justify-center shrink-0 transition-colors"></button>
                 
+               <!-- Kolay Paylaş Butonu -->
+                <button onclick="openShareModalFromEditor()" class="flex items-center gap-2 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 px-3 py-2 rounded-lg text-sm font-medium transition mr-1 sm:mr-2">
+                    <i data-lucide="share-2" class="w-5 h-5"></i>
+                    <span class="hidden sm:inline">Paylaş</span>
+                </button>
+
                 <!-- Dışa Aktar Dropdown -->
                 <div class="relative hidden sm:block">
                     <button onclick="toggleExportMenu()" class="flex items-center gap-2 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 px-3 py-2 rounded-lg text-sm font-medium transition">
@@ -846,9 +852,16 @@
                 return;
             }
 
-            let token = sessionStorage.getItem('google_api_token');
+           let token = localStorage.getItem('google_api_token');
+            let tokenTime = localStorage.getItem('google_api_token_time');
             
-            // AKILLI KONTROL: Eğer token yoksa (sayfa yenilenmişse), anında kullanıcıdan tekrar izin iste.
+            // Google izin anahtarları 1 saat geçerlidir. Eğer üzerinden 55 dakika geçmişse anahtarı güvenle sil.
+            if (token && tokenTime && (Date.now() - tokenTime > 55 * 60 * 1000)) {
+                token = null;
+                localStorage.removeItem('google_api_token');
+            }
+            
+            // AKILLI KONTROL: Eğer token yoksa veya süresi dolmuşsa anında izin iste.
             if (!token) {
                 try {
                     const status = document.getElementById('saveStatus');
@@ -872,7 +885,8 @@
                     
                     if(credential && credential.accessToken) {
                         token = credential.accessToken;
-                        sessionStorage.setItem('google_api_token', token);
+                        localStorage.setItem('google_api_token', token);
+                        localStorage.setItem('google_api_token_time', Date.now());
                     } else {
                         throw new Error("Erişim anahtarı alınamadı.");
                     }
@@ -941,8 +955,8 @@
                     const errData = await response.json();
                     console.error("Takvim Hatası:", errData);
                     if (errData.error && errData.error.code === 401) {
-                         // Süre dolduysa (1 saat geçer) bellekteki eski token'ı sil
-                         sessionStorage.removeItem('google_api_token');
+                         // Süre dolduysa bellekteki eski token'ı sil
+                         localStorage.removeItem('google_api_token');
                          alert("Takvim erişim izninizin süresi dolmuş. Lütfen butona tekrar basarak izni tazeleyin.");
                     } else {
                          alert("Takvime eklenirken hata oluştu.");
@@ -1605,9 +1619,19 @@
             if (!event.target.closest('button[onclick="toggleExportMenu()"]') && !event.target.closest('#exportMenu')) {
                 const exMenu = document.getElementById('exportMenu'); if (exMenu) exMenu.classList.add('hidden');
             }
+            // HATA DÜZELTMESİ: Arka plan karanlık alana tıklayınca pencereler artık kapanacak
             if (event.target.id === 'settingsModal') { closeSettings(); }
+            if (event.target.id === 'shareModal') { closeShareModal(); }
+            
             const toolbar = document.getElementById('cardToolbar');
             if (toolbar && !toolbar.classList.contains('hidden') && !event.target.closest('.note-card') && !event.target.closest('#cardToolbar')) { closeCardToolbar(); }
+        }
+
+        // Editör içinden Paylaş ekranını (Erişimi Yönet) açmayı sağlayan yeni fonksiyon
+        function openShareModalFromEditor() {
+            if (!currentNoteId) return;
+            document.getElementById('activeCardId').value = currentNoteId;
+            openShareModal();
         }
     </script>
 </body>
