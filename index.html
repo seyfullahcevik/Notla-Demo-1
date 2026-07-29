@@ -209,14 +209,13 @@
         <!-- Mobil Sidebar Arka Plan Karartması -->
         <div id="sidebarBackdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-30 hidden md:hidden transition-opacity opacity-0"></div>
 
-        <!-- YENİ PROFESYONEL SİDEBAR (Yanlışlıkla silinen ana etiket eklendi) -->
+        <!-- PROFESYONEL SİDEBAR (Mobilde gizli 'hidden md:flex', masaüstünde açık) -->
         <aside id="sidebar" class="hidden md:flex absolute md:relative inset-y-0 left-0 w-72 bg-slate-50 dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col shrink-0 z-40 transition-transform duration-300 ease-in-out transform -translate-x-full md:translate-x-0 h-screen md:h-full shadow-2xl md:shadow-none">
             
             <!-- 1. Google Tarzı Profil Alanı ve Bar İçinde Bar -->
             <div class="p-4 border-b border-slate-200 dark:border-slate-800 relative">
                 <button onclick="toggleProfileMenu(event)" class="w-full flex items-center justify-between p-2 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-xl transition group">
                     <div class="flex items-center gap-3">
-                        <!-- İsim Baş Harfi Butonu -->
                         <div id="userAvatarBtn" class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-sm shadow-inner">N</div>
                         <div class="text-left flex-1 min-w-0">
                             <div class="text-sm font-bold text-slate-800 dark:text-white truncate" id="userNameDisplay">Hesabım</div>
@@ -226,7 +225,7 @@
                     <i data-lucide="chevrons-up-down" class="w-4 h-4 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200"></i>
                 </button>
 
-                <!-- Açılır Profil Menüsü (Bar İçinde Bar) -->
+                <!-- Açılır Profil Menüsü -->
                 <div id="profileDropdown" class="absolute top-[70px] left-4 right-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl z-50 hidden flex-col overflow-hidden transform opacity-0 scale-95 transition-all duration-200">
                     <div class="p-3 bg-slate-50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-700">
                         <div class="text-xs text-slate-500 font-semibold uppercase tracking-wider">NotLa Hesabı</div>
@@ -244,7 +243,7 @@
                 </div>
             </div>
 
-            <!-- 2. Arama Çubuğu (Sol Bara Taşındı) -->
+            <!-- 2. Arama Çubuğu (Sol Bar İçinde) -->
             <div class="p-4 pb-2">
                 <div class="relative">
                     <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>
@@ -252,7 +251,7 @@
                 </div>
             </div>
 
-            <!-- GÖRÜNÜM BUTONLARI (Notlar / Görevler) -->
+            <!-- Görünüm Butonları (Notlar / Görevler) -->
             <div class="px-4 py-1 flex gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
                 <button data-filter="notes" onclick="setFilter('notes')" class="nav-btn flex-1 flex items-center justify-center gap-2 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg text-xs font-bold text-slate-600 dark:text-slate-300 transition">
                     <i data-lucide="book-open" class="w-3 h-3"></i> Notlar
@@ -268,39 +267,14 @@
             </nav>
         </aside>
 
-        <!-- Ana Alan (Sağ Taraf) -->
+        <!-- ANA ALAN (Sağ Taraf) -->
         <main class="flex-1 flex flex-col relative min-w-0 w-full h-full">
             <!-- Header -->
             <header class="h-16 md:h-20 flex items-center justify-between px-4 md:px-8 bg-white/80 backdrop-blur-md sticky top-0 z-10 border-b dark:bg-slate-900/80 dark:border-slate-800">
-                <!-- ANA ALAN -->
-        <main class="flex-1 flex flex-col relative min-w-0 w-full h-full">
-            <!-- Header -->
-            <header class="...">...</header>
-
-            <!-- MOBİL ARAMA ÇUBUĞU (Sadece Mobilde Görünür) -->
-            <div class="md:hidden p-4 bg-white dark:bg-slate-900 border-b dark:border-slate-800 shrink-0">
-                <div class="relative">
-                    <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>
-                    <input type="text" id="mobileSearch" oninput="handleMobileSearch(event)" placeholder="Notlarda ara..." class="w-full pl-9 pr-3 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl text-sm dark:text-white outline-none">
-                </div>
-            </div>
-
-            <!-- MASAÜSTÜ SEKME BARI (Sadece Masaüstünde Görünür - Birden çok not sekmesi için) -->
-            <div id="desktopTabBar" class="hidden md:flex items-center gap-1 px-4 bg-slate-100 dark:bg-slate-950 border-b dark:border-slate-800 overflow-x-auto custom-scrollbar shrink-0 h-11">
-                <!-- Sekmeler JavaScript ile buraya eklenecek -->
-            </div>
-
-            <!-- İçerik Alanı -->
-            <div id="notesContainer" class="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar pb-24 md:pb-8">
-                <!-- İçerik -->
-            </div>
-        </main>
-                <!-- Mobil Menü Açma Butonu -->
                 <button onclick="toggleSidebar()" class="md:hidden p-2 mr-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">
                     <i data-lucide="menu" class="w-6 h-6"></i>
                 </button>
 
-                <!-- Sağ Üst Araçlar (Görünüm Değiştir, Takvim, Yeni Not) -->
                 <div class="flex items-center gap-2 md:gap-4 ml-auto">
                     <button id="viewToggleBtn" onclick="toggleView()" class="flex p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition" title="Görünümü Değiştir">
                         <i data-lucide="grid" id="viewIcon" class="w-5 h-5 text-slate-600 dark:text-slate-300"></i>
@@ -315,7 +289,20 @@
                 </div>
             </header>
 
-            <!-- Notlar Grid / Calendar / Tasks Container -->
+            <!-- MOBİL ARAMA ÇUBUĞU (Sadece Mobilde Görünür) -->
+            <div class="md:hidden p-4 bg-white dark:bg-slate-900 border-b dark:border-slate-800 shrink-0">
+                <div class="relative">
+                    <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>
+                    <input type="text" id="mobileSearch" oninput="handleMobileSearch(event)" placeholder="Notlarda ara..." class="w-full pl-9 pr-3 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl text-sm dark:text-white outline-none">
+                </div>
+            </div>
+
+            <!-- MASAÜSTÜ SEKME BARI (Sadece Masaüstünde Görünür - Birden çok not sekmesi için) -->
+            <div id="desktopTabBar" class="hidden md:flex items-center gap-1 px-4 bg-slate-100 dark:bg-slate-950 border-b dark:border-slate-800 overflow-x-auto custom-scrollbar shrink-0 h-11">
+                <!-- Sekmeler JavaScript ile buraya eklenecek -->
+            </div>
+
+            <!-- Notlar Grid / Calendar / Tasks Container / Veya Masaüstü Inline Editör Alanı -->
             <div id="notesContainer" class="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar pb-24 md:pb-8">
                 <!-- İçerik JavaScript ile buraya gelecek -->
             </div>
@@ -326,7 +313,6 @@
             </button>
         </main>
     </div>
-
     <!-- Editör (Notion Tarzı Tam Sayfa) -->
     <div id="editorModal" class="fixed inset-0 z-50 hidden bg-white dark:bg-slate-900 transition-all duration-400 ease-[cubic-bezier(0.22,1,0.36,1)] opacity-0 translate-y-12 overflow-y-auto custom-scrollbar">
         
