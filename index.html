@@ -897,21 +897,95 @@
             debouncedSaveToStorage(); 
         }
 
+        // --- KUSURSUZ DOSYA YÜKLEME VE SENKRONİZASYON SİSTEMİ (HESAP GEREKTİRMEZ) ---
+        
         function saveToStorage() {
             const user = firebase.auth().currentUser;
-            if (user) {
-                // Artık eklentilerimizde devasa Base64 veriler yok, sadece kısa bulut URL'leri var!
-                // Bu yüzden 'safeNotes' filtresine gerek kalmadı, notes objesini doğrudan senkronize edebiliriz.
-                firebase.firestore().collection('user_notes').doc(user.uid)
-                    .set({ notes: notes, trash: trash, updatedAt: new Date().toISOString() })
-                    .catch(err => console.error("Firebase kayıt hatası:", err));
-            }
             
-            // Cihaz içi yedekleme devam ediyor
+            // 1. Cihaza Tam Kayıt (LocalForage boyut sınırı tanımaz)
             localforage.setItem('notla_notes', notes).catch(err => {});
             localforage.setItem('notla_trash', trash).catch(err => {});
+
+            if (user) {
+                // 2. Buluta Kayıt (Sadece URL olanları gönder, Base64 kodlarını filtrele ki veritabanı çökmesin)
+                const cloudSyncNotes = notes.map(note => {
+                    const safeNote = { ...note };
+                    if (safeNote.attachments) {
+                        safeNote.attachments = safeNote.attachments.filter(a => a.data && a.data.startsWith('http'));
+                    }
+                    return safeNote;
+                });
+                
+                firebase.firestore().collection('user_notes').doc(user.uid)
+                    .set({ notes: cloudSyncNotes, trash: trash, updatedAt: new Date().toISOString() })
+                    .catch(err => console.error("Firebase kayıt hatası:", err));
+            }
         }
 
+        async function handleFileUpload(event) {
+            const files = event.target.files; if(!files.length || !currentNoteId) return;
+            const note = notes.find(n => n.id === currentNoteId); if(!note) return;
+
+            Array.from(files).forEach(async (file) => {
+                if(file.size > 20 * 1024 * 1024) { alert(`${file.name} çok büyük (Maks. 20MB).`); return; }
+                
+                const fileId = Date.now().toString() + Math.random().toString(36).substr(2, 5);
+                
+                // 1. Arayüzde "Yükleniyor..." durumunu göster
+                if (!note.attachments) note.attachments = [];
+                note.attachments.push({ 
+                    id: fileId, name: file.name, type: file.type, data: '#', isUploading: true 
+                });
+                renderAttachments();
+
+                try {
+                    // 2. HESAP GEREKTİRMEYEN BULUT SERVİSİNE GÖNDERİM
+                    const formData = new FormData();
+                    formData.append('reqtype', 'fileupload'); // Yükleme komutu
+                    formData.append('fileToUpload', file);    // Dosyanın kendisi
+
+                    const response = await fetch('https://catbox.moe/user/api.php', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    // Servis bize direkt olarak dosyanın kalıcı URL'sini metin olarak döner
+                    const fileUrl = await response.text();
+                    
+                    if (fileUrl && fileUrl.startsWith('http')) {
+                        // Yükleme Başarılı! UI'daki sahte dosyayı gerçek linkle güncelle
+                        const targetAtt = note.attachments.find(a => a.id === fileId);
+                        if (targetAtt) {
+                            targetAtt.data = fileUrl; // Artık dosya linki bulutta!
+                            delete targetAtt.isUploading;
+                            saveToStorage(); 
+                            renderAttachments();
+                        }
+                    } else {
+                        throw new Error("Sunucu geçersiz link döndürdü");
+                    }
+                    
+                } catch (error) {
+                    console.error("Yükleme Hatası:", error);
+                    alert(`${file.name} buluta yüklenemedi. İnternet bağlantınızı kontrol edin.`);
+                    // Hata olursa geçici dosyayı arayüzden sil
+                    note.attachments = note.attachments.filter(a => a.id !== fileId);
+                    saveToStorage();
+                    renderAttachments();
+                }
+            }); 
+            event.target.value = '';
+        }
+
+        async function removeAttachment(id) {
+            if(!currentNoteId) return; const note = notes.find(n => n.id === currentNoteId);
+            if(note && note.attachments) { 
+                // Eklentiyi not listesinden çıkar
+                note.attachments = note.attachments.filter(a => a.id !== id); 
+                saveToStorage(); 
+                renderAttachments(); 
+            }
+        }
         async function syncSharedNotes() {
             let hasChanges = false;
             for (let i = 0; i < notes.length; i++) {
@@ -1371,84 +1445,7 @@ function filterPalette() {
                 document.getElementById('pdfIframe').src = ''; // Arkada bellek tüketmemesi için iframe'i boşalt
             }, 300);
         }
-// --- DOSYA YÜKLEME VE SİLME (FIREBASE STORAGE ENTEGRASYONU) ---
-        async function handleFileUpload(event) {
-            const files = event.target.files; if(!files.length || !currentNoteId) return;
-            const note = notes.find(n => n.id === currentNoteId); if(!note) return;
-            
-            const user = firebase.auth().currentUser;
-            if(!user) {
-                alert("Uyarı: Misafir modunda dosyalar sadece bu cihaza kaydedilir ve buluta gönderilmez.");
-            }
 
-            Array.from(files).forEach(async (file) => {
-                if(file.size > 15 * 1024 * 1024) { alert(`${file.name} çok büyük (Maks. 15MB).`); return; }
-                
-                if (!note.attachments) note.attachments = [];
-                const fileId = Date.now().toString() + Math.random().toString(36).substr(2, 5);
-                
-                // Geçici olarak UI'a "Yükleniyor..." durumunu ekle
-                const tempIndex = note.attachments.length;
-                note.attachments.push({ id: fileId, name: file.name + ' (Yükleniyor...)', type: file.type, data: '#', isUploading: true });
-                renderAttachments();
-
-                try {
-                    let fileDataUrl = '';
-                    let storagePathStr = '';
-
-                    // KULLANICI GİRİŞ YAPTIYSA BULUTA (STORAGE) YÜKLE
-                    if (user) {
-                        storagePathStr = `user_uploads/${user.uid}/${currentNoteId}/${fileId}_${file.name}`;
-                        const storageRef = firebase.storage().ref(storagePathStr);
-                        const snapshot = await storageRef.put(file);
-                        fileDataUrl = await snapshot.ref.getDownloadURL(); // Bulut indirme linki
-                    } 
-                    // MİSAFİRSE ESKİSİ GİBİ CİHAZ (BASE64) HAFIZASINA AL
-                    else {
-                        fileDataUrl = await new Promise((resolve) => {
-                            const reader = new FileReader();
-                            reader.onload = (e) => resolve(e.target.result);
-                            reader.readAsDataURL(file);
-                        });
-                    }
-
-                    // Yükleme bitince eklenti objesini gerçek link ile güncelle
-                    const targetAtt = note.attachments.find(a => a.id === fileId);
-                    if (targetAtt) {
-                        targetAtt.name = file.name;
-                        targetAtt.data = fileDataUrl;
-                        targetAtt.storagePath = storagePathStr;
-                        delete targetAtt.isUploading;
-                    }
-                    
-                    triggerAutoSaveUI();
-                    renderAttachments();
-                } catch (error) {
-                    alert(`${file.name} yüklenirken hata oluştu!`);
-                    note.attachments = note.attachments.filter(a => a.id !== fileId); // Hata olursa geçici objeyi sil
-                    renderAttachments();
-                }
-            }); 
-            event.target.value = '';
-        }
-
-        async function removeAttachment(id) {
-            if(!currentNoteId) return; const note = notes.find(n => n.id === currentNoteId);
-            if(note && note.attachments) { 
-                const att = note.attachments.find(a => a.id === id);
-                
-                // Bulutta yüklü bir dosyaysa Storage'dan da sil ki yer kaplamasın
-                if (att && att.storagePath) {
-                    try {
-                        await firebase.storage().ref(att.storagePath).delete();
-                    } catch(e) { console.warn("Storage silme hatası:", e); }
-                }
-                
-                note.attachments = note.attachments.filter(a => a.id !== id); 
-                triggerAutoSaveUI(); 
-                renderAttachments(); 
-            }
-        }
         // --- GOOGLE DOCS TARZI ERİŞİM YÖNETİMİ ---
         let tempShareConfig = { emails: [], accessType: 'restricted', mode: 'view' };
 
