@@ -239,19 +239,20 @@
                 </div>
 
                 <div class="flex items-center gap-2 md:gap-4 ml-2 md:ml-6">
-                    <button id="calendarToggleBtn" onclick="toggleCalendarMode()" class="relative p-2 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/40 dark:to-purple-900/40 border border-indigo-100 dark:border-indigo-800/60 rounded-xl transition flex items-center justify-center shadow-sm hover:shadow-md hover:shadow-indigo-500/20 group overflow-hidden" title="Takvim (Planlananlar)">
-                        <div class="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 opacity-0 group-hover:opacity-10 transition-opacity"></div>
-                        <i data-lucide="calendar" id="calendarIcon" class="w-5 h-5 text-indigo-600 dark:text-indigo-400 transform group-hover:scale-110 transition-transform"></i>
-                    </button>
-                    <!-- Liste / Izgara Görünümü Değiştirme Butonu (Mobilde Görünür Hale Getirildi) -->
-                    <button id="viewToggleBtn" onclick="toggleView()" class="flex p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition" title="Görünümü Değiştir">
-                        <i data-lucide="grid" id="viewIcon" class="w-5 h-5 text-slate-600 dark:text-slate-300"></i>
-                    </button>
-                    <!-- Masaüstü Yeni Butonu -->
-                    <button onclick="createNewItem()" class="hidden md:flex bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl items-center gap-2 text-sm font-semibold shadow-lg shadow-indigo-200 transition active:scale-95" id="mainAddBtn">
-                        <i data-lucide="plus" class="w-4 h-4" id="mainAddBtnIcon"></i> <span id="mainAddBtnText">Yeni Not</span>
-                    </button>
-                </div>
+    <!-- Görünüm Butonu (ÖNE ALINDI) -->
+    <button id="viewToggleBtn" onclick="toggleView()" class="flex p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition" title="Görünümü Değiştir">
+        <i data-lucide="grid" id="viewIcon" class="w-5 h-5 text-slate-600 dark:text-slate-300"></i>
+    </button>
+    <!-- Takvim Butonu (ARKAYA ALINDI) -->
+    <button id="calendarToggleBtn" onclick="toggleCalendarMode()" class="relative p-2 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/40 dark:to-purple-900/40 border border-indigo-100 dark:border-indigo-800/60 rounded-xl transition flex items-center justify-center shadow-sm hover:shadow-md hover:shadow-indigo-500/20 group overflow-hidden" title="Takvim (Planlananlar)">
+        <div class="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 opacity-0 group-hover:opacity-10 transition-opacity"></div>
+        <i data-lucide="calendar" id="calendarIcon" class="w-5 h-5 text-indigo-600 dark:text-indigo-400 transform group-hover:scale-110 transition-transform"></i>
+    </button>
+    <!-- Masaüstü Yeni Butonu -->
+    <button onclick="createNewItem()" class="hidden md:flex bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl items-center gap-2 text-sm font-semibold shadow-lg shadow-indigo-200 transition active:scale-95" id="mainAddBtn">
+        <i data-lucide="plus" class="w-4 h-4" id="mainAddBtnIcon"></i> <span id="mainAddBtnText">Yeni Not</span>
+    </button>
+</div>
             </header>
 
             <!-- Notlar Grid / Calendar / Tasks Container -->
@@ -908,25 +909,14 @@
             });
         }
 function applyEditorColor(colorHex) {
-            const modal = document.getElementById('editorModal');
-            const header = document.getElementById('editorHeader');
-            
-            // Mevcut renkleri temizle
-            modal.classList.remove('bg-white', 'dark:bg-slate-900', 'bg-red-50', 'dark:bg-red-950', 'bg-yellow-50', 'dark:bg-yellow-950', 'bg-green-50', 'dark:bg-green-950', 'bg-blue-50', 'dark:bg-blue-950', 'bg-purple-50', 'dark:bg-purple-950');
-            header.classList.remove('bg-white/90', 'dark:bg-slate-900/90', 'bg-red-50/90', 'dark:bg-red-950/90', 'bg-yellow-50/90', 'dark:bg-yellow-950/90', 'bg-green-50/90', 'dark:bg-green-950/90', 'bg-blue-50/90', 'dark:bg-blue-950/90', 'bg-purple-50/90', 'dark:bg-purple-950/90');
-            
-            const bgMap = {
-                'white': ['bg-white', 'dark:bg-slate-900'], '#fee2e2': ['bg-red-50', 'dark:bg-red-950'], '#fef3c7': ['bg-yellow-50', 'dark:bg-yellow-950'],
-                '#dcfce7': ['bg-green-50', 'dark:bg-green-950'], '#dbeafe': ['bg-blue-50', 'dark:bg-blue-950'], '#f3e8ff': ['bg-purple-50', 'dark:bg-purple-950']
-            };
-            const headerMap = {
-                'white': ['bg-white/90', 'dark:bg-slate-900/90'], '#fee2e2': ['bg-red-50/90', 'dark:bg-red-950/90'], '#fef3c7': ['bg-yellow-50/90', 'dark:bg-yellow-950/90'],
-                '#dcfce7': ['bg-green-50/90', 'dark:bg-green-950/90'], '#dbeafe': ['bg-blue-50/90', 'dark:bg-blue-950/90'], '#f3e8ff': ['bg-purple-50/90', 'dark:bg-purple-950/90']
-            };
-
-            modal.classList.add(...(bgMap[colorHex] || bgMap['white']));
-            header.classList.add(...(headerMap[colorHex] || headerMap['white']));
-        }
+    // Editör rengi artık değişmeyecek, her zaman ana temanın renginde kalacak.
+    const modal = document.getElementById('editorModal');
+    const header = document.getElementById('editorHeader');
+    
+    // Sadece varsayılan beyaz ve koyu mod renklerinin olduğundan emin oluyoruz
+    modal.classList.add('bg-white', 'dark:bg-slate-900');
+    header.classList.add('bg-white/90', 'dark:bg-slate-900/90');
+}
         function openEditor(id) {
             currentNoteId = id; const note = notes.find(n => n.id === id);
             if (note) {
@@ -1181,7 +1171,7 @@ function applyEditorColor(colorHex) {
 
         function renderCalendar() {
             destroySortable(); const container = document.getElementById('notesContainer');
-            const viewBtn = document.getElementById('viewToggleBtn'); if(viewBtn) viewBtn.classList.add('hidden');
+            const viewBtn = document.getElementById('viewToggleBtn'); if(viewBtn) { viewBtn.classList.add('invisible', 'pointer-events-none'); viewBtn.classList.remove('hidden'); }
             document.getElementById('searchContainer').classList.add('opacity-0', 'pointer-events-none');
             container.className = 'flex-1 overflow-y-auto p-4 sm:p-8 custom-scrollbar bg-slate-50 dark:bg-transparent pb-24 md:pb-8';
             
@@ -1387,7 +1377,7 @@ function applyEditorColor(colorHex) {
         // --- TASKS VE KART (NOT) RENDER İŞLEMLERİ ---
         function renderTasksView(filteredTasks) {
             destroySortable(); const container = document.getElementById('notesContainer');
-            const viewBtn = document.getElementById('viewToggleBtn'); if(viewBtn) viewBtn.classList.add('hidden');
+            const viewBtn = document.getElementById('viewToggleBtn'); if(viewBtn) { viewBtn.classList.add('invisible', 'pointer-events-none'); viewBtn.classList.remove('hidden'); }
             document.getElementById('searchContainer').classList.remove('opacity-0', 'pointer-events-none');
             container.className = 'flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar pb-24 md:pb-8 max-w-4xl mx-auto w-full';
             
@@ -1447,7 +1437,7 @@ function applyEditorColor(colorHex) {
 
         function renderCardsView(filteredNotes) {
             const container = document.getElementById('notesContainer');
-            const viewBtn = document.getElementById('viewToggleBtn');
+            const viewBtn = document.getElementById('viewToggleBtn'); if(viewBtn) { viewBtn.classList.remove('invisible', 'pointer-events-none', 'hidden'); }
             if(viewBtn) viewBtn.classList.remove('hidden'); 
             document.getElementById('searchContainer').classList.remove('opacity-0', 'pointer-events-none');
             container.className = `flex-1 overflow-y-auto p-4 md:p-8 ${viewMode === 'grid' ? 'grid-view' : 'list-view'} custom-scrollbar relative z-10 pb-24 md:pb-8`;
@@ -1469,7 +1459,7 @@ function applyEditorColor(colorHex) {
             filteredNotes.forEach(note => {
                 const div = document.createElement('div');
                 const themeColorClass = noteColorClassMap[note.color] || noteColorClassMap['white'];
-                div.className = `note-card p-5 sm:p-6 rounded-2xl border transition-colors ${viewMode === 'list' ? 'flex items-center gap-4' : ''} ${themeColorClass} ${note.completed ? 'opacity-60' : ''}`;
+                div.className = `note-card relative p-5 sm:p-6 rounded-2xl border transition-colors ${viewMode === 'list' ? 'flex items-center gap-4' : ''} ${themeColorClass} ${note.completed ? 'opacity-60' : ''}`;
                 div.onclick = () => currentFilter !== 'trash' && openEditor(note.id);
                 div.oncontextmenu = (e) => currentFilter !== 'trash' && handleCardContext(e, note.id);
                 
@@ -1572,7 +1562,7 @@ function applyEditorColor(colorHex) {
                     calBtn.className = 'relative p-2 bg-gradient-to-r from-indigo-600 to-purple-600 border border-transparent rounded-xl transition-all duration-300 flex items-center justify-center shadow-[0_0_20px_rgba(99,102,241,0.6)] scale-105 group overflow-hidden';
                     calIcon.className = 'w-5 h-5 text-white transform group-hover:scale-110 transition-transform';
                 } else {
-                    calBtn.className = 'relative p-2 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/40 dark:to-purple-900/40 border border-indigo-100 dark:border-indigo-800/60 rounded-xl transition-all duration-300 flex items-center justify-center shadow-sm hover:shadow-md hover:shadow-indigo-500/20 group overflow-hidden';
+                    calBtn.className = 'relative p-2 bg-gradient-to-r from-indigo-600 to-purple-600 border border-transparent rounded-xl transition-all duration-300 flex items-center justify-center shadow-[0_0_20px_rgba(99,102,241,0.6)] group overflow-hidden';
                     calIcon.className = 'w-5 h-5 text-indigo-600 dark:text-indigo-400 transform group-hover:scale-110 transition-transform';
                 }
             }
