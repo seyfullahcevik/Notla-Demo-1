@@ -1410,7 +1410,14 @@ function filterPalette() {
             const startDay = firstDay === 0 ? 6 : firstDay - 1;
             const monthNames = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
             const dayNames = ["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"];
-
+            const calColors = { 
+    'white': 'bg-slate-400 dark:bg-slate-500', 
+    '#fee2e2': 'bg-red-500', 
+    '#fef3c7': 'bg-yellow-500', 
+    '#dcfce7': 'bg-green-500', 
+    '#dbeafe': 'bg-blue-500', 
+    '#f3e8ff': 'bg-purple-500' 
+};
             const eventTags = [...new Set(notes.filter(n => n.type === 'event').flatMap(n => n.tags || []))];
             let tagsHtml = '';
             if(eventTags.length > 0) {
@@ -1446,17 +1453,8 @@ function filterPalette() {
 
             for (let i = 0; i < startDay; i++) { html += `<div class="bg-slate-50/50 dark:bg-slate-900/30 p-1 sm:p-2 min-h-[60px] sm:min-h-[100px]"></div>`; }
             
-            const today = new Date();
-            for (let i = 1; i <= daysInMonth; i++) {
-                const currentDateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
-                
-                const dayNotes = notes.filter(n => (n.type === 'task' || n.type === 'event') && n.reminder && n.reminder.startsWith(currentDateStr));
-                
-               const calColors = { 'white': 'bg-slate-400 dark:bg-slate-500', '#fee2e2': 'bg-red-500', '#fef3c7': 'bg-yellow-500', '#dcfce7': 'bg-green-500', '#dbeafe': 'bg-blue-500', '#f3e8ff': 'bg-purple-500' };
-                
-                let dotsHtml = '';
                 if (dayNotes.length > 0) {
-                    dotsHtml = `<div class="flex gap-1 justify-center mt-1">` + dayNotes.slice(0,3).map(n => `<div class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${calColors[n.color] || calColors['white']}"></div>`).join('') + (dayNotes.length > 3 ? `<div class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-slate-300"></div>` : '') + `</div>`;
+                    dotsHtml = `<div class="flex gap-1 justify-center mt-1 pointer-events-none">` + dayNotes.slice(0,3).map(n => `<div class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${calColors[n.color] || calColors['white']}"></div>`).join('') + (dayNotes.length > 3 ? `<div class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-slate-300"></div>` : '') + `</div>`;
                 }
 
                 const isToday = (i === today.getDate() && month === today.getMonth() && year === today.getFullYear());
