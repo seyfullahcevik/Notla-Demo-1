@@ -123,13 +123,12 @@
     <!-- 1. SLASH KOMUT MENÜSÜ -->
     <div id="slashMenu" class="fixed z-[120] hidden bg-white dark:bg-slate-800 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-700 w-56 overflow-hidden transform scale-95 opacity-0 transition-all duration-150">
         <div class="px-3 py-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest border-b dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50">Biçimlendirme</div>
-        <!-- DİKKAT: onclick yerine onmousedown="event.preventDefault()..." eklendi! Bu, tıklarken editörden imlecin kaybolmasını engeller. -->
-        <button onmousedown="event.preventDefault(); applySlashCommand('h1')" class="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-700 transition text-sm dark:text-white text-left"><div class="p-1 bg-white dark:bg-slate-900 border dark:border-slate-600 rounded text-slate-500 shadow-sm"><i data-lucide="heading-1" class="w-4 h-4"></i></div> Büyük Başlık</button>
-        <button onmousedown="event.preventDefault(); applySlashCommand('h2')" class="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-700 transition text-sm dark:text-white text-left"><div class="p-1 bg-white dark:bg-slate-900 border dark:border-slate-600 rounded text-slate-500 shadow-sm"><i data-lucide="heading-2" class="w-4 h-4"></i></div> Orta Başlık</button>
-        <button onmousedown="event.preventDefault(); applySlashCommand('list')" class="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-700 transition text-sm dark:text-white text-left"><div class="p-1 bg-white dark:bg-slate-900 border dark:border-slate-600 rounded text-slate-500 shadow-sm"><i data-lucide="list" class="w-4 h-4"></i></div> Madde İmi</button>
+        <button onclick="applySlashCommand('h1')" class="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-700 transition text-sm dark:text-white text-left"><div class="p-1 bg-white dark:bg-slate-900 border dark:border-slate-600 rounded text-slate-500 shadow-sm"><i data-lucide="heading-1" class="w-4 h-4"></i></div> Büyük Başlık</button>
+        <button onclick="applySlashCommand('h2')" class="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-700 transition text-sm dark:text-white text-left"><div class="p-1 bg-white dark:bg-slate-900 border dark:border-slate-600 rounded text-slate-500 shadow-sm"><i data-lucide="heading-2" class="w-4 h-4"></i></div> Orta Başlık</button>
+        <button onclick="applySlashCommand('list')" class="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-700 transition text-sm dark:text-white text-left"><div class="p-1 bg-white dark:bg-slate-900 border dark:border-slate-600 rounded text-slate-500 shadow-sm"><i data-lucide="list" class="w-4 h-4"></i></div> Madde İmi</button>
         
         <div class="px-3 py-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest border-y dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50 mt-1">Eklentiler</div>
-        <button onmousedown="event.preventDefault(); applySlashCommand('reminder')" class="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition text-sm text-indigo-600 dark:text-indigo-400 text-left font-bold"><div class="p-1 bg-indigo-100 dark:bg-indigo-900/50 rounded text-indigo-600 dark:text-indigo-400"><i data-lucide="bell-ring" class="w-4 h-4"></i></div> Hatırlatıcı Ekle</button>
+        <button onclick="applySlashCommand('reminder')" class="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition text-sm text-indigo-600 dark:text-indigo-400 text-left font-bold"><div class="p-1 bg-indigo-100 dark:bg-indigo-900/50 rounded text-indigo-600 dark:text-indigo-400"><i data-lucide="bell-ring" class="w-4 h-4"></i></div> Hatırlatıcı Ekle</button>
     </div>
 
     <!-- 2. KOMUT PALETİ (Ctrl+K) -->
@@ -1058,25 +1057,28 @@ function applySlashCommand(command) {
     // 1. Orijinal imleç pozisyonunu yedekle
     const currentIndex = slashIndex; 
     
-    // 2. Menüyü ekrandan kaldır
+    // 2. Menüyü anında kapat ki ekrandan gitsin ve index'i temizlesin
     hideSlashMenu();
     
-    // 3. İşlemleri uygulamak için çok kısa bir gecikme
+    // 3. Editöre odağı (focus) geri ver ki telefon klavyesi kapanmasın ve imleç geri gelsin
+    editor.focus();
+    
+    // 4. İşlemleri garantili uygulamak için çok kısa bir gecikme (10 milisaniye yeterlidir)
     setTimeout(() => {
         // Yazılan '/' harfini editörden sil
         editor.deleteText(currentIndex, 1);
         
         if (command === 'h1') {
-            editor.formatLine(currentIndex, 1, 'header', 1);
+            editor.formatLine(currentIndex, 0, 'header', 1);
             editor.setSelection(currentIndex, 0);
         } else if (command === 'h2') {
-            editor.formatLine(currentIndex, 1, 'header', 2);
+            editor.formatLine(currentIndex, 0, 'header', 2);
             editor.setSelection(currentIndex, 0);
         } else if (command === 'list') {
-            editor.formatLine(currentIndex, 1, 'list', 'bullet');
+            editor.formatLine(currentIndex, 0, 'list', 'bullet');
             editor.setSelection(currentIndex, 0);
         } else if (command === 'reminder') {
-            // Animasyonun bitmesini bekle ve soruları sor
+            // Animasyonun bitmesini bekle ve hatırlatıcı panellerini (prompt) aç
             setTimeout(() => {
                 const reminderTitle = prompt("Takvime eklenecek hatırlatıcının adını girin:\n(Örn: Müşteri toplantısı)", "Önemli Hatırlatma");
                 if (!reminderTitle) { editor.setSelection(currentIndex, 0); return; }
@@ -1096,23 +1098,22 @@ function applySlashCommand(command) {
                 const parentTitle = currentNote ? (currentNote.title || 'Başlıksız Not') : 'Bir not';
                 
                 const newEvent = {
-                    // Takvim için benzersiz bir ID atıyoruz
                     id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
-                    type: 'event', // Bunu event yaparak direkt takvime gönderiyoruz
+                    type: 'event', // Bunu event yapıyoruz ki takvime düşsün
                     title: `🔔 ${reminderTitle}`,
-                    content: `Bu etkinlik "${parentTitle}" isimli notun içinden oluşturuldu.`,
+                    content: `Bu etkinlik "${parentTitle}" isimli notun içinden özel olarak eklendi.`,
                     location: '',
                     tags: ['Not İçi Hatırlatıcı'],
                     reminder: reminderDateTime,
                     completed: false,
-                    color: '#dbeafe', // Takvimde belirgin görünmesi için Mavi renk
+                    color: '#dbeafe', // Takvimde güzel ve dikkat çekici bir açık mavi
                     createdAt: new Date().toISOString(),
                     updatedAt: new Date().toISOString()
                 };
                 notes.unshift(newEvent);
-                saveToStorage(); // Takvime işlenmesi için kaydet
+                saveToStorage(); // Etkinliğin Takvim'de gözükmesi için kaydet
 
-                // --- 2. EDİTÖRÜN İÇİNE RENKLİ ZAMAN DAMGASI (PILL) BASMA ---
+                // --- 2. EDİTÖRÜN İÇİNE RENKLİ ZAMAN DAMGASI BASMA ---
                 let displayDate = `${reminderDate} ${reminderTime}`;
                 try {
                     const dateObj = new Date(reminderDate);
@@ -1125,12 +1126,12 @@ function applySlashCommand(command) {
                 
                 // Belirgin biçimde (Açık mavi arka plan, koyu mavi kalın metin) yazdır
                 editor.insertText(currentIndex, pillText, {
-                    'color': '#4f46e5',      // İndigo-600 rengi
-                    'background': '#e0e7ff', // İndigo-100 arka plan
+                    'color': '#4f46e5',      // İndigo-600 (Koyu mavi)
+                    'background': '#e0e7ff', // İndigo-100 (Açık mavi)
                     'bold': true
                 });
                 
-                // Etiketten hemen sonra bir boşluk bırak ve formatı sıfırla ki kullanıcı normal yazmaya devam edebilsin
+                // Etiketten hemen sonra bir boşluk bırakıp formatı sıfırla ki kullanıcı normal yazmaya devam edebilsin
                 editor.insertText(currentIndex + pillText.length, " ");
                 editor.removeFormat(currentIndex + pillText.length, 1);
                 
