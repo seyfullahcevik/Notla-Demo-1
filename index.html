@@ -1453,6 +1453,12 @@ function filterPalette() {
 
             for (let i = 0; i < startDay; i++) { html += `<div class="bg-slate-50/50 dark:bg-slate-900/30 p-1 sm:p-2 min-h-[60px] sm:min-h-[100px]"></div>`; }
             
+            const today = new Date();
+            for (let i = 1; i <= daysInMonth; i++) {
+                const currentDateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+                const dayNotes = notes.filter(n => (n.type === 'task' || n.type === 'event') && n.reminder && n.reminder.startsWith(currentDateStr));
+                
+                let dotsHtml = '';
                 if (dayNotes.length > 0) {
                     dotsHtml = `<div class="flex gap-1 justify-center mt-1 pointer-events-none">` + dayNotes.slice(0,3).map(n => `<div class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${calColors[n.color] || calColors['white']}"></div>`).join('') + (dayNotes.length > 3 ? `<div class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-slate-300"></div>` : '') + `</div>`;
                 }
