@@ -1054,46 +1054,98 @@ function hideSlashMenu() {
 function applySlashCommand(command) {
     if (slashIndex === null) return;
     
-    // 1. İşlem yapabilmek için editöre odağı geri ver (Mobilde şarttır)
+    // 1. Orijinal imleç pozisyonunu yedekle
+    const currentIndex = slashIndex; 
+    
+    // 2. Editöre odağı geri ver
     editor.focus();
-
-    // 2. Yazılan '/' harfini sil
-    editor.deleteText(slashIndex, 1);
     
-    // 3. İmleci Slash'in olduğu noktaya sabitle
-    editor.setSelection(slashIndex, 0);
-    
-    // 4. İstenen komutu uygula
-    if (command === 'h1') {
-        editor.formatLine(slashIndex, 1, 'header', 1);
-    } else if (command === 'h2') {
-        editor.formatLine(slashIndex, 1, 'header', 2);
-    } else if (command === 'list') {
-        editor.formatLine(slashIndex, 1, 'list', 'bullet');
-    } else if (command === 'reminder') {
-        const note = notes.find(n => n.id === currentNoteId);
-        if (note) {
-            // Notu bir "Görev (Task)" yapısına çevir ki hatırlatıcı çalışsın
-            note.type = 'task';
-            document.getElementById('noteTitle').placeholder = 'Görev adı...';
-            document.getElementById('reminderContainer').classList.remove('hidden');
-            document.getElementById('locationContainer').classList.remove('hidden');
-            document.getElementById('modalTaskCheck').classList.remove('hidden');
-            
-            // Hatırlatıcı seçiciyi (Tarih Paneli) aç
-            const reminderInput = document.getElementById('noteReminder');
-            setTimeout(() => { 
-                reminderInput.focus(); 
-                if(reminderInput.showPicker) reminderInput.showPicker(); 
-                else reminderInput.click(); 
-            }, 100);
-            
-            saveToStorage();
-        }
-    }
-    
-    // İşlem bittikten sonra menüyü kapat
+    // 3. Menüyü ekrandan kaldır
     hideSlashMenu();
+    
+    // 4. Quill'in karakter silme ve format atma işlemlerini çakışmadan yapması için kısa bir gecikme ekliyoruz
+    setTimeout(() => {
+        // Yazılan '/' harfini editörden sil
+        editor.deleteText(currentIndex, 1);
+        
+        if (command === 'h1') {
+            editor.formatLine(currentIndex, 1, 'header', 1);
+            editor.setSelection(currentIndex, 0);
+        } else if (command === 'h2') {
+            editor.formatLine(currentIndex, 1, 'header', 2);
+            editor.setSelection(currentIndex, 0);
+        } else if (command === 'list') {
+            editor.formatLine(currentIndex, 1, 'list', 'bullet');
+            editor.setSelection(currentIndex, 0);
+        } else if (command === 'reminder') {
+            // Animasyonun bitmesini bekle ve soruları sor
+            setTimeout(() => {
+                const reminderTitle = prompt("Takvime eklenecek hatırlatıcının adını girin:\n(Örn: Müşteri toplantısı)", "Önemli Hatırlatma");
+                if (!reminderTitle) { editor.setSelection(currentIndex, 0); return; }
+                
+                const d = new Date();
+                const todayStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+                const reminderDate = prompt("Tarihi girin (Yıl-Ay-Gün formatında):", todayStr);
+                if (!reminderDate) { editor.setSelection(currentIndex, 0); return; }
+                
+                const reminderTime = prompt("Saati girin (Saat:Dakika):", "14:30");
+                if (!reminderTime) { editor.setSelection(currentIndex, 0); return; }
+
+                const reminderDateTime = `${reminderDate}T${reminderTime}`;
+
+                // --- 1. TAKVİME BAĞIMSIZ ETKİNLİK OLARAK EKLEME ---
+                const currentNote = notes.find(n => n.id === currentNoteId);
+                const parentTitle = currentNote ? (currentNote.title || 'Başlıksız Not') : 'Bir not';
+                
+                const newEvent = {
+                    id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
+                    type: 'event',
+                    title: `🔔 ${reminderTitle}`,
+                    content: `Bu hatırlatıcı "${parentTitle}" isimli notun içinden özel olarak eklendi.`,
+                    location: '',
+                    tags: ['Not İçi Hatırlatıcı'],
+                    reminder: reminderDateTime,
+                    completed: false,
+                    color: '#dbeafe', // Dikkat çekici mavi
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                };
+                notes.unshift(newEvent);
+                saveToStorage(); // Takvimde gözükmesi için kaydet
+
+                // --- 2. EDİTÖRÜN İÇİNE RENKLİ ZAMAN DAMGASI (PILL) BASMA ---
+                let displayDate = `${reminderDate} ${reminderTime}`;
+                try {
+                    const dateObj = new Date(reminderDate);
+                    const months = ["Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara"];
+                    displayDate = `${dateObj.getDate()} ${months[dateObj.getMonth()]} ${reminderTime}`;
+                } catch(e) {}
+
+                // Etiket metni (Sağında solunda boşluklarla)
+                const pillText = ` ⏰ ${displayDate} - ${reminderTitle} `;
+                
+                // Belirgin biçimde (Açık mavi arka plan, koyu mavi kalın metin) yazdır
+                editor.insertText(currentIndex, pillText, {
+                    'color': '#4f46e5',      // İndigo-600 rengi
+                    'background': '#e0e7ff', // İndigo-100 arka plan
+                    'bold': true
+                });
+                
+                // Etiketten hemen sonra bir boşluk bırakıp formatı sıfırla ki kullanıcı normal yazmaya devam edebilsin
+                editor.insertText(currentIndex + pillText.length, " ", {
+                    'color': false,
+                    'background': false,
+                    'bold': false
+                });
+                
+                // İmleci etiketin sonuna yerleştir
+                editor.setSelection(currentIndex + pillText.length + 1, 0);
+                
+                // Editördeki değişikliği algılatıp otomatik kaydet
+                triggerAutoSaveUI();
+            }, 160);
+        }
+    }, 10);
 }
 // --- KOMUT PALETİ (CTRL+K) FONKSİYONLARI ---
 
