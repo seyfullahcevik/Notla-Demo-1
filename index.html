@@ -123,6 +123,7 @@
     <!-- 1. SLASH KOMUT MENÜSÜ -->
     <div id="slashMenu" class="fixed z-[120] hidden bg-white dark:bg-slate-800 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-700 w-56 overflow-hidden transform scale-95 opacity-0 transition-all duration-150">
         <div class="px-3 py-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest border-b dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50">Biçimlendirme</div>
+        
         <button onclick="applySlashCommand('h1')" class="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-700 transition text-sm dark:text-white text-left"><div class="p-1 bg-white dark:bg-slate-900 border dark:border-slate-600 rounded text-slate-500 shadow-sm"><i data-lucide="heading-1" class="w-4 h-4"></i></div> Büyük Başlık</button>
         <button onclick="applySlashCommand('h2')" class="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-700 transition text-sm dark:text-white text-left"><div class="p-1 bg-white dark:bg-slate-900 border dark:border-slate-600 rounded text-slate-500 shadow-sm"><i data-lucide="heading-2" class="w-4 h-4"></i></div> Orta Başlık</button>
         <button onclick="applySlashCommand('list')" class="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-700 transition text-sm dark:text-white text-left"><div class="p-1 bg-white dark:bg-slate-900 border dark:border-slate-600 rounded text-slate-500 shadow-sm"><i data-lucide="list" class="w-4 h-4"></i></div> Madde İmi</button>
@@ -1051,22 +1052,17 @@ function hideSlashMenu() {
     slashIndex = null;
 }
 
-function applySlashCommand(command) {
+window.applySlashCommand = function(command) {
     if (slashIndex === null) return;
     
-    // 1. Orijinal imleç pozisyonunu yedekle
+    // Orijinal pozisyonu yedekle ve menüyü gizle
     const currentIndex = slashIndex; 
-    
-    // 2. Menüyü anında kapat ki ekrandan gitsin ve index'i temizlesin
     hideSlashMenu();
     
-    // 3. Editöre odağı (focus) geri ver ki telefon klavyesi kapanmasın ve imleç geri gelsin
-    editor.focus();
-    
-    // 4. İşlemleri garantili uygulamak için çok kısa bir gecikme (10 milisaniye yeterlidir)
+    // Zamanlama çakışmalarını (%100) önleyen güvenlik gecikmesi
     setTimeout(() => {
-        // Yazılan '/' harfini editörden sil
-        editor.deleteText(currentIndex, 1);
+        editor.focus(); // Editöre odağı geri ver
+        editor.deleteText(currentIndex, 1); // Eğik çizgiyi ( / ) sil
         
         if (command === 'h1') {
             editor.formatLine(currentIndex, 0, 'header', 1);
@@ -1078,72 +1074,71 @@ function applySlashCommand(command) {
             editor.formatLine(currentIndex, 0, 'list', 'bullet');
             editor.setSelection(currentIndex, 0);
         } else if (command === 'reminder') {
-            // Animasyonun bitmesini bekle ve hatırlatıcı panellerini (prompt) aç
-            setTimeout(() => {
-                const reminderTitle = prompt("Takvime eklenecek hatırlatıcının adını girin:\n(Örn: Müşteri toplantısı)", "Önemli Hatırlatma");
-                if (!reminderTitle) { editor.setSelection(currentIndex, 0); return; }
-                
-                const d = new Date();
-                const todayStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-                const reminderDate = prompt("Tarihi girin (Yıl-Ay-Gün formatında):", todayStr);
-                if (!reminderDate) { editor.setSelection(currentIndex, 0); return; }
-                
-                const reminderTime = prompt("Saati girin (Saat:Dakika):", "14:30");
-                if (!reminderTime) { editor.setSelection(currentIndex, 0); return; }
+            // Kullanıcıdan hatırlatıcı detaylarını al
+            const reminderTitle = prompt("Takvime eklenecek hatırlatıcının adını girin:\n(Örn: Müşteri toplantısı)", "Önemli Hatırlatma");
+            if (!reminderTitle) { editor.setSelection(currentIndex, 0); return; }
+            
+            const d = new Date();
+            const todayStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+            const reminderDate = prompt("Tarihi girin (Yıl-Ay-Gün formatında):", todayStr);
+            if (!reminderDate) { editor.setSelection(currentIndex, 0); return; }
+            
+            const reminderTime = prompt("Saati girin (Saat:Dakika):", "14:30");
+            if (!reminderTime) { editor.setSelection(currentIndex, 0); return; }
 
-                const reminderDateTime = `${reminderDate}T${reminderTime}`;
+            const reminderDateTime = `${reminderDate}T${reminderTime}`;
 
-                // --- 1. TAKVİME BAĞIMSIZ ETKİNLİK OLARAK EKLEME ---
-                const currentNote = notes.find(n => n.id === currentNoteId);
-                const parentTitle = currentNote ? (currentNote.title || 'Başlıksız Not') : 'Bir not';
-                
-                const newEvent = {
-                    id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
-                    type: 'event', // Bunu event yapıyoruz ki takvime düşsün
-                    title: `🔔 ${reminderTitle}`,
-                    content: `Bu etkinlik "${parentTitle}" isimli notun içinden özel olarak eklendi.`,
-                    location: '',
-                    tags: ['Not İçi Hatırlatıcı'],
-                    reminder: reminderDateTime,
-                    completed: false,
-                    color: '#dbeafe', // Takvimde güzel ve dikkat çekici bir açık mavi
-                    createdAt: new Date().toISOString(),
-                    updatedAt: new Date().toISOString()
-                };
-                notes.unshift(newEvent);
-                saveToStorage(); // Etkinliğin Takvim'de gözükmesi için kaydet
+            // --- 1. TAKVİME BAĞIMSIZ ETKİNLİK OLARAK EKLEME ---
+            const currentNote = notes.find(n => n.id === currentNoteId);
+            const parentTitle = currentNote ? (currentNote.title || 'Başlıksız Not') : 'Bir not';
+            
+            const newEvent = {
+                id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
+                type: 'event', // Türünü event yaparak direkt takvime işliyoruz
+                title: `🔔 ${reminderTitle}`,
+                content: `Bu etkinlik "${parentTitle}" isimli notun içinden özel olarak eklendi.`,
+                location: '',
+                tags: ['Not İçi Hatırlatıcı'],
+                reminder: reminderDateTime,
+                completed: false,
+                color: '#dbeafe', // Takvimde güzel bir mavi arka planla belirecek
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            };
+            notes.unshift(newEvent);
+            saveToStorage(); // Etkinliği hemen takvime kaydet
 
-                // --- 2. EDİTÖRÜN İÇİNE RENKLİ ZAMAN DAMGASI BASMA ---
-                let displayDate = `${reminderDate} ${reminderTime}`;
-                try {
-                    const dateObj = new Date(reminderDate);
-                    const months = ["Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara"];
-                    displayDate = `${dateObj.getDate()} ${months[dateObj.getMonth()]} ${reminderTime}`;
-                } catch(e) {}
+            // --- 2. EDİTÖRÜN İÇİNE RENKLİ ZAMAN DAMGASI (PILL) BASMA ---
+            let displayDate = `${reminderDate} ${reminderTime}`;
+            try {
+                const dateObj = new Date(reminderDate);
+                const months = ["Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara"];
+                displayDate = `${dateObj.getDate()} ${months[dateObj.getMonth()]} ${reminderTime}`;
+            } catch(e) {}
 
-                // Etiket metni (Sağında solunda boşluklarla)
-                const pillText = ` ⏰ ${displayDate} - ${reminderTitle} `;
-                
-                // Belirgin biçimde (Açık mavi arka plan, koyu mavi kalın metin) yazdır
-                editor.insertText(currentIndex, pillText, {
-                    'color': '#4f46e5',      // İndigo-600 (Koyu mavi)
-                    'background': '#e0e7ff', // İndigo-100 (Açık mavi)
-                    'bold': true
-                });
-                
-                // Etiketten hemen sonra bir boşluk bırakıp formatı sıfırla ki kullanıcı normal yazmaya devam edebilsin
-                editor.insertText(currentIndex + pillText.length, " ");
-                editor.removeFormat(currentIndex + pillText.length, 1);
-                
-                // İmleci temizlenmiş alanın sonuna yerleştir
-                editor.setSelection(currentIndex + pillText.length + 1, 0);
-                
-                // Editördeki değişikliği algılatıp otomatik kaydet
-                triggerAutoSaveUI();
-            }, 100);
+            // Etiket metnimiz (sağında solunda boşluklarla)
+            const pillText = ` ⏰ ${displayDate} - ${reminderTitle} `;
+            
+            // Renkli metni editöre bas (Açık mavi arka plan, koyu mavi yazı)
+            editor.insertText(currentIndex, pillText, {
+                'color': '#4f46e5',      // Indigo yazı rengi
+                'background': '#e0e7ff', // Açık indigo arka plan
+                'bold': true
+            });
+            
+            // Etiketten sonraki metin aynı renkte devam etmesin diye formatı sıfırla
+            editor.insertText(currentIndex + pillText.length, " ", {
+                'color': false,
+                'background': false,
+                'bold': false
+            });
+            
+            // İmleci temiz alana yerleştir ve kaydet
+            editor.setSelection(currentIndex + pillText.length + 1, 0);
+            triggerAutoSaveUI();
         }
-    }, 10);
-}
+    }, 60); // Gecikme süresi klavye animasyonları için 60ms'ye çıkarıldı
+};
 // --- KOMUT PALETİ (CTRL+K) FONKSİYONLARI ---
 
 // Klavye Kısayolu Dinleyicisi
