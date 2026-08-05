@@ -123,12 +123,13 @@
     <!-- 1. SLASH KOMUT MENÜSÜ -->
     <div id="slashMenu" class="fixed z-[120] hidden bg-white dark:bg-slate-800 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-700 w-56 overflow-hidden transform scale-95 opacity-0 transition-all duration-150">
         <div class="px-3 py-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest border-b dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50">Biçimlendirme</div>
-        <button onclick="applySlashCommand('h1')" class="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-700 transition text-sm dark:text-white text-left"><div class="p-1 bg-white dark:bg-slate-900 border dark:border-slate-600 rounded text-slate-500 shadow-sm"><i data-lucide="heading-1" class="w-4 h-4"></i></div> Büyük Başlık</button>
-        <button onclick="applySlashCommand('h2')" class="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-700 transition text-sm dark:text-white text-left"><div class="p-1 bg-white dark:bg-slate-900 border dark:border-slate-600 rounded text-slate-500 shadow-sm"><i data-lucide="heading-2" class="w-4 h-4"></i></div> Orta Başlık</button>
-        <button onclick="applySlashCommand('list')" class="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-700 transition text-sm dark:text-white text-left"><div class="p-1 bg-white dark:bg-slate-900 border dark:border-slate-600 rounded text-slate-500 shadow-sm"><i data-lucide="list" class="w-4 h-4"></i></div> Madde İmi</button>
+        <!-- DİKKAT: onclick yerine onmousedown="event.preventDefault()..." eklendi! Bu, tıklarken editörden imlecin kaybolmasını engeller. -->
+        <button onmousedown="event.preventDefault(); applySlashCommand('h1')" class="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-700 transition text-sm dark:text-white text-left"><div class="p-1 bg-white dark:bg-slate-900 border dark:border-slate-600 rounded text-slate-500 shadow-sm"><i data-lucide="heading-1" class="w-4 h-4"></i></div> Büyük Başlık</button>
+        <button onmousedown="event.preventDefault(); applySlashCommand('h2')" class="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-700 transition text-sm dark:text-white text-left"><div class="p-1 bg-white dark:bg-slate-900 border dark:border-slate-600 rounded text-slate-500 shadow-sm"><i data-lucide="heading-2" class="w-4 h-4"></i></div> Orta Başlık</button>
+        <button onmousedown="event.preventDefault(); applySlashCommand('list')" class="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-700 transition text-sm dark:text-white text-left"><div class="p-1 bg-white dark:bg-slate-900 border dark:border-slate-600 rounded text-slate-500 shadow-sm"><i data-lucide="list" class="w-4 h-4"></i></div> Madde İmi</button>
         
         <div class="px-3 py-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest border-y dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50 mt-1">Eklentiler</div>
-        <button onclick="applySlashCommand('reminder')" class="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition text-sm text-indigo-600 dark:text-indigo-400 text-left font-bold"><div class="p-1 bg-indigo-100 dark:bg-indigo-900/50 rounded text-indigo-600 dark:text-indigo-400"><i data-lucide="bell-ring" class="w-4 h-4"></i></div> Hatırlatıcı Ekle</button>
+        <button onmousedown="event.preventDefault(); applySlashCommand('reminder')" class="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition text-sm text-indigo-600 dark:text-indigo-400 text-left font-bold"><div class="p-1 bg-indigo-100 dark:bg-indigo-900/50 rounded text-indigo-600 dark:text-indigo-400"><i data-lucide="bell-ring" class="w-4 h-4"></i></div> Hatırlatıcı Ekle</button>
     </div>
 
     <!-- 2. KOMUT PALETİ (Ctrl+K) -->
@@ -1057,13 +1058,10 @@ function applySlashCommand(command) {
     // 1. Orijinal imleç pozisyonunu yedekle
     const currentIndex = slashIndex; 
     
-    // 2. Editöre odağı geri ver
-    editor.focus();
-    
-    // 3. Menüyü ekrandan kaldır
+    // 2. Menüyü ekrandan kaldır
     hideSlashMenu();
     
-    // 4. Quill'in karakter silme ve format atma işlemlerini çakışmadan yapması için kısa bir gecikme ekliyoruz
+    // 3. İşlemleri uygulamak için çok kısa bir gecikme
     setTimeout(() => {
         // Yazılan '/' harfini editörden sil
         editor.deleteText(currentIndex, 1);
@@ -1098,20 +1096,21 @@ function applySlashCommand(command) {
                 const parentTitle = currentNote ? (currentNote.title || 'Başlıksız Not') : 'Bir not';
                 
                 const newEvent = {
+                    // Takvim için benzersiz bir ID atıyoruz
                     id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
-                    type: 'event',
+                    type: 'event', // Bunu event yaparak direkt takvime gönderiyoruz
                     title: `🔔 ${reminderTitle}`,
-                    content: `Bu hatırlatıcı "${parentTitle}" isimli notun içinden özel olarak eklendi.`,
+                    content: `Bu etkinlik "${parentTitle}" isimli notun içinden oluşturuldu.`,
                     location: '',
                     tags: ['Not İçi Hatırlatıcı'],
                     reminder: reminderDateTime,
                     completed: false,
-                    color: '#dbeafe', // Dikkat çekici mavi
+                    color: '#dbeafe', // Takvimde belirgin görünmesi için Mavi renk
                     createdAt: new Date().toISOString(),
                     updatedAt: new Date().toISOString()
                 };
                 notes.unshift(newEvent);
-                saveToStorage(); // Takvimde gözükmesi için kaydet
+                saveToStorage(); // Takvime işlenmesi için kaydet
 
                 // --- 2. EDİTÖRÜN İÇİNE RENKLİ ZAMAN DAMGASI (PILL) BASMA ---
                 let displayDate = `${reminderDate} ${reminderTime}`;
@@ -1131,19 +1130,16 @@ function applySlashCommand(command) {
                     'bold': true
                 });
                 
-                // Etiketten hemen sonra bir boşluk bırakıp formatı sıfırla ki kullanıcı normal yazmaya devam edebilsin
-                editor.insertText(currentIndex + pillText.length, " ", {
-                    'color': false,
-                    'background': false,
-                    'bold': false
-                });
+                // Etiketten hemen sonra bir boşluk bırak ve formatı sıfırla ki kullanıcı normal yazmaya devam edebilsin
+                editor.insertText(currentIndex + pillText.length, " ");
+                editor.removeFormat(currentIndex + pillText.length, 1);
                 
-                // İmleci etiketin sonuna yerleştir
+                // İmleci temizlenmiş alanın sonuna yerleştir
                 editor.setSelection(currentIndex + pillText.length + 1, 0);
                 
                 // Editördeki değişikliği algılatıp otomatik kaydet
                 triggerAutoSaveUI();
-            }, 160);
+            }, 100);
         }
     }, 10);
 }
